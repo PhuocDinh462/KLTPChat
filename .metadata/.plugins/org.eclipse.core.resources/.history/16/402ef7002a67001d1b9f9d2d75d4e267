@@ -1,0 +1,102 @@
+package Client;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+
+public class ChatBubble extends JPanel{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+     * Enum: Bubble Type
+     */
+    public enum BubbleType {
+        /**
+         * User chat bubble
+         */
+        Mine,
+
+        /**
+         * Others user chat bubble
+         */
+        Others,
+
+        /**
+         * File chat bubble
+         */
+        File
+    }
+
+    /**
+     * Default constructor
+     * @param bubbleType BubbleType
+     * @param content String: Content of this Chat Bubble
+     */
+    public ChatBubble(BubbleType bubbleType, String content) {
+        setBackground(Color.WHITE);
+
+        JLabel timeLabel = new JLabel(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
+
+        JButton contentButton = new JButton(content);
+        contentButton.setBorderPainted(false);
+
+        switch (bubbleType) {
+            case Mine -> {
+                contentButton.setBackground(Color.getHSBColor(0.6F, 1F, 1F));
+                contentButton.setForeground(Color.WHITE);
+                setLayout(new FlowLayout(FlowLayout.RIGHT));
+                add(timeLabel);
+                add(contentButton);
+            }
+            case Others -> {
+                contentButton.setBackground(Color.getHSBColor(0F, 0F, 0.85F));
+                setLayout(new FlowLayout(FlowLayout.LEFT));
+                add(contentButton);
+                add(timeLabel);
+            }
+            case File -> {
+                contentButton.addActionListener(e -> downloadFile(content));
+                contentButton.setBackground(Color.getHSBColor(0F, 0F, 0.85F));
+                setLayout(new FlowLayout(FlowLayout.LEFT));
+                add(contentButton);
+                add(timeLabel);
+            }
+        }
+    }
+
+    /**
+     * Download a file when user click on File-ChatBubble
+     * @param filename String
+     */
+    private void downloadFile(String filename) {
+        JFileChooser fileChooser = new JFileChooser();
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(filename);
+                byte[] data = fileInputStream.readAllBytes();
+                fileInputStream.close();
+
+                FileOutputStream fileOutputStream = new FileOutputStream(
+                        fileChooser.getSelectedFile().getAbsolutePath());
+                fileOutputStream.write(data);
+                fileOutputStream.close();
+
+                File file = new File(filename);
+                if (file.delete()) JOptionPane.showMessageDialog(this, "Đã tải!");
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(this,
+                        "Tải file thất bại!\nError: " + exception,
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+}

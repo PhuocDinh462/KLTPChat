@@ -1,0 +1,14 @@
+package Client;
+
+import javax.swing.JPanel;
+
+public class ChatBubble extends JPanel {
+
+	/**
+	 * Create the panel.
+	 */
+	public ChatBubble() {
+
+	}
+
+}
