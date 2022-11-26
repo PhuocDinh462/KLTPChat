@@ -9,396 +9,568 @@ import java.io.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+//BUTTON RENDERER CLASS
+class ButtonRenderer extends JButton implements TableCellRenderer {
+
+	/**
+		 * 
+		 */
+	private static final long serialVersionUID = 1L;
+
+// CONSTRUCTOR
+	public ButtonRenderer() {
+		// SET BUTTON PROPERTIES
+		setOpaque(true);
+	}
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object obj, boolean selected, boolean focused, int row,
+			int col) {
+
+		// SET PASSED OBJECT AS BUTTON TEXT
+		setText((obj == null) ? "" : obj.toString());
+
+		return this;
+	}
+
+}
+
+//BUTTON EDITOR CLASS
+class ButtonEditor extends DefaultCellEditor {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected JButton btn;
+	private String lbl;
+	private Boolean clicked;
+
+	public ButtonEditor(JTextField txt) {
+		super(txt);
+
+		btn = new JButton();
+		btn.setOpaque(true);
+
+		// WHEN BUTTON IS CLICKED
+		btn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				fireEditingStopped();
+			}
+		});
+	}
+
+// OVERRIDE A COUPLE OF METHODS
+	@Override
+	public Component getTableCellEditorComponent(JTable table, Object obj, boolean selected, int row, int col) {
+
+		// SET TEXT TO BUTTON,SET CLICKED TO TRUE,THEN RETURN THE BTN OBJECT
+		lbl = (obj == null) ? "" : obj.toString();
+		btn.setText(lbl);
+		clicked = true;
+		return btn;
+	}
+
+// IF BUTTON CELL VALUE CHNAGES,IF CLICKED THAT IS
+	@Override
+	public Object getCellEditorValue() {
+
+		if (clicked) {
+			// SHOW US SOME MESSAGE
+			JOptionPane.showMessageDialog(btn, lbl + " Clicked");
+		}
+		// SET IT TO FALSE NOW THAT ITS CLICKED
+		clicked = false;
+		return new String(lbl);
+	}
+
+	@Override
+	public boolean stopCellEditing() {
+
+		// SET CLICKED TO FALSE FIRST
+		clicked = false;
+		return super.stopCellEditing();
+	}
+
+	@Override
+	protected void fireEditingStopped() {
+		super.fireEditingStopped();
+	}
+}
 
 public class Main extends JFrame {
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Enum: Message Status
-     */
-    public enum MessageStatus {
-        /**
-         * Waiting for response
-         */
-        Waiting,
+	 * Enum: Message Status
+	 */
+	public enum MessageStatus {
+		/**
+		 * Waiting for response
+		 */
+		Waiting,
 
-        /**
-         * Failed cause user is offline
-         */
-        Failed,
+		/**
+		 * Failed cause user is offline
+		 */
+		Failed,
 
-        /**
-         * Send message accepted
-         */
-        Accepted
-    }
+		/**
+		 * Send message accepted
+		 */
+		Accepted
+	}
 
-    /**
-     * Attribute: MessageStatus - messageStatus
-     * Status of Message
-     */
-    public static MessageStatus messageStatus;
+	/**
+	 * Attribute: MessageStatus - messageStatus Status of Message
+	 */
+	public static MessageStatus messageStatus;
 
-    /**
-     * Attribute: Socket - server
-     */
-    private static Socket server;
+	/**
+	 * Attribute: Socket - server
+	 */
+	private static Socket server;
 
-    /**
-     * Attribute: String[] - users
-     * List of online users
-     */
-    private static String[] users;
+	/**
+	 * Attribute: String[] - users List of online users
+	 */
+	private static String[] users;
 
-    /**
-     * Attribute: JList - usersList
-     * Display List of online users
-     */
-    private static final JList<String> usersList = new JList<>();
+	/**
+	 * Attribute: JList - usersList Display List of online users
+	 */
+	private static final JList<String> usersList = new JList<>();
 
-    /**
-     * Attribute: JLabel - conversationTitle
-     * Display who user are chatting with
-     */
-    private static JLabel conversationTitle;
+	/**
+	 * Attribute: JLabel - conversationTitle Display who user are chatting with
+	 */
+	private static JLabel conversationTitle;
 
-    /**
-     * Attribute: JPanel - conversationPanel
-     * Display conversation
-     */
-    private static JPanel conversationPanel;
+	/**
+	 * Attribute: JPanel - conversationPanel Display conversation
+	 */
+	private static JPanel conversationPanel;
 
-    /**
-     * Attribute: HashMap - conversations
-     * List of conversations
-     */
-    private static final HashMap<String, JPanel> conversations = new HashMap<>();
+	/**
+	 * Attribute: HashMap - conversations List of conversations
+	 */
+	private static final HashMap<String, JPanel> conversations = new HashMap<>();
+	private JTextField addFriendTextField;
+	private JTable addFriendRequestTable;
+	private DefaultTableModel addFriendRequestTableModel;
 
-    /**
-     * Main function
-     * @param args String[]
-     */
-    public static void main(String[] args) {
-        if (connectServer()) new SignIn();
-        else JOptionPane.showMessageDialog(null, "Máy chủ không hoạt động!",
-                "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
-    }
+	/**
+	 * Main function
+	 * 
+	 * @param args String[]
+	 */
+	public static void main(String[] args) {
+		if (connectServer())
+			new SignIn();
+		else
+			JOptionPane.showMessageDialog(null, "Máy chủ không hoạt động!", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
+	}
 
-    /**
-     * Connect to Server
-     * @return boolean: True if server are available, False if server are not available
-     */
-    private static boolean connectServer() {
-        try {
-            server = new Socket("localhost", 8080);
-            Thread receiveServerMessagesThread = new Thread(Main::receiveServerMessages);
-            receiveServerMessagesThread.start();
-            return true;
-        } catch (Exception exception) {
-            return false;
-        }
-    }
+	/**
+	 * Connect to Server
+	 * 
+	 * @return boolean: True if server are available, False if server are not
+	 *         available
+	 */
+	private static boolean connectServer() {
+		try {
+			server = new Socket("localhost", 8080);
+			Thread receiveServerMessagesThread = new Thread(Main::receiveServerMessages);
+			receiveServerMessagesThread.start();
+			return true;
+		} catch (Exception exception) {
+			return false;
+		}
+	}
 
-    /**
-     * Default constructor
-     */
-    public Main() {
-        addComponents();
+	/**
+	 * Default constructor
+	 */
+	public Main() {
+		addComponents();
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("Java Chat App");
-        setVisible(true);
-    }
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Java Chat App");
+		setVisible(true);
+	}
 
-    /**
-     * Add components to Main JFrame
-     */
-    public void addComponents() {
-        // Content Pane
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
+	/**
+	 * Add components to Main JFrame
+	 */
+	public void addComponents() {
+		// Content Pane
+		JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
 
-        // Left Panel
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BorderLayout());
-        leftPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
+		// Left Panel
+		JPanel leftPanel = new JPanel();
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
 
-        JLabel onlineTitle = new JLabel("Người liên hệ");
-        onlineTitle.setFont(new Font("Arial", Font.BOLD, 20));
+		JLabel onlineTitle = new JLabel("Người liên hệ");
+		onlineTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        usersList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                changeConversation(usersList.getSelectedValue());
-            }
-        });
+		usersList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				changeConversation(usersList.getSelectedValue());
+			}
+		});
 
-        JScrollPane userScroll = new JScrollPane(usersList);
-        userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
+		JScrollPane userScroll = new JScrollPane(usersList);
+		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        JPanel userPanel = new JPanel();
-        userPanel.setLayout(new BorderLayout());
-        userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        userPanel.add(onlineTitle, BorderLayout.PAGE_START);
-        userPanel.add(userScroll, BorderLayout.CENTER);
-        userPanel.setPreferredSize(new Dimension(200, 650));
+		JPanel userPanel = new JPanel();
+		userPanel.setLayout(new BorderLayout());
+		userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		userPanel.add(onlineTitle, BorderLayout.PAGE_START);
+		userPanel.add(userScroll, BorderLayout.CENTER);
+		userPanel.setPreferredSize(new Dimension(200, 650));
 
-        leftPanel.add(userPanel);
+		leftPanel.add(userPanel);
 
-        // Right Panel
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BorderLayout());
-        rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		// Middle Panel
+		JPanel middlePanel = new JPanel();
+		middlePanel.setLayout(new BorderLayout());
+		middlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        conversationTitle = new JLabel(" ");
-        conversationTitle.setFont(new Font("Arial", Font.BOLD, 20));
+		conversationTitle = new JLabel(" ");
+		conversationTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        conversationPanel = new JPanel(new BorderLayout());
-        conversationPanel.setBackground(Color.WHITE);
+		conversationPanel = new JPanel(new BorderLayout());
+		conversationPanel.setBackground(Color.WHITE);
 
-        JScrollPane messageScroll = new JScrollPane(conversationPanel);
-        messageScroll.setBorder(new EmptyBorder(10, 0, 10, 0));
+		JScrollPane messageScroll = new JScrollPane(conversationPanel);
+		messageScroll.setBorder(new EmptyBorder(10, 0, 10, 0));
 
-        JButton fileButton = new JButton("\uD83D\uDCC1");
-        fileButton.addActionListener(e -> fileButtonEventHandler());
-        JTextField messageTextField = new JTextField(20);
-        JButton sendButton = new JButton("Gửi");
-        sendButton.addActionListener(e -> {
-            sendButtonEventHandler(messageTextField.getText());
-            messageTextField.setText("");
-        });
-        getRootPane().setDefaultButton(sendButton);
+		JButton fileButton = new JButton("\uD83D\uDCC1");
+		fileButton.addActionListener(e -> fileButtonEventHandler());
+		JTextField messageTextField = new JTextField(20);
+		JButton sendButton = new JButton("Gửi");
+		sendButton.addActionListener(e -> {
+			sendButtonEventHandler(messageTextField.getText());
+			messageTextField.setText("");
+		});
+		getRootPane().setDefaultButton(sendButton);
 
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
-        messagePanel.add(fileButton);
-        messagePanel.add(Box.createHorizontalStrut(5));
-        messagePanel.add(messageTextField);
-        messagePanel.add(Box.createHorizontalStrut(5));
-        messagePanel.add(sendButton);
+		JPanel messagePanel = new JPanel();
+		messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
+		messagePanel.add(fileButton);
+		messagePanel.add(Box.createHorizontalStrut(5));
+		messagePanel.add(messageTextField);
+		messagePanel.add(Box.createHorizontalStrut(5));
+		messagePanel.add(sendButton);
 
-        rightPanel.add(conversationTitle, BorderLayout.PAGE_START);
-        rightPanel.add(messageScroll, BorderLayout.CENTER);
-        rightPanel.add(messagePanel, BorderLayout.PAGE_END);
+		middlePanel.add(conversationTitle, BorderLayout.PAGE_START);
+		middlePanel.add(messageScroll, BorderLayout.CENTER);
+		middlePanel.add(messagePanel, BorderLayout.PAGE_END);
 
-        // Add components to content pane and Settings
-        contentPane.add(leftPanel, BorderLayout.LINE_START);
-        contentPane.add(rightPanel, BorderLayout.CENTER);
+		// Right pannel
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
 
-        setPreferredSize(new Dimension(825, 650));
-        setContentPane(contentPane);
-        pack();
-    }
+		JLabel friendTitle = new JLabel("Kết bạn");
+		friendTitle.setBounds(10, 10, 180, 24);
+		friendTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-    /**
-     * File Button Event Handler
-     * Send a file
-     */
-    private void fileButtonEventHandler() {
-        JFileChooser fileChooser = new JFileChooser();
+		usersList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				changeConversation(usersList.getSelectedValue());
+			}
+		});
 
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                // Read file
-                FileInputStream fileInputStream = new FileInputStream(fileChooser.getSelectedFile());
-                byte[] data = fileInputStream.readAllBytes();
-                fileInputStream.close();
+		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-                // Send file
-                messageStatus = MessageStatus.Waiting;
-                sendMessage("Command_SendFile`" + conversationTitle.getText() + "`" +
-                        fileChooser.getSelectedFile().getName());
-                while (messageStatus == MessageStatus.Waiting) System.out.print("");
+		JPanel friendPanel = new JPanel();
+		friendPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		friendPanel.setLayout(null);
+		friendPanel.add(friendTitle);
+		friendPanel.setPreferredSize(new Dimension(300, 650));
 
-                if (messageStatus == MessageStatus.Accepted) {
-                    DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
-                    dataOutputStream.writeInt(data.length);
-                    dataOutputStream.write(data);
+		rightPanel.add(friendPanel, BorderLayout.WEST);
 
-                    conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine,
-                            fileChooser.getSelectedFile().getName()));
-                    revalidate();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.",
-                            "Gửi file thất bại.", JOptionPane.WARNING_MESSAGE);
-                }
+		addFriendTextField = new JTextField();
+		addFriendTextField.setBounds(10, 44, 158, 21);
+		friendPanel.add(addFriendTextField);
+		addFriendTextField.setColumns(10);
 
-            } catch (Exception exception) {
-                System.out.println("Gửi file thất bại.");
-            }
-        }
-    }
+		JButton addFriendButton = new JButton("Gửi yêu cầu");
+		addFriendButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(contentPane,
+		                "Gửi lời mời kết bạn thành công.",
+		                "Thông báo",
+		                JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		addFriendButton.setBounds(178, 41, 112, 24);
+		friendPanel.add(addFriendButton);
 
-    /**
-     * Send Button Event Handler
-     * Send a message
-     * @param message String
-     */
-    private void sendButtonEventHandler(String message) {
-        if (message.isBlank()) {
-        	JOptionPane.showMessageDialog(this, "Tin nhắn trống.",
-                    "Lỗi", JOptionPane.WARNING_MESSAGE);
-        } else if (conversations.get(conversationTitle.getText()) == null) {
-        	JOptionPane.showMessageDialog(this, "Chọn người nhận tin nhắn trước khi gửi.",
-                    "Lỗi", JOptionPane.WARNING_MESSAGE);
-        } else {
-            messageStatus = MessageStatus.Waiting;
-            sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message);
-            while (messageStatus == MessageStatus.Waiting) System.out.print("");
+		JLabel lblLiMiKt = new JLabel("Lời mời kết bạn");
+		lblLiMiKt.setFont(new Font("Arial", Font.BOLD, 20));
+		lblLiMiKt.setBounds(10, 107, 180, 24);
+		friendPanel.add(lblLiMiKt);
 
-            if (messageStatus == MessageStatus.Accepted) {
-                conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
-                revalidate();
-            } else {
-                JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.",
-                        "Lỗi", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }
+		// Add friend request table
+		addFriendRequestTableModel = new DefaultTableModel();
+		addFriendRequestTableModel.addColumn("Tên tài khoản");
+		addFriendRequestTableModel.addColumn("Đồng ý");
+		addFriendRequestTableModel.addColumn("Xóa");
 
-    /**
-     * Change conversation when user click on online users list
-     * @param conversationUser String: Selected user
-     */
-    private void changeConversation(String conversationUser) {
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].contains(conversationUser)) {
-                users[i] = users[i].replace(" (Tin nhắn mới)", "");
-                conversationUser = users[i];
-            }
-        }
-        usersList.setListData(users);
+		Object[] rowObjects = {addFriendRequestTableModel.getRowCount() + 1, "Đồng ý", "Xóa"};
+		addFriendRequestTableModel.addRow(rowObjects);
 
-        conversationTitle.setText(conversationUser);
+		addFriendRequestTable = new JTable(addFriendRequestTableModel);
+		
+		addFriendRequestTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
+		addFriendRequestTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
+		addFriendRequestTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+		addFriendRequestTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JTextField()));
 
-        JPanel chatPanel = conversations.get(conversationUser);
-        if (chatPanel == null) {
-            chatPanel = new JPanel();
-            chatPanel.setBackground(Color.WHITE);
-            chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-            conversations.put(conversationUser, chatPanel);
-        }
+		JScrollPane addFriendRequestScrollPane = new JScrollPane(addFriendRequestTable);
+		addFriendRequestScrollPane.setBounds(10, 141, 280, 462);
+		addFriendRequestScrollPane.setColumnHeaderView(addFriendRequestTable);
 
-        conversationPanel.removeAll();
-        conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
-        conversationPanel.revalidate();
-        conversationPanel.repaint();
-    }
+		friendPanel.add(addFriendRequestScrollPane);
 
-    /**
-     * Add a new message to corresponding conversation
-     * @param username String
-     * @param content String
-     * @param bubbleType BubbleType
-     */
-    public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType) {
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].contains(username) && !users[i].contains(" (Tin nhắn mới)")) {
-                if (!conversationTitle.getText().equals(users[i]))
-                    users[i] = users[i] + " (Tin nhắn mới)";
-            }
-        }
-        usersList.setListData(users);
+		// Add components to content pane and Settings
+		contentPane.add(leftPanel, BorderLayout.LINE_START);
+		contentPane.add(middlePanel, BorderLayout.CENTER);
+		contentPane.add(rightPanel, BorderLayout.LINE_END);
 
-        if (conversations.get(username) == null) {
-            JPanel chatPanel = new JPanel();
-            chatPanel.setBackground(Color.WHITE);
-            chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-            conversations.put(username, chatPanel);
-        }
+		setPreferredSize(new Dimension(1125, 650));
+		setContentPane(contentPane);
+		pack();
+	}
 
-        conversations.get(username).add(new ChatBubble(bubbleType, content));
-        conversationPanel.revalidate();
-    }
+	/**
+	 * File Button Event Handler Send a file
+	 */
+	private void fileButtonEventHandler() {
+		JFileChooser fileChooser = new JFileChooser();
 
-    /**
-     * Send a message to Server
-     * @param message String
-     */
-    public static void sendMessage(String message) {
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
-            bufferedWriter.write(message);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
-        } catch (Exception exception) {
-            System.out.println("Gửi tin nhắn thất bại: " + exception);
-        }
-    }
+		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			try {
+				// Read file
+				FileInputStream fileInputStream = new FileInputStream(fileChooser.getSelectedFile());
+				byte[] data = fileInputStream.readAllBytes();
+				fileInputStream.close();
 
-    /**
-     * Receive message from server and Process the command
-     */
-    private static void receiveServerMessages() {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
+				// Send file
+				messageStatus = MessageStatus.Waiting;
+				sendMessage("Command_SendFile`" + conversationTitle.getText() + "`"
+						+ fileChooser.getSelectedFile().getName());
+				while (messageStatus == MessageStatus.Waiting)
+					System.out.print("");
 
-            while (true) {
-                String receivedMessage = bufferedReader.readLine();
+				if (messageStatus == MessageStatus.Accepted) {
+					DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
+					dataOutputStream.writeInt(data.length);
+					dataOutputStream.write(data);
 
-                if (receivedMessage.contains("Command_CloseConnect")) {
-                    System.out.println("Máy chủ không hoạt động!");
-                    break;
+					conversations.get(conversationTitle.getText())
+							.add(new ChatBubble(ChatBubble.BubbleType.Mine, fileChooser.getSelectedFile().getName()));
+					revalidate();
+				} else {
+					JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Gửi file thất bại.",
+							JOptionPane.WARNING_MESSAGE);
+				}
 
-                } else if (receivedMessage.contains("Command_UserList")) {
-                    String[] str = receivedMessage.split("`");
-                    users = new String[str.length - 1];
-                    System.arraycopy(str, 1, users, 0, str.length - 1);
-                    usersList.setListData(users);
+			} catch (Exception exception) {
+				System.out.println("Gửi file thất bại.");
+			}
+		}
+	}
 
-                } else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
-                    SignIn.status = SignIn.SignInStatus.Accepted;
+	/**
+	 * Send Button Event Handler Send a message
+	 * 
+	 * @param message String
+	 */
+	private void sendButtonEventHandler(String message) {
+		if (message.isBlank()) {
+			JOptionPane.showMessageDialog(this, "Tin nhắn trống.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+		} else if (conversations.get(conversationTitle.getText()) == null) {
+			JOptionPane.showMessageDialog(this, "Chọn người nhận tin nhắn trước khi gửi.", "Lỗi",
+					JOptionPane.WARNING_MESSAGE);
+		} else {
+			messageStatus = MessageStatus.Waiting;
+			sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message);
+			while (messageStatus == MessageStatus.Waiting)
+				System.out.print("");
 
-                } else if (receivedMessage.contains("Command_AccountVerifyAlready")) {
-                    SignIn.status = SignIn.SignInStatus.Already;
+			if (messageStatus == MessageStatus.Accepted) {
+				conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				revalidate();
+			} else {
+				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
 
-                } else if (receivedMessage.contains("Command_AccountVerifyFailed")) {
-                    SignIn.status = SignIn.SignInStatus.Failed;
+	/**
+	 * Change conversation when user click on online users list
+	 * 
+	 * @param conversationUser String: Selected user
+	 */
+	private void changeConversation(String conversationUser) {
+		for (int i = 0; i < users.length; i++) {
+			if (users[i].contains(conversationUser)) {
+				users[i] = users[i].replace(" (Tin nhắn mới)", "");
+				conversationUser = users[i];
+			}
+		}
+		usersList.setListData(users);
 
-                } else if (receivedMessage.contains("Command_CreateAccountAccepted")) {
-                    SignUp.status = SignUp.SignUpStatus.Accepted;
+		conversationTitle.setText(conversationUser);
 
-                } else if (receivedMessage.contains("Command_CreateAccountFailed")) {
-                    SignUp.status = SignUp.SignUpStatus.Failed;
+		JPanel chatPanel = conversations.get(conversationUser);
+		if (chatPanel == null) {
+			chatPanel = new JPanel();
+			chatPanel.setBackground(Color.WHITE);
+			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+			conversations.put(conversationUser, chatPanel);
+		}
 
-                } else if (receivedMessage.contains("Command_SendMessageAccepted")) {
-                    messageStatus = MessageStatus.Accepted;
+		conversationPanel.removeAll();
+		conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
+		conversationPanel.revalidate();
+		conversationPanel.repaint();
+	}
 
-                } else if (receivedMessage.contains("Command_SendMessageFailed")) {
-                    messageStatus = MessageStatus.Failed;
+	/**
+	 * Add a new message to corresponding conversation
+	 * 
+	 * @param username   String
+	 * @param content    String
+	 * @param bubbleType BubbleType
+	 */
+	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType) {
+		for (int i = 0; i < users.length; i++) {
+			if (users[i].contains(username) && !users[i].contains(" (Tin nhắn mới)")) {
+				if (!conversationTitle.getText().equals(users[i]))
+					users[i] = users[i] + " (Tin nhắn mới)";
+			}
+		}
+		usersList.setListData(users);
 
-                } else if (receivedMessage.contains("Command_Message")) {
-                    String[] str = receivedMessage.split("`");
-                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+		if (conversations.get(username) == null) {
+			JPanel chatPanel = new JPanel();
+			chatPanel.setBackground(Color.WHITE);
+			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+			conversations.put(username, chatPanel);
+		}
 
-                } else if (receivedMessage.contains("Command_File")) {
-                    sendMessage("Command_Accepted");
-                    String[] str = receivedMessage.split("`");
+		conversations.get(username).add(new ChatBubble(bubbleType, content));
+		conversationPanel.revalidate();
+	}
 
-                    DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
-                    byte[] data = new byte[dataInputStream.readInt()];
-                    dataInputStream.readFully(data, 0, data.length);
+	/**
+	 * Send a message to Server
+	 * 
+	 * @param message String
+	 */
+	public static void sendMessage(String message) {
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
+			bufferedWriter.write(message);
+			bufferedWriter.newLine();
+			bufferedWriter.flush();
+		} catch (Exception exception) {
+			System.out.println("Gửi tin nhắn thất bại: " + exception);
+		}
+	}
 
-                    FileOutputStream fileOutputStream = new FileOutputStream(str[2]);
-                    fileOutputStream.write(data);
-                    fileOutputStream.close();
+	/**
+	 * Receive message from server and Process the command
+	 */
+	private static void receiveServerMessages() {
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
 
-                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+			while (true) {
+				String receivedMessage = bufferedReader.readLine();
 
-                } else {
-                    System.out.println(receivedMessage);
-                }
-            }
+				if (receivedMessage.contains("Command_CloseConnect")) {
+					System.out.println("Máy chủ không hoạt động!");
+					break;
 
-            bufferedReader.close();
-            server.close();
-        } catch (Exception exception) {
-            System.out.println("Lỗi hệ thống: " + exception);
-        }
-    }
+				} else if (receivedMessage.contains("Command_UserList")) {
+					String[] str = receivedMessage.split("`");
+					users = new String[str.length - 1];
+					System.arraycopy(str, 1, users, 0, str.length - 1);
+					usersList.setListData(users);
+
+				} else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
+					SignIn.status = SignIn.SignInStatus.Accepted;
+
+				} else if (receivedMessage.contains("Command_AccountVerifyAlready")) {
+					SignIn.status = SignIn.SignInStatus.Already;
+
+				} else if (receivedMessage.contains("Command_AccountVerifyFailed")) {
+					SignIn.status = SignIn.SignInStatus.Failed;
+
+				} else if (receivedMessage.contains("Command_CreateAccountAccepted")) {
+					SignUp.status = SignUp.SignUpStatus.Accepted;
+
+				} else if (receivedMessage.contains("Command_CreateAccountFailed")) {
+					SignUp.status = SignUp.SignUpStatus.Failed;
+
+				} else if (receivedMessage.contains("Command_SendMessageAccepted")) {
+					messageStatus = MessageStatus.Accepted;
+
+				} else if (receivedMessage.contains("Command_SendMessageFailed")) {
+					messageStatus = MessageStatus.Failed;
+
+				} else if (receivedMessage.contains("Command_Message")) {
+					String[] str = receivedMessage.split("`");
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+
+				} else if (receivedMessage.contains("Command_File")) {
+					sendMessage("Command_Accepted");
+					String[] str = receivedMessage.split("`");
+
+					DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
+					byte[] data = new byte[dataInputStream.readInt()];
+					dataInputStream.readFully(data, 0, data.length);
+
+					FileOutputStream fileOutputStream = new FileOutputStream(str[2]);
+					fileOutputStream.write(data);
+					fileOutputStream.close();
+
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+
+				} else {
+					System.out.println(receivedMessage);
+				}
+			}
+
+			bufferedReader.close();
+			server.close();
+		} catch (Exception exception) {
+			System.out.println("Lỗi hệ thống: " + exception);
+		}
+	}
 }
