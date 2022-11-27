@@ -138,6 +138,12 @@ public class Main extends JFrame {
 	 */
 	public static MessageStatus messageStatus;
 
+	public enum AddFriendRequestStatus {
+		Failed, Accepted, Self
+	}
+
+	public static AddFriendRequestStatus addFriendRequestStatus;
+
 	/**
 	 * Attribute: Socket - server
 	 */
@@ -169,7 +175,7 @@ public class Main extends JFrame {
 	private static final HashMap<String, JPanel> conversations = new HashMap<>();
 	private JTextField addFriendTextField;
 	private JTable addFriendRequestTable;
-	private DefaultTableModel addFriendRequestTableModel;
+	private static DefaultTableModel addFriendRequestTableModel;
 
 	/**
 	 * Main function
@@ -319,10 +325,23 @@ public class Main extends JFrame {
 		addFriendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JOptionPane.showMessageDialog(contentPane,
-		                "Gửi lời mời kết bạn thành công.",
-		                "Thông báo",
-		                JOptionPane.INFORMATION_MESSAGE);
+				if (!addFriendTextField.getText().isBlank()) {
+					sendMessage("Command_AddFriendRequest`" + addFriendTextField.getText());
+
+					if (addFriendRequestStatus == AddFriendRequestStatus.Accepted)
+						JOptionPane.showMessageDialog(contentPane, "Gửi lời mời kết bạn thành công.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Self)
+						JOptionPane.showMessageDialog(contentPane, "Không thể tự kết bạn với chính mình.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Failed)
+						JOptionPane.showMessageDialog(contentPane, "Tên người dùng không tồn tại.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+//				else
+//					JOptionPane.showMessageDialog(contentPane, addFriendRequestStatus, "Thông báo",
+//							JOptionPane.INFORMATION_MESSAGE);
+					addFriendTextField.setText("");
+				}
 			}
 		});
 		addFriendButton.setBounds(178, 41, 112, 24);
@@ -339,11 +358,11 @@ public class Main extends JFrame {
 		addFriendRequestTableModel.addColumn("Đồng ý");
 		addFriendRequestTableModel.addColumn("Xóa");
 
-		Object[] rowObjects = {addFriendRequestTableModel.getRowCount() + 1, "Đồng ý", "Xóa"};
-		addFriendRequestTableModel.addRow(rowObjects);
+//		Object[] rowObjects = { addFriendRequestTableModel.getRowCount() + 1, "Đồng ý", "Xóa" };
+//		addFriendRequestTableModel.addRow(rowObjects);
 
 		addFriendRequestTable = new JTable(addFriendRequestTableModel);
-		
+
 		addFriendRequestTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
 		addFriendRequestTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
 		addFriendRequestTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
@@ -562,7 +581,22 @@ public class Main extends JFrame {
 
 					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
 
-				} else {
+				} else if (receivedMessage.contains("Command_AddFriendRequestAccepted")) {
+					addFriendRequestStatus = AddFriendRequestStatus.Accepted;
+
+				} else if (receivedMessage.contains("Command_AddFriendRequestFailed")) {
+					addFriendRequestStatus = AddFriendRequestStatus.Failed;
+
+				} else if (receivedMessage.contains("Command_AddFriendRequestSelf")) {
+					addFriendRequestStatus = AddFriendRequestStatus.Self;
+
+				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");
+					Object[] rowObjects = { str[1], "Đồng ý", "Xóa" };
+					addFriendRequestTableModel.addRow(rowObjects);
+				}
+
+				else {
 					System.out.println(receivedMessage);
 				}
 			}
