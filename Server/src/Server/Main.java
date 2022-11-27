@@ -303,11 +303,10 @@ public class Main extends JFrame {
                                 sendMessage(socket, "Command_File`" + users.get(client) + "`" + str[2]);
                                 while (waitingClientResponse)
                                     System.out.print("");
-
                                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                                 dataOutputStream.writeInt(data.length);
                                 dataOutputStream.write(data);
-                            }
+                            } 
                         }
                     } else {
                         sendMessage(client, "Command_SendMessageFailed");
