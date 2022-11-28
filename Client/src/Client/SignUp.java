@@ -9,7 +9,6 @@ import javax.swing.border.EmptyBorder;
 import com.toedter.calendar.JDateChooser;
 
 
-//import demo.test;
 
 
 public class SignUp extends JFrame {
