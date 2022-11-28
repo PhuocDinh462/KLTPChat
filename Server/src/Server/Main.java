@@ -312,7 +312,23 @@ public class Main extends JFrame {
                         sendMessage(client, "Command_SendMessageFailed");
                     }
 
-                } else {
+                } else if (receivedMessage.contains("Command_AddFriendRequest")) {
+                	//******************
+                	String[] str = receivedMessage.split("`");
+                	if(str[1].equals(users.get(client)))
+                		sendMessage(client, "Command_AddFriendRequestSelf");
+                	
+                	else if(accounts.containsKey(str[1])) {
+                		for (Socket socket : users.keySet())
+                            if (users.get(socket).equals(str[1]))
+                                sendMessage(socket, "Command_NewAddFriendRequest`" + users.get(client));
+                		sendMessage(client, "Command_AddFriendRequestAccepted");
+                	}
+                	else
+                		sendMessage(client, "Command_AddFriendRequestFailed");
+                }
+                
+                else {
                     addLogs(client, receivedMessage);
                 }
             }
