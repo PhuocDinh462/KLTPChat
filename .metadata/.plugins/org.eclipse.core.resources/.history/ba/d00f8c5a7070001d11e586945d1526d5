@@ -1,4 +1,4 @@
-package Server;
+package AdminForm;
 
 public class InforUser {
 	private String username;

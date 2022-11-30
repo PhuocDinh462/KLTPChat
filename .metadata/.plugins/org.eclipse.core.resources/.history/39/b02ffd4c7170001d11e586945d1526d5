@@ -41,27 +41,20 @@ public class ChatBubble extends JPanel{
      */
     public ChatBubble(BubbleType bubbleType, String content) {
         setBackground(Color.WHITE);
-        
 
         JLabel timeLabel = new JLabel(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
 
         JButton contentButton = new JButton(content);
         contentButton.setBorderPainted(false);
-        
-        JLabel viewed = new JLabel("đã xem");
-        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
-        
 
         switch (bubbleType) {
             case Mine -> {
                 contentButton.setBackground(Color.getHSBColor(0.6F, 1F, 1F));
                 contentButton.setForeground(Color.WHITE);
                 setLayout(new FlowLayout(FlowLayout.RIGHT));
-                add(viewed);
                 add(timeLabel);
                 add(contentButton);
-                
             }
             case Others -> {
                 contentButton.setBackground(Color.getHSBColor(0F, 0F, 0.85F));
