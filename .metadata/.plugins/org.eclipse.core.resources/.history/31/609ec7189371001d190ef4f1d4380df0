@@ -139,6 +139,12 @@ public class Main extends JFrame {
 	 */
 	public static MessageStatus messageStatus;
 
+	public enum AddFriendRequestStatus {
+		Failed, Accepted, Self
+	}
+
+	public static AddFriendRequestStatus addFriendRequestStatus;
+
 	/**
 	 * Attribute: Socket - server
 	 */
@@ -322,6 +328,19 @@ public class Main extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!addFriendTextField.getText().isBlank()) {
 					sendMessage("Command_AddFriendRequest`" + addFriendTextField.getText());
+
+					if (addFriendRequestStatus == AddFriendRequestStatus.Accepted)
+						JOptionPane.showMessageDialog(contentPane, "Gửi lời mời kết bạn thành công.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Self)
+						JOptionPane.showMessageDialog(contentPane, "Không thể tự kết bạn với chính mình.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Failed)
+						JOptionPane.showMessageDialog(contentPane, "Tên người dùng không tồn tại.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+//				else
+//					JOptionPane.showMessageDialog(contentPane, addFriendRequestStatus, "Thông báo",
+//							JOptionPane.INFORMATION_MESSAGE);
 					addFriendTextField.setText("");
 				}
 			}
@@ -564,11 +583,13 @@ public class Main extends JFrame {
 					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
 
 				} else if (receivedMessage.contains("Command_AddFriendRequestAccepted")) {
+					addFriendRequestStatus = AddFriendRequestStatus.Accepted;
 					JOptionPane.showMessageDialog(null, "Gửi lời mời kết bạn thành công.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 
 
 				} else if (receivedMessage.contains("Command_AddFriendRequestFailed")) {
+					addFriendRequestStatus = AddFriendRequestStatus.Failed;
 					JOptionPane.showMessageDialog(null, "Tên người dùng không tồn tại.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 

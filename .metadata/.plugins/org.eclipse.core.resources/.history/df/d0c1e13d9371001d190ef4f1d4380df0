@@ -322,6 +322,19 @@ public class Main extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (!addFriendTextField.getText().isBlank()) {
 					sendMessage("Command_AddFriendRequest`" + addFriendTextField.getText());
+
+					if (addFriendRequestStatus == AddFriendRequestStatus.Accepted)
+						JOptionPane.showMessageDialog(contentPane, "Gửi lời mời kết bạn thành công.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Self)
+						JOptionPane.showMessageDialog(contentPane, "Không thể tự kết bạn với chính mình.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+					else if (addFriendRequestStatus == AddFriendRequestStatus.Failed)
+						JOptionPane.showMessageDialog(contentPane, "Tên người dùng không tồn tại.", "Thông báo",
+								JOptionPane.INFORMATION_MESSAGE);
+//				else
+//					JOptionPane.showMessageDialog(contentPane, addFriendRequestStatus, "Thông báo",
+//							JOptionPane.INFORMATION_MESSAGE);
 					addFriendTextField.setText("");
 				}
 			}
