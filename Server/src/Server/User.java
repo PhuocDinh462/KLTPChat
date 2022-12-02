@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class User {
 	private InforUser infor;
-	private ArrayList<String> timeLogin;
-	private ArrayList<String> friend;
-	private ArrayList<String> addFriendRequest;
+	private ArrayList<String> timeLogin = new ArrayList<String>();
+	private ArrayList<String> friend = new ArrayList<String>();
+	private ArrayList<String> addFriendRequest = new ArrayList<String>();
 
 	public User() {
 		infor = new InforUser();

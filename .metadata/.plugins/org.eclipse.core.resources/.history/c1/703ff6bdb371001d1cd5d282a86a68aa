@@ -1,0 +1,44 @@
+package Client;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+public class FriendList extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTable friendListTable;
+
+	/**
+	 * Create the frame.
+	 */
+	public FriendList(String[] friendList) {
+		addComponents();
+        setTitle("Danh sách bạn bè");
+        setResizable(false);
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+
+	public void addComponents() {
+		// Content Pane
+		setBounds(100, 100, 289, 425);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JScrollPane friendListScrollPane = new JScrollPane();
+		friendListScrollPane.setBounds(10, 10, 255, 368);
+		contentPane.add(friendListScrollPane);
+		
+		friendListTable = new JTable();
+		friendListScrollPane.setColumnHeaderView(friendListTable);
+	}
+}

@@ -15,7 +15,7 @@ public class SignIn extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Enum: SignInStatus
+     * @Enum: SignInStatus
      */
     public enum SignInStatus {
         /**
