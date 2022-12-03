@@ -59,7 +59,7 @@ public class Main extends JFrame {
 		addComponents();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Java Chat Server");
+		setTitle("KLTP Chat Server");
 		setVisible(true);
 
 		loadAccounts();

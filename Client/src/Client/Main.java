@@ -15,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.border.MatteBorder;
 
 //BUTTON RENDERER CLASS
 class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -207,7 +208,7 @@ public class Main extends JFrame {
 		addComponents();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Java Chat App");
+		setTitle("KLTP Chat App");
 		setVisible(true);
 	}
 
@@ -224,8 +225,9 @@ public class Main extends JFrame {
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
 
-		JLabel onlineTitle = new JLabel("Người liên hệ");
-		onlineTitle.setFont(new Font("Arial", Font.BOLD, 20));
+		JLabel userTitle = new JLabel("Người liên hệ");
+		userTitle.setBounds(10, 10, 180, 24);
+		userTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
 		usersList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -236,29 +238,31 @@ public class Main extends JFrame {
 		});
 
 		JScrollPane userScroll = new JScrollPane(usersList);
+		userScroll.setBounds(10, 34, 180, 354);
 		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 
 		JPanel userPanel = new JPanel();
-		userPanel.setLayout(new BorderLayout());
 		userPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		userPanel.add(onlineTitle, BorderLayout.PAGE_START);
-		userPanel.add(userScroll, BorderLayout.CENTER);
+		userPanel.setLayout(null);
+		userPanel.add(userTitle);
+		userPanel.add(userScroll);
 		userPanel.setPreferredSize(new Dimension(200, 650));
 
 		leftPanel.add(userPanel);
 
 		// Middle Panel
 		JPanel middlePanel = new JPanel();
-		middlePanel.setLayout(new BorderLayout());
 		middlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		conversationTitle = new JLabel(" ");
+		conversationTitle.setBounds(10, 10, 589, 24);
 		conversationTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
 		conversationPanel = new JPanel(new BorderLayout());
 		conversationPanel.setBackground(Color.WHITE);
 
 		JScrollPane messageScroll = new JScrollPane(conversationPanel);
+		messageScroll.setBounds(10, 34, 589, 548);
 		messageScroll.setBorder(new EmptyBorder(10, 0, 10, 0));
 
 		JButton fileButton = new JButton("\uD83D\uDCC1");
@@ -272,21 +276,23 @@ public class Main extends JFrame {
 		getRootPane().setDefaultButton(sendButton);
 
 		JPanel messagePanel = new JPanel();
+		messagePanel.setBounds(10, 582, 589, 21);
 		messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
 		messagePanel.add(fileButton);
 		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(messageTextField);
 		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(sendButton);
+		middlePanel.setLayout(null);
 
-		middlePanel.add(conversationTitle, BorderLayout.PAGE_START);
-		middlePanel.add(messageScroll, BorderLayout.CENTER);
-		middlePanel.add(messagePanel, BorderLayout.PAGE_END);
+		middlePanel.add(conversationTitle);
+		middlePanel.add(messageScroll);
+		middlePanel.add(messagePanel);
 
-		// Right pannel
+		// Right panel
 		JPanel rightPanel = new JPanel();
 		rightPanel.setLayout(new BorderLayout());
-		rightPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
+		rightPanel.setBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(192, 192, 192)));
 
 		JLabel friendTitle = new JLabel("Kết bạn");
 		friendTitle.setBounds(10, 10, 180, 24);
@@ -301,6 +307,25 @@ public class Main extends JFrame {
 		});
 
 		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
+		
+		JLabel groupTitle = new JLabel("Nhóm");
+		groupTitle.setFont(new Font("Arial", Font.BOLD, 20));
+		groupTitle.setBounds(10, 415, 180, 24);
+		userPanel.add(groupTitle);
+		
+		JScrollPane groupScroll = new JScrollPane((Component) null);
+		groupScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
+		groupScroll.setBounds(10, 437, 180, 166);
+		userPanel.add(groupScroll);
+		
+		JList<String> groupList = new JList<String>();
+		groupList.setVisibleRowCount(10);
+		groupScroll.setColumnHeaderView(groupList);
+		
+		JSeparator separator = new JSeparator();
+		separator.setForeground(new Color(192, 192, 192));
+		separator.setBounds(10, 403, 180, 2);
+		userPanel.add(separator);
 
 		JPanel friendPanel = new JPanel();
 		friendPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
