@@ -18,7 +18,7 @@ public class SignUp extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * @Enum: Sign Up Status
+     * Enum: Sign Up Status
      */
     public enum SignUpStatus {
         /**
@@ -60,9 +60,22 @@ public class SignUp extends JFrame {
 	      .matcher(emailAddress)
 	      .matches();
 	}
+    
+    public static String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+
+        return null;
+    }
+    
     /**
      * Add components to Sign Up JFrame
      */
+    
     public void addComponents() {
         // Content Pane
         JPanel contentPane = new JPanel();
@@ -94,8 +107,8 @@ public class SignUp extends JFrame {
         
         
         //Gender Panel
-        JRadioButton radioBtn1 = new JRadioButton("A) Nam");
-        JRadioButton radioBtn2 = new JRadioButton("B) Nữ");
+        JRadioButton radioBtn1 = new JRadioButton("Nam");
+        JRadioButton radioBtn2 = new JRadioButton("Nữ");
         radioBtn1.setBounds(50, 60, 170, 30);
         radioBtn2.setBounds(50, 100, 170, 30);
         ButtonGroup bg = new ButtonGroup();
@@ -117,10 +130,6 @@ public class SignUp extends JFrame {
         else {
         	gender="";
         }
-
-        
-        
-
         
         JPanel CalendarPanel = new JPanel();
         
@@ -180,7 +189,7 @@ public class SignUp extends JFrame {
         
         signUpNowButton.addActionListener(e -> signUpNowButtonEventHandler(
         		fullnameTextField.getText(),
-//        		gender,
+        		SignUp.getSelectedButtonText(bg),
         		dateChooser.getDate(),
         		addressTextField.getText(),
                 usernameTextField.getText(),
@@ -220,18 +229,20 @@ public class SignUp extends JFrame {
      * @param password String
      * @param repassword String
      */
-    void signUpNowButtonEventHandler(String fullname,Date date, String address, String username, String password, String repassword) {
+    void signUpNowButtonEventHandler(String fullname,String gender,Date date, String address, String username, String password, String repassword) {
     	String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
 		        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     	Boolean test= SignUp.patternMatches(username, regexPattern);
+    	System.out.print(gender);
     	if (fullname.isEmpty()){
         	JOptionPane.showMessageDialog(this, "Bạn chưa nhập họ tên!",
                   "Lỗi", JOptionPane.WARNING_MESSAGE);
         }
-//        else if (gender == "") {
-//            JOptionPane.showMessageDialog(this, "Bạn chưa chọn giới tính!",
-//                    "Lỗi", JOptionPane.WARNING_MESSAGE);
-//        }
+    	
+        else if (gender==null) {
+            JOptionPane.showMessageDialog(this, "Bạn chưa chọn giới tính!",
+                    "Lỗi", JOptionPane.WARNING_MESSAGE);
+        }
     	else if (date== null) {
     		JOptionPane.showMessageDialog(this, "Bạn chưa nhập ngày sinh!",
                   "Lỗi", JOptionPane.WARNING_MESSAGE);
@@ -258,6 +269,8 @@ public class SignUp extends JFrame {
         }else {
             status = SignUp.SignUpStatus.Waiting;
             Main.sendMessage("Command_CreateAccount`" + username + "`" + password);
+//            Main.sendMessage("Command_CreateAccount`" + username + "`" + password + "`" + fullname + "`" + 
+//            				date.toString()+ "`" + "`" + address);
             while (status == SignUp.SignUpStatus.Waiting) System.out.print("");
 
             if (status == SignUp.SignUpStatus.Accepted) {
@@ -265,7 +278,7 @@ public class SignUp extends JFrame {
                 new Main();
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại!",
+                JOptionPane.showMessageDialog(this, "Tài khoản đã tồn tại!",
                         "Lỗi", JOptionPane.WARNING_MESSAGE);
             }
         }
