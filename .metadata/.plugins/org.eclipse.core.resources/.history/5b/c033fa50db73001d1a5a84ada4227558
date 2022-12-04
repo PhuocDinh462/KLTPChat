@@ -398,11 +398,11 @@ public class Main extends JFrame {
 		contentPane.add(middlePanel, BorderLayout.CENTER);
 		
 		JButton searchButton = new JButton("🔎︎");
-		searchButton.setBounds(549, 10, 50, 23);
+		searchButton.setBounds(543, 12, 50, 23);
 		middlePanel.add(searchButton);
 		
 		JButton deleteButton = new JButton("🗑");
-		deleteButton.setBounds(489, 10, 50, 23);
+		deleteButton.setBounds(483, 12, 50, 23);
 		middlePanel.add(deleteButton);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
 

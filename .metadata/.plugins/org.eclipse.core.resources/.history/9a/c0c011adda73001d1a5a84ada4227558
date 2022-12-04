@@ -255,7 +255,7 @@ public class Main extends JFrame {
 		middlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		conversationTitle = new JLabel(" ");
-		conversationTitle.setBounds(10, 10, 295, 24);
+		conversationTitle.setBounds(10, 10, 589, 24);
 		conversationTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
 		conversationPanel = new JPanel(new BorderLayout());
@@ -396,14 +396,6 @@ public class Main extends JFrame {
 		// Add components to content pane and Settings
 		contentPane.add(leftPanel, BorderLayout.LINE_START);
 		contentPane.add(middlePanel, BorderLayout.CENTER);
-		
-		JButton searchButton = new JButton("🔎︎");
-		searchButton.setBounds(549, 10, 50, 23);
-		middlePanel.add(searchButton);
-		
-		JButton deleteButton = new JButton("🗑");
-		deleteButton.setBounds(489, 10, 50, 23);
-		middlePanel.add(deleteButton);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
 
 		setPreferredSize(new Dimension(1125, 650));

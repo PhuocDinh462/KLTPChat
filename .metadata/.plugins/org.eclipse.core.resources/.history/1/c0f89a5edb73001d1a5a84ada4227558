@@ -398,12 +398,16 @@ public class Main extends JFrame {
 		contentPane.add(middlePanel, BorderLayout.CENTER);
 		
 		JButton searchButton = new JButton("🔎︎");
-		searchButton.setBounds(549, 10, 50, 23);
+		searchButton.setBounds(549, 14, 50, 23);
 		middlePanel.add(searchButton);
 		
 		JButton deleteButton = new JButton("🗑");
-		deleteButton.setBounds(489, 10, 50, 23);
+		deleteButton.setBounds(489, 14, 50, 23);
 		middlePanel.add(deleteButton);
+		
+		JButton createGroupButton_1 = new JButton("Tạo nhóm");
+		createGroupButton_1.setBounds(171, 15, 180, 21);
+		middlePanel.add(createGroupButton_1);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
 
 		setPreferredSize(new Dimension(1125, 650));

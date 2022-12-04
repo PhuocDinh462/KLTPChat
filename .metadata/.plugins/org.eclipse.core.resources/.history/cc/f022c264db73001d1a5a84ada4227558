@@ -402,7 +402,7 @@ public class Main extends JFrame {
 		middlePanel.add(searchButton);
 		
 		JButton deleteButton = new JButton("🗑");
-		deleteButton.setBounds(489, 10, 50, 23);
+		deleteButton.setBounds(489, 14, 50, 23);
 		middlePanel.add(deleteButton);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
 
