@@ -315,7 +315,7 @@ public class Main extends JFrame {
 		
 		JScrollPane groupScroll = new JScrollPane((Component) null);
 		groupScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
-		groupScroll.setBounds(10, 437, 180, 134);
+		groupScroll.setBounds(10, 437, 180, 166);
 		userPanel.add(groupScroll);
 		
 		JList<String> groupList = new JList<String>();
@@ -326,10 +326,6 @@ public class Main extends JFrame {
 		separator.setForeground(new Color(192, 192, 192));
 		separator.setBounds(10, 403, 180, 2);
 		userPanel.add(separator);
-		
-		JButton createGroupButton = new JButton("Tạo nhóm");
-		createGroupButton.setBounds(10, 582, 180, 21);
-		userPanel.add(createGroupButton);
 
 		JPanel friendPanel = new JPanel();
 		friendPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
