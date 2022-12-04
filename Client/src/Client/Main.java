@@ -9,6 +9,7 @@ import java.io.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -170,6 +171,7 @@ public class Main extends JFrame {
 	private static final HashMap<String, JPanel> conversations = new HashMap<>();
 	private JTextField addFriendTextField;
 	private JTable addFriendRequestTable;
+	private static JTextField messageTextField;
 	private static DefaultTableModel addFriendRequestTableModel;
 
 	/**
@@ -267,11 +269,10 @@ public class Main extends JFrame {
 
 		JButton fileButton = new JButton("\uD83D\uDCC1");
 		fileButton.addActionListener(e -> fileButtonEventHandler());
-		JTextField messageTextField = new JTextField(20);
+		messageTextField = new JTextField(20);
 		JButton sendButton = new JButton("Gửi");
 		sendButton.addActionListener(e -> {
 			sendButtonEventHandler(messageTextField.getText());
-			messageTextField.setText("");
 		});
 		getRootPane().setDefaultButton(sendButton);
 
@@ -328,6 +329,11 @@ public class Main extends JFrame {
 		userPanel.add(separator);
 		
 		JButton createGroupButton = new JButton("Tạo nhóm");
+		createGroupButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new CreateGroup();
+			}
+		});
 		createGroupButton.setBounds(10, 582, 180, 21);
 		userPanel.add(createGroupButton);
 
@@ -372,6 +378,10 @@ public class Main extends JFrame {
 //		addFriendRequestTableModel.addRow(rowObjects);
 
 		addFriendRequestTable = new JTable(addFriendRequestTableModel);
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		addFriendRequestTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
 
 		addFriendRequestTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
 		addFriendRequestTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
@@ -586,6 +596,7 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_SendMessageAccepted")) {
 					messageStatus = MessageStatus.Accepted;
+					messageTextField.setText("");
 
 				} else if (receivedMessage.contains("Command_SendMessageFailed")) {
 					messageStatus = MessageStatus.Failed;
