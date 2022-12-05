@@ -36,10 +36,10 @@ public class Admin extends JFrame {
 	private JPanel contentPane;
 	private JPanel panelMainContent;
 
-	private ImageIcon iconManagement = new ImageIcon(getClass().getResource("/Image/UserManagement.png"));
-	private ImageIcon iconLoginHis = new ImageIcon(getClass().getResource("/Image/LoginHistory.png"));
-	private ImageIcon iconGroupChat = new ImageIcon(getClass().getResource("/Image/GroupChat.png"));
-	private ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Image/Logo.png"));
+	private ImageIcon iconManagement = new ImageIcon(Admin.class.getResource("/Image/UserManagement.png"));
+	private ImageIcon iconLoginHis = new ImageIcon(Admin.class.getResource("/Image/LoginHistory.png"));
+	private ImageIcon iconGroupChat = new ImageIcon(Admin.class.getResource("/Image/GroupChat.png"));
+	private ImageIcon iconLogo = new ImageIcon(Admin.class.getResource("/Image/Logo.png"));
 
 	private PanelManagement PanelManage;
 	private LoginHistory PanelLoginHis;
