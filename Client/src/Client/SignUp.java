@@ -163,6 +163,14 @@ public class SignUp extends JFrame {
 	    usernamePanel.add(Box.createHorizontalStrut(40));
 	    usernamePanel.add(usernameTextField);
 	    
+	 // Email Panel
+        JTextField emailTextField = new JTextField(15);
+        
+	    JPanel emailPanel = new JPanel();
+	    emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
+	    emailPanel.add(new JLabel("Email"));
+	    emailPanel.add(Box.createHorizontalStrut(40));
+	    emailPanel.add(emailTextField);
            
         // Password Panel
         JPasswordField passwordField = new JPasswordField(15);
@@ -193,6 +201,7 @@ public class SignUp extends JFrame {
         		dateChooser.getDate(),
         		addressTextField.getText(),
                 usernameTextField.getText(),
+                emailTextField.getText(),
                 String.valueOf(passwordField.getPassword()),
 //                Array.toString(passwordField.getPassword()),
                 String.valueOf(repasswordField.getPassword())));
@@ -207,6 +216,7 @@ public class SignUp extends JFrame {
         contentPane.add(CalendarPanel);
         contentPane.add(addressPanel);
         contentPane.add(usernamePanel);
+        contentPane.add(emailPanel);
         contentPane.add(passwordPanel);
         contentPane.add(repasswordPanel);
         contentPane.add(signUpNowButton);
@@ -229,11 +239,10 @@ public class SignUp extends JFrame {
      * @param password String
      * @param repassword String
      */
-    void signUpNowButtonEventHandler(String fullname,String gender,Date date, String address, String username, String password, String repassword) {
+    void signUpNowButtonEventHandler(String fullname,String gender,Date date, String address, String username,String email, String password, String repassword) {
     	String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
 		        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-    	Boolean test= SignUp.patternMatches(username, regexPattern);
-    	System.out.print(gender);
+    	Boolean test= SignUp.patternMatches(email, regexPattern);
     	if (fullname.isEmpty()){
         	JOptionPane.showMessageDialog(this, "Bạn chưa nhập họ tên!",
                   "Lỗi", JOptionPane.WARNING_MESSAGE);
@@ -254,6 +263,9 @@ public class SignUp extends JFrame {
         else if (username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Bạn chưa nhập tên tài khoản!",
                     "Lỗi", JOptionPane.WARNING_MESSAGE);
+        } else if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Bạn chưa nhập email!",
+                    "Lỗi", JOptionPane.WARNING_MESSAGE);
         } else if (password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Bạn chưa nhập mật khẩu!",
                     "Lỗi", JOptionPane.WARNING_MESSAGE);
@@ -269,7 +281,7 @@ public class SignUp extends JFrame {
         }else {
             status = SignUp.SignUpStatus.Waiting;
             Main.sendMessage("Command_CreateAccount`" + username + "`" + password);
-//            Main.sendMessage("Command_CreateAccount`" + username + "`" + password + "`" + fullname + "`" + 
+//            Main.sendMessage("Command_CreateAccount`" + email + "`" + password + "`" + fullname + "`" + username + "`" +
 //            				date.toString()+ "`" + "`" + address);
             while (status == SignUp.SignUpStatus.Waiting) System.out.print("");
 
