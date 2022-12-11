@@ -88,6 +88,7 @@ class ButtonEditor extends DefaultCellEditor {
 		if (clicked) {
 			// SHOW US SOME MESSAGE
 			JOptionPane.showMessageDialog(btn, lbl + " Clicked");
+			Main.sendMessage(lbl);
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
 		clicked = false;
@@ -116,7 +117,7 @@ public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Enum: Message Status
+	 * @Enum: Message Status
 	 */
 	public enum MessageStatus {
 		/**
@@ -212,6 +213,7 @@ public class Main extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("KLTP Chat App");
 		setVisible(true);
+		setResizable(false);
 	}
 
 	/**
@@ -632,9 +634,13 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Không thể tự kết bạn với chính mình.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 
+				} else if (receivedMessage.contains("Command_AddFriendRequestIsFriend")) {
+					JOptionPane.showMessageDialog(null, "Bạn đã là bạn với người này rồi.", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					Object[] rowObjects = { str[1], "Đồng ý", "Xóa" };
+					Object[] rowObjects = { str[1], "Command_NewAddFriendRequest`" + str[1], "Xóa" };
 					addFriendRequestTableModel.addRow(rowObjects);
 					
 				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
