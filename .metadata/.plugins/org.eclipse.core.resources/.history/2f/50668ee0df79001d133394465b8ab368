@@ -332,6 +332,7 @@ public class Main extends JFrame {
 							if (users.get(socket).getInfor().getUsername().equals(str[1])) {						
 								if (!users.get(socket).getAddFriendRequest().contains(users.get(client).getInfor().getUsername())) {
 									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
+									System.out.print(1);
 									String str2 = "Command_NewAddFriendRequest`";								
 									for (int i = 0; i < users.get(socket).getAddFriendRequest().size() - 1; i++)
 										str2 += users.get(socket).getAddFriendRequest().get(i) + "`";
