@@ -17,7 +17,7 @@ public class FriendList extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static JTable friendListTable;
+	private JTable friendListTable;
 	private static DefaultTableModel friendListTableModel;
 
 	/**
@@ -28,10 +28,6 @@ public class FriendList extends JFrame {
 		setTitle("Danh sách bạn bè");
 		setResizable(false);
 		setVisible(true);
-	}
-	
-	public static void deleteRow(int index) {
-		((DefaultTableModel)friendListTable.getModel()).removeRow(index);
 	}
 
 	public void addComponents(String[] friendList) {

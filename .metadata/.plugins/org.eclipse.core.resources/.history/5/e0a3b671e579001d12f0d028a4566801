@@ -383,10 +383,8 @@ public class Main extends JFrame {
 					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
 					users.get(client).deleteFriend(str[1]);
 					for (Socket socket : users.keySet())
-						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend().indexOf(users.get(client).getInfor().getUsername()));
+						if (users.get(socket).getInfor().getUsername().equals(str[1]))
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
-						}
 
 				} else {
 					addLogs(client, receivedMessage);

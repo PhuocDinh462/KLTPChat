@@ -648,10 +648,6 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					new FriendList(str);
 					
-				} else if (receivedMessage.contains("Command_unfriend")) {
-					String[] str = receivedMessage.split("`");
-					FriendList.deleteRow(Integer.parseInt(str[1]));
-					
 				} else {
 					System.out.println(receivedMessage);
 				}
