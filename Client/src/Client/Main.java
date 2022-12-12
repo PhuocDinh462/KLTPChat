@@ -636,7 +636,7 @@ public class Main extends JFrame {
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 					if (str.length > 1) {
-						Object[] rowObjects = { str[1], "Command_NewAddFriendRequest`" + str[1], "Command_deleteAddFriendRequest`" + str[1] };
+						Object[] rowObjects = { str[1], "Command_AcceptAddFriendRequest`" + str[1], "Command_deleteAddFriendRequest`" + str[1] };
 						addFriendRequestTableModel.addRow(rowObjects);
 					}
 
@@ -648,7 +648,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					new FriendList(str);
 					
-				} else if (receivedMessage.contains("Command_unfriend")) {
+				}  else if (receivedMessage.contains("Command_unfriend")) {
 					String[] str = receivedMessage.split("`");
 					FriendList.deleteRow(Integer.parseInt(str[1]));
 					
