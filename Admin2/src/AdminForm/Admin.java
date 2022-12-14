@@ -30,6 +30,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import javax.swing.JButton;
 
 public class Admin extends JFrame {
 
@@ -182,6 +183,10 @@ public class Admin extends JFrame {
 		panelMainContent.add(PanelLoginHis);
 		panelMainContent.add(PanelGroupChat);
 		menuClicked(PanelManage);
+		
+		JButton btnNewButton = new JButton("New button");
+		btnNewButton.setBounds(484, 12, 89, 23);
+		PanelManage.add(btnNewButton);
 
 		// Group Panel
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
