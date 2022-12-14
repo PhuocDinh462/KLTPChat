@@ -1,6 +1,8 @@
-package AdminForm;
+package Server.Classes;
 
 import java.util.ArrayList;
+
+import Server.Classes.InforUser;
 
 public class User {
 	private InforUser infor;

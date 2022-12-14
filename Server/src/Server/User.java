@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class User {
 	private InforUser infor;
-	private ArrayList<String> timeLogin = new ArrayList<String>();
-	private ArrayList<String> friend = new ArrayList<String>();
-	private ArrayList<String> addFriendRequest = new ArrayList<String>();
+	private ArrayList<String> timeLogin;
+	private ArrayList<String> friend;
+	private ArrayList<String> addFriendRequest;
 
 	public User() {
 		infor = new InforUser();
@@ -34,8 +34,7 @@ public class User {
 	}
 
 	public void deleteFriend(String username) {
-		if(this.friend.indexOf(username) >= 0)
-			this.friend.remove(this.friend.indexOf(username));
+		this.friend.remove(this.friend.indexOf(username));
 	}
 
 	public ArrayList<String> getAddFriendRequest() {
@@ -51,8 +50,7 @@ public class User {
 	}
 
 	public void deleteAddFriendRequest(String username) {
-		if (this.addFriendRequest.indexOf(username) >= 0)
-			this.addFriendRequest.remove(this.addFriendRequest.indexOf(username));
+		this.addFriendRequest.remove(this.addFriendRequest.indexOf(username));
 	}
 
 	public InforUser getInfor() {

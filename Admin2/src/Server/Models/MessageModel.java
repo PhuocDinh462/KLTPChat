@@ -7,15 +7,15 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class AccountModel {
-	public MongoCollection<Document> CollectionAccount() {
+public class MessageModel {
+	public MongoCollection<Document> CollectionMessage() {
 		String uri = "mongodb+srv://longit7557:19667557@chatappjava.wntnalz.mongodb.net/?retryWrites=true&w=majority";
 		MongoClientURI mongoClientURI = new MongoClientURI(uri);
 		MongoClient mongoClient = new MongoClient(mongoClientURI);
 
 		MongoDatabase mongoDatabase = mongoClient.getDatabase("Database");
 
-		MongoCollection<Document> collection = mongoDatabase.getCollection("Account");
+		MongoCollection<Document> collection = mongoDatabase.getCollection("Message");
 		return collection;
 	}
 }

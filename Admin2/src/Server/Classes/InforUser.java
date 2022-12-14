@@ -1,4 +1,4 @@
-package AdminForm;
+package Server.Classes;
 
 public class InforUser {
 	private String username;

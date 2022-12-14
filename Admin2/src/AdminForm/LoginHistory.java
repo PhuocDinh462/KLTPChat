@@ -6,15 +6,13 @@ import javax.swing.JTable;
 import java.awt.Font;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
+
+import Server.Classes.User;
 
 public class LoginHistory extends JPanel {
 	private JTable tableLogin;
