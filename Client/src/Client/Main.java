@@ -88,6 +88,7 @@ class ButtonEditor extends DefaultCellEditor {
 		if (clicked) {
 			// SHOW US SOME MESSAGE
 			JOptionPane.showMessageDialog(btn, lbl + " Clicked");
+			Main.sendMessage(lbl);
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
 		clicked = false;
@@ -108,7 +109,6 @@ class ButtonEditor extends DefaultCellEditor {
 	}
 }
 
-
 public class Main extends JFrame {
 	/**
 	 * 
@@ -116,7 +116,7 @@ public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Enum: Message Status
+	 * @Enum: Message Status
 	 */
 	public enum MessageStatus {
 		/**
@@ -170,7 +170,7 @@ public class Main extends JFrame {
 	 */
 	private static final HashMap<String, JPanel> conversations = new HashMap<>();
 	private JTextField addFriendTextField;
-	private JTable addFriendRequestTable;
+	private static JTable addFriendRequestTable;
 	private static JTextField messageTextField;
 	private static DefaultTableModel addFriendRequestTableModel;
 
@@ -212,6 +212,7 @@ public class Main extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("KLTP Chat App");
 		setVisible(true);
+		setResizable(false);
 	}
 
 	/**
@@ -308,26 +309,26 @@ public class Main extends JFrame {
 		});
 
 		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
-		
+
 		JLabel groupTitle = new JLabel("Nhóm");
 		groupTitle.setFont(new Font("Arial", Font.BOLD, 20));
 		groupTitle.setBounds(10, 415, 180, 24);
 		userPanel.add(groupTitle);
-		
+
 		JScrollPane groupScroll = new JScrollPane((Component) null);
 		groupScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 		groupScroll.setBounds(10, 437, 180, 134);
 		userPanel.add(groupScroll);
-		
+
 		JList<String> groupList = new JList<String>();
 		groupList.setVisibleRowCount(10);
 		groupScroll.setColumnHeaderView(groupList);
-		
+
 		JSeparator separator = new JSeparator();
 		separator.setForeground(new Color(192, 192, 192));
 		separator.setBounds(10, 403, 180, 2);
 		userPanel.add(separator);
-		
+
 		JButton createGroupButton = new JButton("Tạo nhóm");
 		createGroupButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -374,11 +375,8 @@ public class Main extends JFrame {
 		addFriendRequestTableModel.addColumn("Đồng ý");
 		addFriendRequestTableModel.addColumn("Xóa");
 
-//		Object[] rowObjects = { addFriendRequestTableModel.getRowCount() + 1, "Đồng ý", "Xóa" };
-//		addFriendRequestTableModel.addRow(rowObjects);
-
 		addFriendRequestTable = new JTable(addFriendRequestTableModel);
-		
+
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 		addFriendRequestTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
@@ -393,7 +391,7 @@ public class Main extends JFrame {
 		addFriendRequestScrollPane.setViewportView(addFriendRequestTable);
 
 		friendPanel.add(addFriendRequestScrollPane);
-		
+
 		JButton showFriendButton = new JButton("Bạn bè");
 		showFriendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -406,11 +404,11 @@ public class Main extends JFrame {
 		// Add components to content pane and Settings
 		contentPane.add(leftPanel, BorderLayout.LINE_START);
 		contentPane.add(middlePanel, BorderLayout.CENTER);
-		
+
 		JButton searchButton = new JButton("🔎︎");
 		searchButton.setBounds(549, 10, 50, 23);
 		middlePanel.add(searchButton);
-		
+
 		JButton deleteButton = new JButton("🗑");
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
@@ -623,7 +621,6 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Gửi lời mời kết bạn thành công.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 
-
 				} else if (receivedMessage.contains("Command_AddFriendRequestFailed")) {
 					JOptionPane.showMessageDialog(null, "Tên người dùng không tồn tại.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -632,17 +629,30 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Không thể tự kết bạn với chính mình.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 
+				} else if (receivedMessage.contains("Command_AddFriendRequestIsFriend")) {
+					JOptionPane.showMessageDialog(null, "Bạn đã là bạn với người này rồi.", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					Object[] rowObjects = { str[1], "Đồng ý", "Xóa" };
-					addFriendRequestTableModel.addRow(rowObjects);
+					if (str.length > 1) {
+						Object[] rowObjects = { str[1], "Command_AcceptAddFriendRequest`" + str[1], "Command_deleteAddFriendRequest`" + str[1] };
+						addFriendRequestTableModel.addRow(rowObjects);
+					}
+
+				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");
+					((DefaultTableModel)addFriendRequestTable.getModel()).removeRow(Integer.parseInt(str[1]));
 					
 				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
 					String[] str = receivedMessage.split("`");
 					new FriendList(str);
-				}
-
-				else {
+					
+				}  else if (receivedMessage.contains("Command_unfriend")) {
+					String[] str = receivedMessage.split("`");
+					FriendList.deleteRow(Integer.parseInt(str[1]));
+					
+				} else {
 					System.out.println(receivedMessage);
 				}
 			}

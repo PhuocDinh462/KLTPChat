@@ -323,22 +323,66 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					if (str[1].equals(users.get(client).getInfor().getUsername()))
 						sendMessage(client, "Command_AddFriendRequestSelf");
+					
+					else if (users.get(client).getFriend().contains(str[1]))
+						sendMessage(client, "Command_AddFriendRequestIsFriend");
 
 					else if (accounts.containsKey(str[1])) {
 						for (Socket socket : users.keySet())
-							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-								if (!users.get(socket).getAddFriendRequest().contains(str[1])) {
-									users.get(socket).addAddFriendRequest(str[1]);
-									sendMessage(socket, "Command_NewAddFriendRequest`"
-											+ users.get(client).getInfor().getUsername());
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {						
+								if (!users.get(socket).getAddFriendRequest().contains(users.get(client).getInfor().getUsername())) {
+									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
+//									String str2 = "Command_NewAddFriendRequest`";								
+//									for (int i = 0; i < users.get(socket).getAddFriendRequest().size() - 1; i++)
+//										str2 += users.get(socket).getAddFriendRequest().get(i) + "`";
+//									if(users.get(socket).getAddFriendRequest().size() > 0)
+//										str2 += users.get(socket).getAddFriendRequest().get(users.get(socket).getAddFriendRequest().size() - 1);
+//									
+//									sendMessage(socket, str2);
+									sendMessage(socket, "Command_NewAddFriendRequest`" + users.get(client).getInfor().getUsername());
 								}
 							}
 						sendMessage(client, "Command_AddFriendRequestAccepted");
 					} else
 						sendMessage(client, "Command_AddFriendRequestFailed");
 					
+				} else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");
+					users.get(client).addFriend(str[1]);	
+					sendMessage(client, "Command_deleteAddFriendRequest`" + users.get(client).getAddFriendRequest().indexOf(str[1]));
+					users.get(client).deleteAddFriendRequest(str[1]);
+					
+					for (Socket socket : users.keySet())
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
+							
+
+						}
+
+				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");		
+					sendMessage(client, "Command_deleteAddFriendRequest`" + users.get(client).getAddFriendRequest().indexOf(str[1]));
+					users.get(client).deleteAddFriendRequest(str[1]);
+
 				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
-					sendMessage(client, "Command_ShowFriendListRequest`" + "phuoc`" + "Long`" + "Tien`" + "Kien");
+					String str = "Command_ShowFriendListRequest`";
+					
+					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
+						str += users.get(client).getFriend().get(i) + "`";
+					if(users.get(client).getFriend().size() > 0)
+						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
+					
+					sendMessage(client, str);
+
+				} else if (receivedMessage.contains("Command_unfriend")) {
+					String[] str = receivedMessage.split("`");
+					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
+					users.get(client).deleteFriend(str[1]);
+					for (Socket socket : users.keySet())
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend().indexOf(users.get(client).getInfor().getUsername()));
+							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
+						}
 
 				} else {
 					addLogs(client, receivedMessage);
