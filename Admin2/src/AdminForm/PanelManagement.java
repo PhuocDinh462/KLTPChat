@@ -3,20 +3,109 @@ package AdminForm;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.TableCellRenderer;
+
 import javax.swing.JTable;
 
+import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JScrollPane;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
+import javax.swing.JOptionPane;
+import javax.swing.DefaultCellEditor;
+
+//BUTTON RENDERER CLASS
+class ButtonRenderer extends JButton implements TableCellRenderer {
+
+	/**
+		 * 
+		 */
+	private static final long serialVersionUID = 1L;
+
+//CONSTRUCTOR
+	public ButtonRenderer() {
+		// SET BUTTON PROPERTIES
+		setOpaque(true);
+	}
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object obj, boolean selected, boolean focused, int row,
+			int col) {
+
+		// SET PASSED OBJECT AS BUTTON TEXT
+//		setText((obj == null) ? "" : obj.toString());
+		setText("...");
+		return this;
+	}
+}
+
+//BUTTON EDITOR CLASS
+class ButtonEditor extends DefaultCellEditor {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected JButton btn;
+	private String lbl;
+	private Boolean clicked;
+
+	public ButtonEditor(JTextField txt) {
+		super(txt);
+
+		btn = new JButton();
+		btn.setOpaque(true);
+
+		// WHEN BUTTON IS CLICKED
+		btn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				fireEditingStopped();
+			}
+		});
+	}
+
+//OVERRIDE A COUPLE OF METHODS
+	@Override
+	public Component getTableCellEditorComponent(JTable table, Object obj, boolean selected, int row, int col) {
+
+		// SET TEXT TO BUTTON,SET CLICKED TO TRUE,THEN RETURN THE BTN OBJECT
+		lbl = (obj == null) ? "" : obj.toString();
+		btn.setText(lbl);
+		clicked = true;
+		return btn;
+	}
+
+//IF BUTTON CELL VALUE CHNAGES,IF CLICKED THAT IS
+	@Override
+	public Object getCellEditorValue() {
+
+		if (clicked) {
+			// SHOW US SOME MESSAGE
+			FeaturesManagement FM = new FeaturesManagement();
+		}
+		// SET IT TO FALSE NOW THAT ITS CLICKED
+		clicked = false;
+		return new String(lbl);
+	}
+
+	@Override
+	public boolean stopCellEditing() {
+
+		// SET CLICKED TO FALSE FIRST
+		clicked = false;
+		return super.stopCellEditing();
+	}
+
+	@Override
+	protected void fireEditingStopped() {
+		super.fireEditingStopped();
+	}
+}
 
 public class PanelManagement extends JPanel {
 
@@ -25,11 +114,45 @@ public class PanelManagement extends JPanel {
 	private JTextField textFindUser;
 
 	public PanelManagement() {
-		setLayout(null);
-		setBounds(0, 0, 1040, 470);
+		init();
+		JScrollPane scrollPane = new JScrollPane(tableUsers);
+		scrollPane.setBounds(10, 45, 1050, 415);
+		scrollPane.setVisible(true);
+		add(scrollPane);
 
+		JTableHeader tHeader = tableUsers.getTableHeader();
+		tHeader.setFont(new Font("Tahome", Font.BOLD, 12));
+
+		textFindUser = new JTextField();
+		textFindUser.setBounds(15, 8, 200, 30);
+		add(textFindUser);
+		textFindUser.setColumns(10);
+
+		JButton btnFind = new JButton("Tìm kiếm");
+		btnFind.setBounds(225, 11, 90, 25);
+		add(btnFind);
+
+		JButton btnAddNewAccount = new JButton("Thêm tài khoản");
+		btnAddNewAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnAddNewAccount.setBounds(930, 7, 130, 30);
+		add(btnAddNewAccount);
+
+		JButton btnDeleteAccount = new JButton("Xóa tài khoản");
+		btnDeleteAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnDeleteAccount.setBounds(800, 7, 120, 30);
+		add(btnDeleteAccount);
+
+		JButton btnBlockAccount = new JButton("Khóa tài khoản");
+		btnBlockAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnBlockAccount.setBounds(660, 7, 130, 30);
+		add(btnBlockAccount);
+	}
+
+	private void init() {
+		setLayout(null);
+		setBounds(0, 0, 1070, 470);
 		String[] titleTable = new String[] { "STT", "Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính",
-				"Email", "Trạng thái", "Ngày tạo" };
+				"Email", "Trạng thái", "Ngày tạo", "Lựa chọn", "Chức năng" };
 		Object[][] listItem = new Object[][] {
 				{ 1, "abl", "clong", "a135b Tran Hung Dao", "11/10/2002", "Male", "leoit811@gmail.com", "Offline",
 						"2022/09/12 00:00" },
@@ -42,47 +165,9 @@ public class PanelManagement extends JPanel {
 		tableUsers = new JTable();
 		tableUsers.setRowSelectionAllowed(false);
 		tableUsers.setFillsViewportHeight(true);
-		tableUsers.setFont(new Font("Tahome", Font.PLAIN, 14));
+		tableUsers.setFont(new Font("Dialog", Font.PLAIN, 12));
 
-		tableUsers.setModel(new DefaultTableModel(listItem, titleTable));
-
-		setTable();
-
-		JScrollPane scrollPane = new JScrollPane(tableUsers);
-		scrollPane.setBounds(10, 45, 1020, 415);
-		scrollPane.setVisible(true);
-		add(scrollPane);
-
-		JTableHeader tHeader = tableUsers.getTableHeader();
-		tHeader.setFont(new Font("Tahome", Font.BOLD, 14));
-
-		JButton btnOrther = new JButton("Các chức năng khác");
-		btnOrther.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FeaturesManagement FM = new FeaturesManagement();
-			
-			}
-		});
-		btnOrther.setFont(new Font("Dialog", Font.PLAIN, 13));
-		btnOrther.setBounds(845, 8, 170, 30);
-		add(btnOrther);
-
-		textFindUser = new JTextField();
-		textFindUser.setBounds(15, 8, 200, 30);
-		add(textFindUser);
-		textFindUser.setColumns(10);
-
-		JButton btnFind = new JButton("Tìm kiếm");
-		btnFind.setBounds(225, 11, 90, 25);
-		add(btnFind);
-
-		JButton btnNewButton_1 = new JButton("Thêm tài khoản");
-		btnNewButton_1.setFont(new Font("Dialog", Font.PLAIN, 13));
-		btnNewButton_1.setBounds(660, 8, 130, 30);
-		add(btnNewButton_1);
-	}
-
-	private void setTable() {
+		tableUsers.setModel(userTableModel);
 		tableUsers.getColumnModel().getColumn(0).setPreferredWidth(35);
 		tableUsers.getColumnModel().getColumn(0).setMaxWidth(35);
 		tableUsers.getColumnModel().getColumn(1).setPreferredWidth(120);
@@ -98,5 +183,10 @@ public class PanelManagement extends JPanel {
 		tableUsers.getColumnModel().getColumn(7).setMaxWidth(75);
 		tableUsers.getColumnModel().getColumn(8).setPreferredWidth(140);
 		tableUsers.getColumnModel().getColumn(8).setMaxWidth(170);
+		tableUsers.getColumnModel().getColumn(9).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(10).setPreferredWidth(80);
+		tableUsers.getColumnModel().getColumn(10).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
+		tableUsers.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
 	}
 }

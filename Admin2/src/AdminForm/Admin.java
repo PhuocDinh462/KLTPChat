@@ -5,9 +5,11 @@ import java.awt.EventQueue;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.UIManager;
+
+import Server.Classes.InforUser;
+import Server.Controllers.UserController;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -21,16 +23,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import javax.swing.JButton;
 
 public class Admin extends JFrame {
 
@@ -45,6 +40,8 @@ public class Admin extends JFrame {
 	private PanelManagement PanelManage;
 	private LoginHistory PanelLoginHis;
 	private GroupChat PanelGroupChat;
+
+	private UserController manageUsers;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -63,6 +60,51 @@ public class Admin extends JFrame {
 	 * Create the frame.
 	 */
 	public Admin() {
+		init();
+		manageUsers = new UserController();
+		InforUser newUser = new InforUser("TBL","123long","Tran Bao Long","admin@gmail.com","HCM","02/10/2002","Nam");
+		manageUsers.create(newUser);
+//		manageUsers.read();
+	}
+
+	// Setting display component content
+	public void menuClicked(JPanel panel) {
+		PanelManage.setVisible(false);
+		PanelLoginHis.setVisible(false);
+		PanelGroupChat.setVisible(false);
+
+		panel.setVisible(true);
+	}
+
+	private class PanelButtonMouseAdapter extends MouseAdapter {
+		JPanel panel;
+
+		public PanelButtonMouseAdapter(JPanel panel) {
+			this.panel = panel;
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			panel.setBackground(Color.LIGHT_GRAY);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			panel.setBackground(new Color(160, 160, 160));
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+	}
+
+	private void init() {
 		setResizable(false);
 		// Setting content panel
 		setTitle("Administrator");
@@ -78,7 +120,7 @@ public class Admin extends JFrame {
 				}
 			}
 		});
-		setBounds(100, 100, 1321, 519);
+		setBounds(100, 100, 1350, 519);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.inactiveCaptionBorder);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -87,11 +129,8 @@ public class Admin extends JFrame {
 
 		// Init component
 		PanelManage = new PanelManagement();
-		PanelManage.setBounds(0, 0, 1040, 470);
 		PanelLoginHis = new LoginHistory();
-		PanelLoginHis.setSize(1040, 470);
 		PanelGroupChat = new GroupChat();
-		PanelGroupChat.setBounds(0, 0, 1040, 470);
 
 		// Panel Logo
 		JPanel panelAdmin = new JPanel();
@@ -183,10 +222,6 @@ public class Admin extends JFrame {
 		panelMainContent.add(PanelLoginHis);
 		panelMainContent.add(PanelGroupChat);
 		menuClicked(PanelManage);
-		
-		JButton btnNewButton = new JButton("New button");
-		btnNewButton.setBounds(484, 12, 89, 23);
-		PanelManage.add(btnNewButton);
 
 		// Group Panel
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -199,45 +234,5 @@ public class Admin extends JFrame {
 				.addComponent(panelAdmin, GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
 				.addComponent(panelMainContent, GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE));
 		contentPane.setLayout(gl_contentPane);
-	}
-
-	// Setting display component content
-	public void menuClicked(JPanel panel) {
-		PanelManage.setVisible(false);
-		PanelLoginHis.setVisible(false);
-		PanelGroupChat.setVisible(false);
-//		System.out.println(getSize());   
-//		System.out.println(contentPane.getSize());
-//		System.out.println(panelMainContent.getBounds());
-		panel.setVisible(true);
-	}
-
-	//
-	private class PanelButtonMouseAdapter extends MouseAdapter {
-		JPanel panel;
-
-		public PanelButtonMouseAdapter(JPanel panel) {
-			this.panel = panel;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			panel.setBackground(new Color(240, 240, 240));
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			panel.setBackground(Color.LIGHT_GRAY);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			panel.setBackground(new Color(160, 160, 160));
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			panel.setBackground(new Color(240, 240, 240));
-		}
 	}
 }

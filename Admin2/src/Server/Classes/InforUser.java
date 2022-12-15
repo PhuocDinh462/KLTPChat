@@ -8,8 +8,7 @@ public class InforUser {
 	private String DOB;
 	private String gender;
 	private String email;
-	private String dateCreated;
-	
+
 	public InforUser() {
 		this.username = "";
 		this.password = "";
@@ -20,8 +19,8 @@ public class InforUser {
 		this.email = "";
 	}
 
-	public InforUser(String username, String password, String fullname, String address, String DOB, String gender,
-			String email) {
+	public InforUser(String username, String password, String fullname, String email, String address, String DOB,
+			String gender) {
 		this.username = username;
 		this.password = password;
 		this.fullname = fullname;
@@ -85,13 +84,5 @@ public class InforUser {
 
 	public void setGender(String gender) {
 		this.gender = gender;
-	}
-
-	public String getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(String dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 }
