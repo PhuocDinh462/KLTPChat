@@ -9,7 +9,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MessageModel {
 	public MongoCollection<Document> CollectionMessage() {
-		String uri = "mongodb+srv://longit7557:19667557@chatappjava.wntnalz.mongodb.net/?retryWrites=true&w=majority";
+		String uri = "mongodb+srv://admin:admin123@cluster0.wbqiils.mongodb.net/?retryWrites=true&w=majority";
 		MongoClientURI mongoClientURI = new MongoClientURI(uri);
 		MongoClient mongoClient = new MongoClient(mongoClientURI);
 

@@ -9,7 +9,7 @@ public class Group {
 	private List<String> userId;
 	private List<String> messageId;
 
-	Group() {
+	public Group() {
 		groupName = new String();
 		managers = new ArrayList<String>();
 		userId = new ArrayList<String>();

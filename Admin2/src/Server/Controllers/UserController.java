@@ -19,9 +19,7 @@ import Server.Models.UserModel;
 
 public class UserController extends UserModel {
 	public void create(InforUser Information) {
-		
-		System.out.println(Information.getFullname());
-		
+
 		ArrayList<String> listFriend = new ArrayList<String>();
 		ArrayList<String> listAddFriend = new ArrayList<String>();
 		ArrayList<String> historyLogin = new ArrayList<String>();
@@ -29,100 +27,175 @@ public class UserController extends UserModel {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("userName", Information.getUsername())
-				.append("password", Information.getPassword()).append("dob", Information.getDOB())
-				.append("gender", Information.getGender()).append("address", Information.getAddress())
-				.append("email", Information.getEmail()).append("listFriend", listFriend)
-				.append("listAddFriend", listAddFriend).append("createTime", formatter.format(date))
+		Document document = new Document("id", Information.getId()).append("username", Information.getUsername())
+				.append("password", Information.getPassword()).append("fullName", Information.getFullname())
+				.append("dob", Information.getDOB()).append("gender", Information.getGender())
+				.append("address", Information.getAddress()).append("email", Information.getEmail())
+				.append("createTime", formatter.format(date)).append("blocked", Information.getBlocked())
+				.append("listFriend", listFriend).append("listAddFriend", listAddFriend)
 				.append("historyLogin", historyLogin);
-		System.out.println("aaaaaaa");
+
 		CollectionUser().insertOne(document);
-//		DBObject person = new BasicDBObject("userName", Information.getUsername())
-//				.append("password", Information.getPassword()).append("dob", Information.getDOB())
-//				.append("gender", Information.getGender()).append("address", Information.getAddress())
-//				.append("email", Information.getEmail()).append("listFriend", listFriend)
-//				.append("listAddFriend", listAddFriend).append("createTime", formatter.format(date))
-//				.append("historyLogin", historyLogin);
-//		DBObject updateDoc = new BasicDBObject("$set",person);
-//		CollectionUser().insert(updateDoc);
+
 		System.out.println("successful");
 	}
-//
-//	public void read() {
-//		
-//		MongoCursor<Document> document = CollectionUser().find().iterator();
-//		
-////		try {
-////			while (document.hasNext()) {
-////				System.out.println(document.next().toJson());
-////			}
-////		} finally {
-////			document.close();
-////		}
-//		System.out.print("Successfull");
-//	}
-//
+
+	public void read() {
+
+		MongoCursor<Document> document = CollectionUser().find().iterator();
+
+		try {
+			while (document.hasNext()) {
+				System.out.println(document.next().toJson());
+			}
+		} finally {
+			document.close();
+		}
+		System.out.print("Successfull");
+	}
+
 //	public void addPeopleRoom(String idRoom, String idUser) {
 //		ArrayList<String> document = new ArrayList<String>();
-//		document = (ArrayList<String>) CollectionUser().find().iterator().next().get("listRoom");
+//		document = (ArrayList<String>) CollectionUser().find().iterator().next().get("group");
 //		document.add(idRoom);
 //		CollectionUser().updateOne(eq("id", idUser), combine(set("listRoom", document)));
 //	}
-//
-//	public void update(String id, String name) {
-//		CollectionUser().updateOne(eq("_id", id), combine(set("name", name)));
-//		System.out.println("successful");
-//	}
-//
-//	public void delete(String id) {
-//		CollectionUser().deleteMany(eq("_id", id));
-//	}
-//
-//	public ArrayList<String> searchListFriend(String id) {
-//		Document filterDoc = new Document();
-//		filterDoc.append("id", id);
-//		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
-//		ArrayList<String> listData = new ArrayList<String>();
-//		try {
-//			while (document.hasNext()) {
-//				Document doc = document.next();
-//				listData.add((String) doc.get("listFriend").toString());
-//			}
-//		} finally {
-//			document.close();
-//		}
-//		return listData;
-//	}
-//
-//	public ArrayList<String> searchNameFriend(String id) {
-//		Document filterDoc = new Document();
-//		filterDoc.append("id", id);
-//		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
-//		ArrayList<String> listData = new ArrayList<String>();
-//		try {
-//			while (document.hasNext()) {
-//				Document doc = document.next();
-//				listData.add((String) doc.get("fullName").toString());
-//			}
-//		} finally {
-//			document.close();
-//		}
-//		return listData;
-//	}
-//
-//	public ArrayList<String> getListNameGrToId(String id) {
-//		Document filterDoc = new Document();
-//		filterDoc.append("id", id);
-//		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
-//		ArrayList<String> listData = new ArrayList<String>();
-//		try {
-//			while (document.hasNext()) {
-//				Document doc = document.next();
-//				listData.add((String) doc.get("listRoom").toString());
-//			}
-//		} finally {
-//			document.close();
-//		}
-//		return listData;
-//	}
+
+	public void update(String id, InforUser user) {
+		CollectionUser().updateOne(eq("id", id),
+				combine(set("username", user.getUsername()), set("fullName", user.getFullname()),
+						set("dob", user.getDOB()), set("gender", user.getGender()), set("address", user.getAddress()),
+						set("email", user.getEmail())));
+		System.out.println("successful");
+	}
+
+	public void updatePassword(String id, String newPass) {
+		CollectionUser().updateOne(eq("id", id), combine(set("password", newPass)));
+		System.out.println("successful");
+	}
+
+	public void updateBlock(String id, Boolean blocked) {
+		CollectionUser().updateOne(eq("id", id), combine(set("blocked", blocked)));
+		System.out.println("successful");
+	}
+
+	public void delete(String id) {
+		CollectionUser().deleteMany(eq("id", id));
+		System.out.println("successful");
+	}
+
+	public ArrayList<String> searchListFriend(String id) {
+		Document filterDoc = new Document();
+		filterDoc.append("id", id);
+		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("listFriend");
+		} finally {
+			document.close();
+		}
+		return listData;
+	}
+
+	public Boolean addFriend(String id, String idRequest) {
+		ArrayList<String> listData = searchListFriend(id);
+
+		if (listData.contains(idRequest))
+			return false;
+
+		listData.add(idRequest);
+
+		CollectionUser().updateOne(eq("id", id), combine(set("listFriend", listData)));
+
+		System.out.println("successful");
+		return true;
+	}
+
+	public Boolean deleteFriend(String id, String idRequest) {
+		ArrayList<String> listData = searchListFriend(id);
+
+		for (int i = 0; i < listData.size(); i++) {
+			if (listData.get(i).equals(idRequest)) {
+				listData.remove(i);
+
+				CollectionUser().updateOne(eq("id", id), combine(set("listFriend", listData)));
+
+				System.out.println("successful");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ArrayList<String> searchListRequestFriend(String id) {
+		Document filterDoc = new Document();
+		filterDoc.append("id", id);
+		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("listAddFriend");
+		} finally {
+			document.close();
+		}
+		return listData;
+	}
+
+	public Boolean addRequestFriend(String id, String idRequest) {
+		ArrayList<String> listData = searchListFriend(id);
+
+		if (listData.contains(idRequest))
+			return false;
+
+		listData.add(idRequest);
+
+		CollectionUser().updateOne(eq("id", id), combine(set("listAddFriend", listData)));
+
+		System.out.println("successful");
+		return true;
+	}
+
+	public Boolean deleteRequestFriend(String id, String idRequest) {
+		ArrayList<String> listData = searchListFriend(id);
+
+		for (int i = 0; i < listData.size(); i++) {
+			if (listData.get(i).equals(idRequest)) {
+				listData.remove(i);
+
+				CollectionUser().updateOne(eq("id", id), combine(set("listAddFriend", listData)));
+
+				System.out.println("successful");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public ArrayList<String> searchHistoryLogin(String id) {
+		Document filterDoc = new Document();
+		filterDoc.append("id", id);
+		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("historyLogin");
+		} finally {
+			document.close();
+		}
+		return listData;
+	}
+
+	public void addLogin(String id) {
+		ArrayList<String> listData = searchListFriend(id);
+
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date date = new Date();
+
+		listData.add(formatter.format(date));
+
+		CollectionUser().updateOne(eq("id", id), combine(set("historyLogin", listData)));
+
+		System.out.println("successful");
+	}
 }

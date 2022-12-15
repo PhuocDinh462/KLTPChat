@@ -7,7 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import Server.Classes.Group;
 import Server.Classes.InforUser;
+import Server.Controllers.GroupController;
 import Server.Controllers.UserController;
 
 import javax.swing.JLabel;
@@ -42,13 +44,14 @@ public class Admin extends JFrame {
 	private GroupChat PanelGroupChat;
 
 	private UserController manageUsers;
+	private GroupController grp;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Admin frame = new Admin();
-					frame.setVisible(true);
+					frame.setVisible(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -62,9 +65,20 @@ public class Admin extends JFrame {
 	public Admin() {
 		init();
 		manageUsers = new UserController();
-		InforUser newUser = new InforUser("TBL","123long","Tran Bao Long","admin@gmail.com","HCM","02/10/2002","Nam");
-		manageUsers.create(newUser);
+		InforUser newUser = new InforUser("Cho Tien","TienAnCuc","Tran Bao Long","admin@gmail.com","HCM","02/10/2002","Nam");
+//		manageUsers.create(newUser);
 //		manageUsers.read();
+		
+		
+//		grp = new GroupController();
+//		Group newGroup = new Group();
+//		grp.create(newGroup);
+//		manageUsers.update("e6d425e2-0c30-4c1e-9645-5c40e0c81e9e", newUser);
+		manageUsers.addFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0", "3ba8339e-c817-444f-8919-89cde9ea5d7e");
+		System.out.println(manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0"));
+		manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0").forEach((ele)->{
+			System.out.println(ele);
+		});
 	}
 
 	// Setting display component content

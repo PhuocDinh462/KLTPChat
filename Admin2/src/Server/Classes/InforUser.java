@@ -1,6 +1,9 @@
 package Server.Classes;
 
+import java.util.UUID;
+
 public class InforUser {
+	private String id;
 	private String username;
 	private String password;
 	private String fullname;
@@ -8,8 +11,10 @@ public class InforUser {
 	private String DOB;
 	private String gender;
 	private String email;
+	private Boolean blocked;
 
 	public InforUser() {
+		this.id = UUID.randomUUID().toString();
 		this.username = "";
 		this.password = "";
 		this.fullname = "";
@@ -17,10 +22,12 @@ public class InforUser {
 		DOB = "";
 		this.gender = "";
 		this.email = "";
+		this.blocked = false;
 	}
 
 	public InforUser(String username, String password, String fullname, String email, String address, String DOB,
 			String gender) {
+		this.id = UUID.randomUUID().toString();
 		this.username = username;
 		this.password = password;
 		this.fullname = fullname;
@@ -28,6 +35,7 @@ public class InforUser {
 		this.DOB = DOB;
 		this.gender = gender;
 		this.email = email;
+		this.blocked = false;
 	}
 
 	public String getUsername() {
@@ -84,5 +92,17 @@ public class InforUser {
 
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public Boolean getBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(Boolean blocked) {
+		this.blocked = blocked;
 	}
 }
