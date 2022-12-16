@@ -9,7 +9,9 @@ import javax.swing.border.EmptyBorder;
 
 import Server.Classes.Group;
 import Server.Classes.InforUser;
+import Server.Classes.Message;
 import Server.Controllers.GroupController;
+import Server.Controllers.MessageController;
 import Server.Controllers.UserController;
 
 import javax.swing.JLabel;
@@ -45,6 +47,7 @@ public class Admin extends JFrame {
 
 	private UserController manageUsers;
 	private GroupController grp;
+	private MessageController messC;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -65,8 +68,16 @@ public class Admin extends JFrame {
 	public Admin() {
 		init();
 		manageUsers = new UserController();
+		messC = new MessageController();
+		Message m = new Message( "dd942b10-dbd6-47d3-ac4e-2b1a0fe1fa68","d2c41b73-7da6-40af-86f1-235dfd885bd8", "Long");
 		InforUser newUser = new InforUser("Cho Tien","TienAnCuc","Tran Bao Long","admin@gmail.com","HCM","02/10/2002","Nam");
+		
+		messC.deleteByMsgSend("217f3ca7-4c1c-4777-8fd2-d8387c74f6ab");
+//		messC.deleteByRemoveFriend("dd942b10-dbd6-47d3-ac4e-2b1a0fe1fa68","d2c41b73-7da6-40af-86f1-235dfd885bd8");
+//		messC.deleteBy("d2bbf989-4ae7-4ad8-9615-b11b7a757452", true);
 //		manageUsers.create(newUser);
+//		messC.create(m);
+//		messC.read();
 //		manageUsers.read();
 		
 		
@@ -74,11 +85,18 @@ public class Admin extends JFrame {
 //		Group newGroup = new Group();
 //		grp.create(newGroup);
 //		manageUsers.update("e6d425e2-0c30-4c1e-9645-5c40e0c81e9e", newUser);
-		manageUsers.addFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0", "3ba8339e-c817-444f-8919-89cde9ea5d7e");
-		System.out.println(manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0"));
-		manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0").forEach((ele)->{
-			System.out.println(ele);
-		});
+//		manageUsers.addFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0", "3ba8339e-c817-444f-8919-89cde9ea5d7e");
+//		System.out.println(manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0"));
+//		manageUsers.searchListFriend("4fb225e7-31ef-488d-9d6f-0c91d122dae0").forEach((ele)->{
+//			System.out.println(ele);
+//		});
+//		
+//		messC.findMessageBySender("dd942b10-dbd6-47d3-ac4e-2b1a0fe1fa68","d2c41b73-7da6-40af-86f1-235dfd885bd8")
+//				.forEach((ele) -> {
+//					System.out.println(ele);
+//				});
+//		System.out.println(messC.findMessageById("d9fd0730-3800-43c4-9553-da18718ca584").getContent());
+		
 	}
 
 	// Setting display component content

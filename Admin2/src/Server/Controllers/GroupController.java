@@ -45,7 +45,7 @@ public class GroupController extends GroupModel {
 	}
 
 	public void delete(String id) {
-		CollectionGroup().deleteMany(eq("_id", id));
+		CollectionGroup().deleteMany(eq("id", id));
 	}
 
 	public void findMessageByContent(String content) {
@@ -66,7 +66,7 @@ public class GroupController extends GroupModel {
 
 	public void findMessageById(String id) {
 		Document doc = new Document();
-		doc.append("_id", id);
+		doc.append("id", id);
 		MongoCursor<Document> document = CollectionGroup().find(doc).iterator();
 		try {
 			while (document.hasNext()) {
@@ -81,7 +81,7 @@ public class GroupController extends GroupModel {
 
 	public void updateGroupName(String newName, String id) {
 
-		Document query = new Document().append("_id", id);
+		Document query = new Document().append("id", id);
 
 		Bson updates = Updates.combine(Updates.set("name", newName));
 

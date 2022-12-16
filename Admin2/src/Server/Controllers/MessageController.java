@@ -1,10 +1,16 @@
 package Server.Controllers;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
 import org.bson.Document;
 
+import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import Server.Classes.Message;
 import Server.Models.MessageModel;
@@ -14,8 +20,10 @@ public class MessageController extends MessageModel {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("createdBy", msg.getUserId()).append("desId", msg.getDestinationId())
-				.append("content", msg.getContent()).append("createTime", formatter.format(date));
+		Document document = new Document("_id", msg.getId()).append("senderId", msg.getSenderId())
+				.append("receiverId", msg.getReceiverId()).append("content", msg.getContent())
+				.append("createTime", formatter.format(date)).append("senderDelete", false)
+				.append("receiverDelete", false);
 
 		CollectionMessage().insertOne(document);
 		System.out.println("successful");
@@ -35,38 +43,70 @@ public class MessageController extends MessageModel {
 		System.out.print("Successfull");
 	}
 
-	public void delete(String id) {
+	public void deleteById(String id) {
 		CollectionMessage().deleteMany(eq("_id", id));
+		System.out.println("successful");
 	}
 
-	public void findMessageByContent(String content) {
+	public void deleteByRemoveFriend(String senderId, String receiverId) {
 		Document doc = new Document();
-		doc.append("content", content);
-		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
-
-		try {
-			while (document.hasNext()) {
-				System.out.println(document.next().toJson());
-			}
-		} finally {
-			document.close();
-		}
+		doc.append("senderId", senderId);
+		doc.append("receiverId", receiverId);
+		CollectionMessage().deleteMany(doc);
 
 		System.out.print("Successfull");
 	}
 
-	public void findMessageById(String id) {
+	public void deleteByMsgSend(String id) {
+		Message msg = new Message();
+		msg = findMessageById(id);
+
+		if (msg.getReceiverDelete()) {
+			deleteById(id);
+		} else {
+			CollectionMessage().updateOne(eq("_id", id), combine(set("senderDelete", true)));
+		}
+		System.out.print("Successfull");
+	}
+
+	public void deleteByMsgReceive(String id) {
+		Message msg = new Message();
+		msg = findMessageById(id);
+
+		if (msg.getSenderDelete()) {
+			deleteById(id);
+		} else {
+			CollectionMessage().updateOne(eq("_id", id), combine(set("receiverDelete", true)));
+		}
+		System.out.print("Successfull");
+	}
+
+	public Message findMessageById(String id) {
 		Document doc = new Document();
 		doc.append("_id", id);
 		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		Gson gson = new Gson();
+		System.out.print("Successfull");
+		return gson.fromJson(document.next().toJson(), Message.class);
+	}
+
+	public ArrayList<Message> findMessageBySender(String sender, String receiver) {
+		Document doc = new Document();
+		doc.append("senderId", sender);
+		doc.append("receiverId", receiver);
+		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		ArrayList<Message> mess = new ArrayList<Message>();
+		Gson gson = new Gson();
+
 		try {
 			while (document.hasNext()) {
-				System.out.println(document.next().toJson());
+				Message addMess = gson.fromJson(document.next().toJson(), Message.class);
+				mess.add(addMess);
 			}
 		} finally {
 			document.close();
 		}
-
-		System.out.print("Successfull");
+		System.out.println("Successfull");
+		return mess;
 	}
 }

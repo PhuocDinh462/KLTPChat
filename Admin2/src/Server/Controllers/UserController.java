@@ -27,7 +27,7 @@ public class UserController extends UserModel {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("id", Information.getId()).append("username", Information.getUsername())
+		Document document = new Document("_id", Information.getId()).append("username", Information.getUsername())
 				.append("password", Information.getPassword()).append("fullName", Information.getFullname())
 				.append("dob", Information.getDOB()).append("gender", Information.getGender())
 				.append("address", Information.getAddress()).append("email", Information.getEmail())
@@ -62,7 +62,7 @@ public class UserController extends UserModel {
 //	}
 
 	public void update(String id, InforUser user) {
-		CollectionUser().updateOne(eq("id", id),
+		CollectionUser().updateOne(eq("_id", id),
 				combine(set("username", user.getUsername()), set("fullName", user.getFullname()),
 						set("dob", user.getDOB()), set("gender", user.getGender()), set("address", user.getAddress()),
 						set("email", user.getEmail())));
@@ -70,23 +70,23 @@ public class UserController extends UserModel {
 	}
 
 	public void updatePassword(String id, String newPass) {
-		CollectionUser().updateOne(eq("id", id), combine(set("password", newPass)));
+		CollectionUser().updateOne(eq("_id", id), combine(set("password", newPass)));
 		System.out.println("successful");
 	}
 
 	public void updateBlock(String id, Boolean blocked) {
-		CollectionUser().updateOne(eq("id", id), combine(set("blocked", blocked)));
+		CollectionUser().updateOne(eq("_id", id), combine(set("blocked", blocked)));
 		System.out.println("successful");
 	}
 
 	public void delete(String id) {
-		CollectionUser().deleteMany(eq("id", id));
+		CollectionUser().deleteMany(eq("_id", id));
 		System.out.println("successful");
 	}
 
 	public ArrayList<String> searchListFriend(String id) {
 		Document filterDoc = new Document();
-		filterDoc.append("id", id);
+		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();
@@ -106,7 +106,7 @@ public class UserController extends UserModel {
 
 		listData.add(idRequest);
 
-		CollectionUser().updateOne(eq("id", id), combine(set("listFriend", listData)));
+		CollectionUser().updateOne(eq("_id", id), combine(set("listFriend", listData)));
 
 		System.out.println("successful");
 		return true;
@@ -119,7 +119,7 @@ public class UserController extends UserModel {
 			if (listData.get(i).equals(idRequest)) {
 				listData.remove(i);
 
-				CollectionUser().updateOne(eq("id", id), combine(set("listFriend", listData)));
+				CollectionUser().updateOne(eq("_id", id), combine(set("listFriend", listData)));
 
 				System.out.println("successful");
 				return true;
@@ -130,7 +130,7 @@ public class UserController extends UserModel {
 
 	public ArrayList<String> searchListRequestFriend(String id) {
 		Document filterDoc = new Document();
-		filterDoc.append("id", id);
+		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();
@@ -150,7 +150,7 @@ public class UserController extends UserModel {
 
 		listData.add(idRequest);
 
-		CollectionUser().updateOne(eq("id", id), combine(set("listAddFriend", listData)));
+		CollectionUser().updateOne(eq("_id", id), combine(set("listAddFriend", listData)));
 
 		System.out.println("successful");
 		return true;
@@ -163,7 +163,7 @@ public class UserController extends UserModel {
 			if (listData.get(i).equals(idRequest)) {
 				listData.remove(i);
 
-				CollectionUser().updateOne(eq("id", id), combine(set("listAddFriend", listData)));
+				CollectionUser().updateOne(eq("_id", id), combine(set("listAddFriend", listData)));
 
 				System.out.println("successful");
 				return true;
@@ -174,7 +174,7 @@ public class UserController extends UserModel {
 
 	public ArrayList<String> searchHistoryLogin(String id) {
 		Document filterDoc = new Document();
-		filterDoc.append("id", id);
+		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();
@@ -194,7 +194,7 @@ public class UserController extends UserModel {
 
 		listData.add(formatter.format(date));
 
-		CollectionUser().updateOne(eq("id", id), combine(set("historyLogin", listData)));
+		CollectionUser().updateOne(eq("_id", id), combine(set("historyLogin", listData)));
 
 		System.out.println("successful");
 	}

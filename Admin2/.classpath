@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="jcalendar-1.4.jar"/>
 	<classpathentry kind="lib" path="D:/source/Java/KLTPChat/Admin2/mongo-java-driver-3.12.11.jar"/>
+	<classpathentry kind="lib" path="D:/source/Java/KLTPChat/Admin2/gson-2.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
