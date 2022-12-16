@@ -26,7 +26,7 @@ public class GroupController extends GroupModel {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("id", grp.getGroupId()).append("name", grp.getGroupName())
+		Document document = new Document("_id", grp.getGroupId()).append("name", grp.getGroupName())
 				.append("listUsers", grp.getlistUsers()).append("listManagers", grp.getManagers())
 				.append("listMessage", grp.getmessageId()).append("createTime", formatter.format(date));
 		CollectionGroup().insertOne(document);
@@ -42,6 +42,7 @@ public class GroupController extends GroupModel {
 		} finally {
 			document.close();
 		}
+		System.out.println("successful");
 	}
 
 	public Boolean addPeopleGroup(String idUser, String idGroup) {
@@ -53,7 +54,7 @@ public class GroupController extends GroupModel {
 
 		listData.add(idUser);
 
-		CollectionGroup().updateOne(eq("id", idGroup), combine(set("listUsers", listData)));
+		CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listUsers", listData)));
 
 		System.out.println("successful");
 		return true;
@@ -68,7 +69,7 @@ public class GroupController extends GroupModel {
 			if (listData.get(i).equals(idUser)) {
 				listData.remove(i);
 
-				CollectionGroup().updateOne(eq("id", idGroup), combine(set("listFriend", listData)));
+				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listFriend", listData)));
 				System.out.println("successful");
 
 				return true;
@@ -88,12 +89,13 @@ public class GroupController extends GroupModel {
 		} finally {
 			document.close();
 		}
+		System.out.println("successful");
 		return listData;
 	}
 
 	public ArrayList<String> searchListUsers(String idGroup) {
 		Document filterDoc = new Document();
-		filterDoc.append("id", idGroup);
+		filterDoc.append("_id", idGroup);
 		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();
@@ -102,6 +104,7 @@ public class GroupController extends GroupModel {
 		} finally {
 			document.close();
 		}
+		System.out.println("successful");
 		return listData;
 	}
 
@@ -112,5 +115,6 @@ public class GroupController extends GroupModel {
 
 	public void deleteGroup(String idGroup) {
 		CollectionGroup().deleteMany(eq("_id", idGroup));
+		System.out.println("successful");
 	}
 }
