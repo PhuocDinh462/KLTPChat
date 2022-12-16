@@ -1,13 +1,16 @@
 package Server.Controllers;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-
+import Server.Controllers.MessageController;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
@@ -19,21 +22,20 @@ import Server.Models.GroupModel;
 
 public class GroupController extends GroupModel {
 	public void create(Group grp) {
+
+
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("name", grp.getGroupName()).append("managers", grp.getManagers())
-				.append("users", grp.getuserId()).append("messages", grp.getmessageId())
-				.append("createTime", formatter.format(date));
-
+		Document document = new Document("id", grp.getGroupId()).append("name", grp.getGroupName())
+				.append("listUsers", grp.getlistUsers()).append("listManagers", grp.getManagers())
+				.append("listMessage",grp.getmessageId()).append("createTime", formatter.format(date));
 		CollectionGroup().insertOne(document);
 		System.out.println("successful");
 	}
 
 	public void read() {
-
 		MongoCursor<Document> document = CollectionGroup().find().iterator();
-
 		try {
 			while (document.hasNext()) {
 				System.out.println(document.next().toJson());
@@ -41,59 +43,77 @@ public class GroupController extends GroupModel {
 		} finally {
 			document.close();
 		}
-		System.out.print("Successfull");
 	}
 
-	public void delete(String id) {
-		CollectionGroup().deleteMany(eq("_id", id));
+	public Boolean addPeopleGroup(String idUser, String idGroup) {
+
+		ArrayList<String> listData = searchListUsers(idGroup);
+
+		if (listData.contains(idUser))
+			return false;
+
+		listData.add(idUser);
+
+		CollectionGroup().updateOne(eq("id", idGroup), combine(set("listUsers", listData)));
+
+		System.out.println("successful");
+		return true;
+
 	}
+	
+	public Boolean removePeopleGroup(String idUser, String idGroup) {
 
-	public void findMessageByContent(String content) {
-		Document doc = new Document();
-		doc.append("content", content);
-		MongoCursor<Document> document = CollectionGroup().find(doc).iterator();
+		ArrayList<String> listData = searchListUsers(idGroup);
 
-		try {
-			while (document.hasNext()) {
-				System.out.println(document.next().toJson());
+		for (int i = 0; i < listData.size(); i++) {
+			if (listData.get(i).equals(idUser)) {
+				listData.remove(i);
+
+				CollectionGroup().updateOne(eq("id", idGroup), combine(set("listFriend", listData)));
+				System.out.println("successful");
+				
+				return true;
 			}
+		}
+		return false;
+	}
+	
+	public ArrayList<String> searchListMessage(String idGroup) {
+		Document filterDoc = new Document();
+		filterDoc.append("id", idGroup);
+		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("listMessage");
 		} finally {
 			document.close();
 		}
-
-		System.out.print("Successfull");
+		return listData;
 	}
+	
+	public ArrayList<String> searchListUsers(String idGroup) {
+		Document filterDoc = new Document();
+		filterDoc.append("id", idGroup);
+		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
 
-	public void findMessageById(String id) {
-		Document doc = new Document();
-		doc.append("_id", id);
-		MongoCursor<Document> document = CollectionGroup().find(doc).iterator();
+		ArrayList<String> listData = new ArrayList<String>();
 		try {
-			while (document.hasNext()) {
-				System.out.println(document.next().toJson());
-			}
+			listData = (ArrayList<String>) document.next().get("listUsers");
 		} finally {
 			document.close();
 		}
-
-		System.out.print("Successfull");
+		return listData;
+	}
+	
+	public void update(String idGroup, String nameGroup) {
+		CollectionGroup().updateOne(eq("_id", idGroup), combine(set("name", nameGroup)));
+		System.out.println("successful");
 	}
 
-	public void updateGroupName(String newName, String id) {
-
-		Document query = new Document().append("_id", id);
-
-		Bson updates = Updates.combine(Updates.set("name", newName));
-
-		UpdateOptions options = new UpdateOptions().upsert(true);
-		try {
-			UpdateResult result = CollectionGroup().updateOne(query, updates, options);
-			System.out.println("Modified document count: " + result.getModifiedCount());
-			System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is
-																		// performed
-		} catch (MongoException me) {
-			System.err.println("Unable to update due to an error: " + me);
-		}
+	public void deleteGroup(String idGroup) {
+		CollectionGroup().deleteMany(eq("_id", idGroup));
 	}
+
 
 }
