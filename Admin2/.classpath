@@ -7,7 +7,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="jcalendar-1.4.jar"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="D:/source/Java/KLTPChat/Admin2/mongo-java-driver-3.12.11.jar"/>
 	<classpathentry kind="lib" path="D:/source/Java/KLTPChat/Admin2/gson-2.10.jar"/>
+=======
+	<classpathentry kind="lib" path="/Users/trandungtien/Desktop/Java/Project/KLTPChat/Admin2/mongo-java-driver-3.12.11.jar"/>
+>>>>>>> 03c71e561a2208df64ed7d14db0e0181e446ab75
 	<classpathentry kind="output" path="bin"/>
 </classpath>
