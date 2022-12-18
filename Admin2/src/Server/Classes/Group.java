@@ -5,34 +5,42 @@ import java.util.List;
 import java.util.UUID;
 
 public class Group {
-	private String groupName;
-	private String groupId;
-	private ArrayList<String> listManagers;
-	private ArrayList<String> listUsers;
-	private ArrayList<String> messageId;
+	private String _id;
+	private String name;
+	private String createTime;
+	private ArrayList<String> listManagers;	//Id
+	private ArrayList<String> listUsers;	//Id
+	private ArrayList<String> messageId;	//Id
 
-	public Group(){
-		groupId  = UUID.randomUUID().toString();
-		groupName = new String();
+	public Group() {
+		_id = UUID.randomUUID().toString();
+		name = new String();
+		createTime = new String();
 		listManagers = new ArrayList<String>();
 		listUsers = new ArrayList<String>();
 		messageId = new ArrayList<String>();
 	}
-	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers, ArrayList<String> messageId) {
-		this.groupId  = UUID.randomUUID().toString();
+
+	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers,
+			ArrayList<String> messageId) {
+		this._id = UUID.randomUUID().toString();
+		this.name = groupName;
+		createTime = new String();
 		this.listManagers = managers;
 		this.listUsers = listUsers;
 		this.messageId = messageId;
 	}
+
 	public String getGroupId() {
-		return groupId;
+		return _id;
 	}
+
 	public String getGroupName() {
-		return groupName;
+		return name;
 	}
 
 	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+		this.name = groupName;
 	}
 
 	public List<String> getManagers() {
@@ -57,6 +65,10 @@ public class Group {
 
 	public void setmessageId(ArrayList<String> messageId) {
 		this.messageId = messageId;
+	}
+
+	public String getCreateTime() {
+		return createTime;
 	}
 
 }

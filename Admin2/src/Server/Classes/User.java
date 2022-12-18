@@ -1,22 +1,37 @@
 package Server.Classes;
 
 import java.util.ArrayList;
-
-import Server.Classes.InforUser;
+import java.util.UUID;
 
 public class User {
-	private InforUser infor;
+	private String _id;
+	private InforUser InforUser;
+	private String createTime;
 	private ArrayList<String> timeLogin;
-	private ArrayList<String> friend;
-	private ArrayList<String> addFriendRequest;
+	private ArrayList<String> friend;    //Username not Id
+	private ArrayList<String> addFriendRequest; //Username not Id
 
 	public User() {
-		infor = new InforUser();
+		this._id = UUID.randomUUID().toString();
+		InforUser = new InforUser();
+		createTime = new String();
+		timeLogin = new ArrayList<String>();
+		friend = new ArrayList<String>();
+		addFriendRequest = new ArrayList<String>();
 	}
 
 	public User(String username, String password, String fullname, String address, String DOB, String gender,
 			String email) {
-		infor = new InforUser(username, password, fullname, address, DOB, gender, email);
+		this._id = UUID.randomUUID().toString();
+		InforUser = new InforUser(username, password, fullname, address, DOB, gender, email);
+		createTime = new String();
+		timeLogin = new ArrayList<String>();
+		friend = new ArrayList<String>();
+		addFriendRequest = new ArrayList<String>();
+	}
+
+	public String getId() {
+		return _id;
 	}
 
 	public ArrayList<String> getTimeLogin() {
@@ -43,10 +58,6 @@ public class User {
 		return addFriendRequest;
 	}
 
-//	public void setAddFriendRequest(ArrayList<String> addFriendRequest) {
-//		this.addFriendRequest = addFriendRequest;
-//	}
-
 	public void addAddFriendRequest(String username) {
 		this.addFriendRequest.add(username);
 	}
@@ -56,6 +67,14 @@ public class User {
 	}
 
 	public InforUser getInfor() {
-		return infor;
+		return InforUser;
+	}
+
+	public void setInfor(InforUser userInf) {
+		this.InforUser = userInf;
+	}
+
+	public String getCreateTime() {
+		return createTime;
 	}
 }

@@ -1,17 +1,17 @@
-package AdminForm;
+package AdminInterfaces;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class ListFriend extends JPanel {
+public class LoginHistoryAUser extends JPanel {
 	private JTable table;
 
 	/**
 	 * Create the panel.
 	 */
-	public ListFriend() {
+	public LoginHistoryAUser() {
 		setBounds(0, 0, 430, 460);
 		setLayout(null);
 		
@@ -20,17 +20,18 @@ public class ListFriend extends JPanel {
 		add(scrollPane);
 		
 		table = new JTable();
+		table.setRowSelectionAllowed(false);
+		table.setEnabled(false);
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null},
 			},
 			new String[] {
-				"STT", "T\u00EAn b\u1EA1n b\u00E8"
+				"STT", "Th\u1EDDi gian \u0111\u0103ng nh\u1EADp"
 			}
 		));
 		table.getColumnModel().getColumn(0).setPreferredWidth(35);
 		table.getColumnModel().getColumn(0).setMaxWidth(35);
 		scrollPane.setViewportView(table);
 	}
-
 }

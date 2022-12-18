@@ -1,4 +1,4 @@
-package AdminForm;
+package AdminInterfaces;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

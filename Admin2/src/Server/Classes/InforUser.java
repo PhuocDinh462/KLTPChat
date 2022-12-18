@@ -1,41 +1,42 @@
 package Server.Classes;
 
-import java.util.UUID;
-
 public class InforUser {
-	private String id;
+
 	private String username;
 	private String password;
-	private String fullname;
+	private String fullName;
 	private String address;
-	private String DOB;
+	private String dob;
 	private String gender;
 	private String email;
 	private Boolean blocked;
+	private Boolean status;
 
 	public InforUser() {
-		this.id = UUID.randomUUID().toString();
+
 		this.username = "";
 		this.password = "";
-		this.fullname = "";
+		this.fullName = "";
 		this.address = "";
-		DOB = "";
+		this.dob = "";
 		this.gender = "";
 		this.email = "";
 		this.blocked = false;
+		this.status = false;
 	}
 
-	public InforUser(String username, String password, String fullname, String email, String address, String DOB,
+	public InforUser(String username, String password, String fullName, String email, String address, String dob,
 			String gender) {
-		this.id = UUID.randomUUID().toString();
+
 		this.username = username;
 		this.password = password;
-		this.fullname = fullname;
+		this.fullName = fullName;
 		this.address = address;
-		this.DOB = DOB;
+		this.dob = dob;
 		this.gender = gender;
 		this.email = email;
 		this.blocked = false;
+		this.status = false;
 	}
 
 	public String getUsername() {
@@ -55,11 +56,11 @@ public class InforUser {
 	}
 
 	public String getFullname() {
-		return fullname;
+		return fullName;
 	}
 
-	public void setFullname(String fullname) {
-		this.fullname = fullname;
+	public void setFullname(String fullName) {
+		this.fullName = fullName;
 	}
 
 	public String getAddress() {
@@ -79,11 +80,11 @@ public class InforUser {
 	}
 
 	public String getDOB() {
-		return DOB;
+		return dob;
 	}
 
-	public void setDOB(String dOB) {
-		DOB = dOB;
+	public void setDOB(String dob) {
+		this.dob = dob;
 	}
 
 	public String getGender() {
@@ -94,15 +95,19 @@ public class InforUser {
 		this.gender = gender;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public Boolean getBlocked() {
 		return blocked;
 	}
 
 	public void setBlocked(Boolean blocked) {
 		this.blocked = blocked;
+	}
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
 	}
 }

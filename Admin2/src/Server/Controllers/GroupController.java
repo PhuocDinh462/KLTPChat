@@ -3,20 +3,11 @@ package Server.Controllers;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import Server.Controllers.MessageController;
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
-
 import Server.Classes.Group;
 import Server.Models.GroupModel;
 
@@ -80,7 +71,7 @@ public class GroupController extends GroupModel {
 
 	public ArrayList<String> searchListMessage(String idGroup) {
 		Document filterDoc = new Document();
-		filterDoc.append("id", idGroup);
+		filterDoc.append("_id", idGroup);
 		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();

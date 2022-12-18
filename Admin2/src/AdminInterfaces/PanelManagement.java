@@ -1,9 +1,11 @@
-package AdminForm;
+package AdminInterfaces;
 
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+
+import Server.Classes.User;
 
 import javax.swing.JTable;
 
@@ -11,10 +13,10 @@ import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.DefaultCellEditor;
 
 //BUTTON RENDERER CLASS
@@ -80,13 +82,14 @@ class ButtonEditor extends DefaultCellEditor {
 		return btn;
 	}
 
-//IF BUTTON CELL VALUE CHNAGES,IF CLICKED THAT IS
+//IF BUTTON CELL VALUE CHANGES, IF CLICKED THAT IS
 	@Override
 	public Object getCellEditorValue() {
 
 		if (clicked) {
 			// SHOW US SOME MESSAGE
 			FeaturesManagement FM = new FeaturesManagement();
+
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
 		clicked = false;
@@ -112,8 +115,10 @@ public class PanelManagement extends JPanel {
 	private JTable tableUsers;
 	private DefaultTableModel userTableModel;
 	private JTextField textFindUser;
+	private Main mainInter;
 
-	public PanelManagement() {
+	public PanelManagement(Main mainInter) {
+		this.mainInter = mainInter;
 		init();
 		JScrollPane scrollPane = new JScrollPane(tableUsers);
 		scrollPane.setBounds(10, 45, 1050, 415);
@@ -129,6 +134,11 @@ public class PanelManagement extends JPanel {
 		textFindUser.setColumns(10);
 
 		JButton btnFind = new JButton("Tìm kiếm");
+		btnFind.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		btnFind.setBounds(225, 11, 90, 25);
 		add(btnFind);
 
@@ -153,15 +163,24 @@ public class PanelManagement extends JPanel {
 		setBounds(0, 0, 1070, 470);
 		String[] titleTable = new String[] { "STT", "Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính",
 				"Email", "Trạng thái", "Ngày tạo", "Lựa chọn", "Chức năng" };
-		Object[][] listItem = new Object[][] {
-				{ 1, "abl", "clong", "a135b Tran Hung Dao", "11/10/2002", "Male", "leoit811@gmail.com", "Offline",
-						"2022/09/12 00:00" },
-				{ 2, "wbl", "blong", "o135b Tran Hung Dao", "12/11/2001", "Female", "leoit811@gmail.com", "Online",
-						"2014/05/11 00:00" },
-				{ 3, "cbl", "along", "c135b Tran Hung Dao", "12/10/2023", "Male", "leoit811@gmail.com", "Offline",
-						"2014/10/02 00:00" } };
-		userTableModel = new DefaultTableModel(listItem, titleTable);
 
+		userTableModel = new DefaultTableModel() {
+			Class[] columnTypes = new Class[] { Object.class, Object.class, Object.class, Object.class, Object.class,
+					Object.class, Object.class, Object.class, Object.class, Boolean.class, Object.class };
+
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		};
+		
+		//Initialize title of the table
+		for (int i = 0; i < titleTable.length; i++) {
+			userTableModel.addColumn(titleTable[i]);
+		}
+		//Initialize row content of the table
+		setListItems();
+		
+		//Create Table
 		tableUsers = new JTable();
 		tableUsers.setRowSelectionAllowed(false);
 		tableUsers.setFillsViewportHeight(true);
@@ -184,9 +203,22 @@ public class PanelManagement extends JPanel {
 		tableUsers.getColumnModel().getColumn(8).setPreferredWidth(140);
 		tableUsers.getColumnModel().getColumn(8).setMaxWidth(170);
 		tableUsers.getColumnModel().getColumn(9).setMaxWidth(75);
-		tableUsers.getColumnModel().getColumn(10).setPreferredWidth(80);
 		tableUsers.getColumnModel().getColumn(10).setMaxWidth(75);
 		tableUsers.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
 		tableUsers.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
+	}
+
+	public void setListItems() {
+		ArrayList<User> users = mainInter.getAccounts();
+		int cnt = 0;
+		for (User e : users) {
+			String status = e.getInfor().getStatus() ? "Online" : "Offline";
+			status = e.getInfor().getBlocked() ? "Blocked" : status;
+
+			Object[] obj = { ++cnt, e.getInfor().getUsername(), e.getInfor().getFullname(), e.getInfor().getAddress(),
+					e.getInfor().getDOB(), e.getInfor().getGender(), e.getInfor().getEmail(), status,
+					e.getCreateTime() };
+			userTableModel.addRow(obj);
+		}
 	}
 }

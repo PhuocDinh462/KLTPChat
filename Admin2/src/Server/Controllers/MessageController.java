@@ -48,7 +48,7 @@ public class MessageController extends MessageModel {
 		System.out.println("successful");
 	}
 
-	public void deleteByRemoveFriend(String senderId, String receiverId) {
+	public void deleteWhenRemoveFriend(String senderId, String receiverId) {
 		Document doc = new Document();
 		doc.append("senderId", senderId);
 		doc.append("receiverId", receiverId);
@@ -57,6 +57,7 @@ public class MessageController extends MessageModel {
 		System.out.print("Successfull");
 	}
 
+	// @param id: Message
 	public void deleteByMsgSend(String id) {
 		Message msg = new Message();
 		msg = findMessageById(id);
@@ -69,6 +70,7 @@ public class MessageController extends MessageModel {
 		System.out.print("Successfull");
 	}
 
+	// @param id: Message
 	public void deleteByMsgReceive(String id) {
 		Message msg = new Message();
 		msg = findMessageById(id);
@@ -78,7 +80,7 @@ public class MessageController extends MessageModel {
 		} else {
 			CollectionMessage().updateOne(eq("_id", id), combine(set("receiverDelete", true)));
 		}
-		System.out.print("Successfull");
+		System.out.print("Successful");
 	}
 
 	public Message findMessageById(String id) {
@@ -86,7 +88,7 @@ public class MessageController extends MessageModel {
 		doc.append("_id", id);
 		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
 		Gson gson = new Gson();
-		System.out.print("Successfull");
+		System.out.print("Successful");
 		return gson.fromJson(document.next().toJson(), Message.class);
 	}
 
@@ -106,7 +108,7 @@ public class MessageController extends MessageModel {
 		} finally {
 			document.close();
 		}
-		System.out.println("Successfull");
+		System.out.println("Successful");
 		return mess;
 	}
 }

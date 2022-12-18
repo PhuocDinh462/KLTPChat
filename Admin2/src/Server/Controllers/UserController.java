@@ -10,15 +10,18 @@ import java.util.Date;
 
 import org.bson.Document;
 
+import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.MongoCursor;
 
 import Server.Classes.InforUser;
+import Server.Classes.Message;
+import Server.Classes.User;
 import Server.Models.UserModel;
 
 public class UserController extends UserModel {
-	public void create(InforUser Information) {
+	public void create(User newUser) {
 
 		ArrayList<String> listFriend = new ArrayList<String>();
 		ArrayList<String> listAddFriend = new ArrayList<String>();
@@ -27,13 +30,16 @@ public class UserController extends UserModel {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
-		Document document = new Document("_id", Information.getId()).append("username", Information.getUsername())
-				.append("password", Information.getPassword()).append("fullName", Information.getFullname())
-				.append("dob", Information.getDOB()).append("gender", Information.getGender())
-				.append("address", Information.getAddress()).append("email", Information.getEmail())
-				.append("createTime", formatter.format(date)).append("blocked", Information.getBlocked())
-				.append("listFriend", listFriend).append("listAddFriend", listAddFriend)
-				.append("historyLogin", historyLogin);
+		Document document = new Document("_id", newUser.getId())
+				.append("InforUser", new Document("username", newUser.getInfor().getUsername())
+						.append("password", newUser.getInfor().getPassword())
+						.append("fullName", newUser.getInfor().getFullname()).append("dob", newUser.getInfor().getDOB())
+						.append("gender", newUser.getInfor().getGender())
+						.append("address", newUser.getInfor().getAddress())
+						.append("email", newUser.getInfor().getEmail())
+						.append("blocked", newUser.getInfor().getBlocked()))
+				.append("createTime", formatter.format(date)).append("listFriend", listFriend)
+				.append("listAddFriend", listAddFriend).append("historyLogin", historyLogin);
 
 		CollectionUser().insertOne(document);
 
@@ -54,12 +60,50 @@ public class UserController extends UserModel {
 		System.out.print("Successfull");
 	}
 
-//	public void addPeopleRoom(String idRoom, String idUser) {
-//		ArrayList<String> document = new ArrayList<String>();
-//		document = (ArrayList<String>) CollectionUser().find().iterator().next().get("group");
-//		document.add(idRoom);
-//		CollectionUser().updateOne(eq("id", idUser), combine(set("listRoom", document)));
-//	}
+	public ArrayList<User> getAllUsers() {
+		MongoCursor<Document> document = CollectionUser().find().iterator();
+		ArrayList<User> users = new ArrayList<User>();
+		Gson gson = new Gson();
+
+		try {
+			while (document.hasNext()) {
+				Document doc = document.next();
+
+				InforUser addUserInfor = gson.fromJson(((Document) doc.get("InforUser")).toJson(), InforUser.class);
+
+				User addUser = gson.fromJson(doc.toJson(), User.class);
+				addUser.setInfor(addUserInfor);
+
+				users.add(addUser);
+			}
+		} finally {
+			document.close();
+		}
+		System.out.print("Successful");
+		return users;
+	}
+
+	public User getUserById(String id) {
+		Document doc = new Document();
+		Gson gson = new Gson();
+		doc.append("_id", id);
+		MongoCursor<Document> document = CollectionUser().find(doc).iterator();
+
+		System.out.print("Successful");
+
+		return gson.fromJson(document.next().toJson(), User.class);
+	}
+
+	public User getUserByUsername(String username) {
+		Document doc = new Document();
+		Gson gson = new Gson();
+		doc.append("InforUser", new Document("username", username));
+		MongoCursor<Document> document = CollectionUser().find(doc).iterator();
+
+		System.out.print("Successful");
+
+		return gson.fromJson(document.next().toJson(), User.class);
+	}
 
 	public void update(String id, InforUser user) {
 		CollectionUser().updateOne(eq("_id", id),
@@ -84,7 +128,7 @@ public class UserController extends UserModel {
 		System.out.println("successful");
 	}
 
-	public ArrayList<String> searchListFriend(String id) {
+	public ArrayList<String> getListFriendById(String id) {
 		Document filterDoc = new Document();
 		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
@@ -99,7 +143,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean addFriend(String id, String idRequest) {
-		ArrayList<String> listData = searchListFriend(id);
+		ArrayList<String> listData = getListFriendById(id);
 
 		if (listData.contains(idRequest))
 			return false;
@@ -113,7 +157,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean deleteFriend(String id, String idRequest) {
-		ArrayList<String> listData = searchListFriend(id);
+		ArrayList<String> listData = getListFriendById(id);
 
 		for (int i = 0; i < listData.size(); i++) {
 			if (listData.get(i).equals(idRequest)) {
@@ -128,7 +172,7 @@ public class UserController extends UserModel {
 		return false;
 	}
 
-	public ArrayList<String> searchListRequestFriend(String id) {
+	public ArrayList<String> getListRequestFriendById(String id) {
 		Document filterDoc = new Document();
 		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
@@ -143,7 +187,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean addRequestFriend(String id, String idRequest) {
-		ArrayList<String> listData = searchListFriend(id);
+		ArrayList<String> listData = getListFriendById(id);
 
 		if (listData.contains(idRequest))
 			return false;
@@ -157,7 +201,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean deleteRequestFriend(String id, String idRequest) {
-		ArrayList<String> listData = searchListFriend(id);
+		ArrayList<String> listData = getListFriendById(id);
 
 		for (int i = 0; i < listData.size(); i++) {
 			if (listData.get(i).equals(idRequest)) {
@@ -172,7 +216,7 @@ public class UserController extends UserModel {
 		return false;
 	}
 
-	public ArrayList<String> searchHistoryLogin(String id) {
+	public ArrayList<String> getHistoryLoginById(String id) {
 		Document filterDoc = new Document();
 		filterDoc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(filterDoc).iterator();
@@ -187,7 +231,7 @@ public class UserController extends UserModel {
 	}
 
 	public void addLogin(String id) {
-		ArrayList<String> listData = searchListFriend(id);
+		ArrayList<String> listData = getListFriendById(id);
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();

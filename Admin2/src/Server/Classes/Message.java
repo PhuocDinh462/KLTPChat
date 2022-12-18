@@ -8,6 +8,7 @@ public class Message {
 	private String receiverId;
 	private String content;
 	private String createTime;
+	private Boolean seen;
 	private Boolean senderDelete;
 	private Boolean receiverDelete;
 
@@ -24,6 +25,10 @@ public class Message {
 		receiverId = new String();
 		senderId = new String();
 		content = new String();
+		createTime = new String();
+		senderDelete = false;
+		receiverDelete = false;
+		seen = false;
 	}
 
 	public Message(String senderIdTemp, String receiverIdTemp, String contentTemp) {
@@ -31,6 +36,10 @@ public class Message {
 		content = contentTemp;
 		receiverId = receiverIdTemp;
 		_id = UUID.randomUUID().toString();
+		createTime = new String();
+		senderDelete = false;
+		receiverDelete = false;
+		seen = false;
 	}
 
 	public String getSenderId() {
@@ -75,5 +84,13 @@ public class Message {
 
 	public void setReceiverDelete(Boolean receiverDelete) {
 		this.receiverDelete = receiverDelete;
+	}
+
+	public Boolean getSeen() {
+		return seen;
+	}
+
+	public void setSeen(Boolean seen) {
+		this.seen = seen;
 	}
 }
