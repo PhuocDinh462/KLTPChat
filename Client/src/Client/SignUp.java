@@ -280,9 +280,11 @@ public class SignUp extends JFrame {
                      "Lỗi", JOptionPane.WARNING_MESSAGE);
         }else {
             status = SignUp.SignUpStatus.Waiting;
-            Main.sendMessage("Command_CreateAccount`" + username + "`" + password);
-//            Main.sendMessage("Command_CreateAccount`" + email + "`" + password + "`" + fullname + "`" + username + "`" +
-//            				date.toString()+ "`" + "`" + address);
+
+//            User createUser = new User(username, password, fullname, address, date.toString(),gender, email);
+//            Main.sendMessage("Command_CreateAccount`" + username + "`" + password);
+            Main.sendMessage("Command_CreateAccount`" + username + "`" + password + "`" + fullname + "`" + address + "`" +
+            				date.toString()+ "`" + gender + "`" + email);
             while (status == SignUp.SignUpStatus.Waiting) System.out.print("");
 
             if (status == SignUp.SignUpStatus.Accepted) {
