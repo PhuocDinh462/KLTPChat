@@ -91,7 +91,7 @@ public class SignIn extends JFrame {
         // Sign in Button
         JButton signInButton = new JButton("Đăng nhập");
         signInButton.addActionListener(e ->
-                signInButtonEventHandler(usernameTextField.getText(), Arrays.toString(passwordField.getPassword())));
+                signInButtonEventHandler(usernameTextField.getText(), String.valueOf((passwordField.getPassword()))));
         signInButton.setFocusPainted(false);
         getRootPane().setDefaultButton(signInButton);
         

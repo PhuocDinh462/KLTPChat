@@ -144,6 +144,12 @@ public class Main extends JFrame {
 	 * Attribute: Socket - server
 	 */
 	private static Socket server;
+	
+	/**
+	 * @Attribute: int - port
+	 *
+	 */
+	private static int port = 8080;
 
 	/**
 	 * Attribute: String[] - users List of online users
@@ -194,7 +200,7 @@ public class Main extends JFrame {
 	 */
 	private static boolean connectServer() {
 		try {
-			server = new Socket("localhost", 8080);
+			server = new Socket("localhost", port);
 			Thread receiveServerMessagesThread = new Thread(Main::receiveServerMessages);
 			receiveServerMessagesThread.start();
 			return true;

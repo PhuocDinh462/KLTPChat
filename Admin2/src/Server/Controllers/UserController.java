@@ -106,14 +106,14 @@ public class UserController extends UserModel {
 	}
 
 	public User getUserByUsername(String username) {
-		Document doc = new Document();
-		Gson gson = new Gson();
-		doc.append("InforUser", new Document("username", username));
-		MongoCursor<Document> document = CollectionUser().find(doc).iterator();
-
-		System.out.print("Successful");
-
-		return gson.fromJson(document.next().toJson(), User.class);
+		ArrayList<User> getUsers = getAllUsers();
+		String id = "";
+		for(User e: getUsers) {
+			if(e.getInfor().getUsername().equals(username))
+				id = e.getId();
+		}
+		System.out.println("Successful get User");
+		return getUserById(id);
 	}
 
 	public void update(String id, InforUser user) {

@@ -72,23 +72,41 @@ public class Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Attribute: Boolean - Waiting Client Response True if server are waiting for
+	 * @Attribute: Boolean - Waiting Client Response True if server are waiting for
 	 * client's response False if server are not waiting, or just got response
 	 */
 	private boolean waitingClientResponse;
+	
+	/**
+	 * @Attribute: int - port
+	 *
+	 */
+	private static int port = 8080;
+
 
 	/**
-	 * Attribute: HashMap - Users Online users list
+	 * @Attribute: HashMap - Users Online users list
 	 */
 	private HashMap<Socket, User> users;
 
 	/**
-	 * Attribute: HashMap - Accounts database
+	 * @Attribute: HashMap - Accounts database
 	 */
 
 //	private HashMap<String, String> accounts;
 
 	private ArrayList<User> accounts;
+	
+	/**
+	 * @Attribute: username
+	 */
+	private int getAccountIndex(String username) {
+		for (int i = 0; i < accounts.size(); i++) {
+			if(accounts.get(i).getInfor().getUsername().equals(username))
+				return i;
+		}
+		return -1;
+	}
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -111,10 +129,10 @@ public class Main extends JFrame {
 		groupController = new GroupController();
 		messageController = new MessageController();
 
-//		accounts = userController.getAllUsers();
+		accounts = userController.getAllUsers();
 
 		initUI();
-
+		waitClients();
 	}
 
 	// Setting display component content
@@ -134,17 +152,18 @@ public class Main extends JFrame {
 		waitingClientResponse = false;
 
 		try {
-			try (ServerSocket serverSocket = new ServerSocket(8080)) {
+			try (ServerSocket serverSocket = new ServerSocket(port)) {
+				System.out.println("\nServer đang chạy tại port " + port + "...");
 				while (true) {
 					Socket client = serverSocket.accept();
 					if (client == null)
 						break;
-//					Thread receiveClientMessage = new Thread(() -> receiveClientMessages(client));
-//					receiveClientMessage.start();
+					Thread receiveClientMessage = new Thread(() -> receiveClientMessages(client));
+					receiveClientMessage.start();
 				}
 			}
 		} catch (Exception exception) {
-//			addLogs("Tạo server thất bại.");
+			System.out.println("Không thể tạo server vì có một server khác đang chạy!");
 		}
 	}
 
@@ -389,18 +408,17 @@ public class Main extends JFrame {
 //	 * @param client  Socket
 //	 * @param message String
 //	 */
-//	public void sendMessage(Socket client, String message) {
-//		try {
-////			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-////			bufferedWriter.write(message);
-////			bufferedWriter.newLine();
-////			bufferedWriter.flush();
-//
-//		} catch (Exception exception) {
-//			addLogs("Client ngắt kết nối");
-//			removeUser(client);
-//		}
-//	}
+	public void sendMessage(Socket client, String message) {
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+			bufferedWriter.write(message);
+			bufferedWriter.newLine();
+			bufferedWriter.flush();
+
+		} catch (Exception exception) {
+			removeUser(client);
+		}
+	}
 
 //	/**
 //	 * Receive and Process Message from client
@@ -408,38 +426,40 @@ public class Main extends JFrame {
 //	 * @param client Socket
 //	 */
 
-//	private void receiveClientMessages(Socket client) {
-//		try {
-//			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//
-//			while (true) {
-//				String receivedMessage = bufferedReader.readLine();
-//
-//				if (receivedMessage.contains("Command_CloseConnect")) {
-//					String[] str = receivedMessage.split("`");						
-//					addLogs(client, str[1] + " đăng xuất");
-//					break;
-//
-//				} else if (receivedMessage.contains("Command_SignedIn")) {
-//					String[] str = receivedMessage.split("`");
-//					addUserLogin(client, str[1]);
-//					addLogs(client, str[1] + " đã đăng nhập");
-//
-//				} else if (receivedMessage.contains("Command_AccountVerify")) {
-//					String[] str = receivedMessage.split("`");
-//					String query = accounts.get(str[1]);
-//					if (query == null) {
-//						sendMessage(client, "Command_AccountVerifyFailed");
-//					} else if (query.equals(str[2])) {
-//						if (containUser(str[1]))
-//							sendMessage(client, "Command_AccountVerifyAlready");
-//						else
-//							sendMessage(client, "Command_AccountVerifyAccepted");
-//					} else {
-//						sendMessage(client, "Command_AccountVerifyFailed");
-//					}
-//
-//				} else if (receivedMessage.contains("Command_CreateAccount")) {
+	private void receiveClientMessages(Socket client) {
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+			while (true) {
+				String receivedMessage = bufferedReader.readLine();
+
+				if (receivedMessage.contains("Command_CloseConnect")) {
+					String[] str = receivedMessage.split("`");						
+					break;
+
+				} else if (receivedMessage.contains("Command_SignedIn")) {
+					String[] str = receivedMessage.split("`");
+					addUserLogin(client, str[1]);
+
+				}
+				
+				else if (receivedMessage.contains("Command_AccountVerify")) {
+					String[] str = receivedMessage.split("`");
+					int i = getAccountIndex(str[1]);
+					if (i == -1) {
+						sendMessage(client, "Command_AccountVerifyFailed");
+					} else if (accounts.get(i).getInfor().getPassword().equals(str[2])) {
+						if (containUser(str[1]))
+							sendMessage(client, "Command_AccountVerifyAlready");
+						else
+							sendMessage(client, "Command_AccountVerifyAccepted");
+					} else {
+						sendMessage(client, "Command_AccountVerifyFailed");
+					}
+
+				}
+				
+//					else if (receivedMessage.contains("Command_CreateAccount")) {
 //					String[] str = receivedMessage.split("`");
 //					String query = accounts.get(str[1]);
 //					if (query == null) {
@@ -450,7 +470,9 @@ public class Main extends JFrame {
 //						sendMessage(client, "Command_CreateAccountFailed");
 //					}
 //
-//				} else if (receivedMessage.contains("Command_SendMessage")) {
+//				}
+				
+//				else if (receivedMessage.contains("Command_SendMessage")) {
 //					String[] str = receivedMessage.split("`");
 //					if (containUser(str[1])) {
 //						for (Socket socket : users.keySet()) {
@@ -491,7 +513,9 @@ public class Main extends JFrame {
 //						sendMessage(client, "Command_SendMessageFailed");
 //					}
 //
-//				} else if (receivedMessage.contains("Command_AddFriendRequest")) {
+//				}
+				
+//				else if (receivedMessage.contains("Command_AddFriendRequest")) {
 //					// ******************
 //					String[] str = receivedMessage.split("`");
 //					if (str[1].equals(users.get(client).getInfor().getUsername()))
@@ -506,13 +530,7 @@ public class Main extends JFrame {
 //								if (!users.get(socket).getAddFriendRequest()
 //										.contains(users.get(client).getInfor().getUsername())) {
 //									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
-////									String str2 = "Command_NewAddFriendRequest`";								
-////									for (int i = 0; i < users.get(socket).getAddFriendRequest().size() - 1; i++)
-////										str2 += users.get(socket).getAddFriendRequest().get(i) + "`";
-////									if(users.get(socket).getAddFriendRequest().size() > 0)
-////										str2 += users.get(socket).getAddFriendRequest().get(users.get(socket).getAddFriendRequest().size() - 1);
-////									
-////									sendMessage(socket, str2);
+//									
 //									sendMessage(socket, "Command_NewAddFriendRequest`"
 //											+ users.get(client).getInfor().getUsername());
 //								}
@@ -521,57 +539,57 @@ public class Main extends JFrame {
 //					} else
 //						sendMessage(client, "Command_AddFriendRequestFailed");
 //
-//				} else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
-//					String[] str = receivedMessage.split("`");
-//					users.get(client).addFriend(str[1]);
-//					sendMessage(client, "Command_deleteAddFriendRequest`"
-//							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
-//					users.get(client).deleteAddFriendRequest(str[1]);
-//
-//					for (Socket socket : users.keySet())
-//						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-//							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-//
-//						}
-//
-//				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
-//					String[] str = receivedMessage.split("`");
-//					sendMessage(client, "Command_deleteAddFriendRequest`"
-//							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
-//					users.get(client).deleteAddFriendRequest(str[1]);
-//
-//				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
-//					String str = "Command_ShowFriendListRequest`";
-//
-//					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
-//						str += users.get(client).getFriend().get(i) + "`";
-//					if (users.get(client).getFriend().size() > 0)
-//						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
-//
-//					sendMessage(client, str);
-//
-//				} else if (receivedMessage.contains("Command_unfriend")) {
-//					String[] str = receivedMessage.split("`");
-//					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
-//					users.get(client).deleteFriend(str[1]);
-//					for (Socket socket : users.keySet())
-//						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-//							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
-//									.indexOf(users.get(client).getInfor().getUsername()));
-//							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
-//						}
-//
-//				} else {
-//					addLogs(client, receivedMessage);
 //				}
-//			}
-//
-//			bufferedReader.close();
-//			removeUser(client);
-//			client.close();
-//		} catch (Exception exception) {
-//			addLogs(client, "Client ngắt kết nối");
-//			removeUser(client);
-//		}
-//	}
+				
+				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");
+					users.get(client).addFriend(str[1]);
+					sendMessage(client, "Command_deleteAddFriendRequest`"
+							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
+					users.get(client).deleteAddFriendRequest(str[1]);
+
+					for (Socket socket : users.keySet())
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
+
+						}
+
+				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
+					String[] str = receivedMessage.split("`");
+					sendMessage(client, "Command_deleteAddFriendRequest`"
+							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
+					users.get(client).deleteAddFriendRequest(str[1]);
+
+				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
+					String str = "Command_ShowFriendListRequest`";
+
+					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
+						str += users.get(client).getFriend().get(i) + "`";
+					if (users.get(client).getFriend().size() > 0)
+						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
+
+					sendMessage(client, str);
+
+				} else if (receivedMessage.contains("Command_unfriend")) {
+					String[] str = receivedMessage.split("`");
+					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
+					users.get(client).deleteFriend(str[1]);
+					for (Socket socket : users.keySet())
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
+									.indexOf(users.get(client).getInfor().getUsername()));
+							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
+						}
+
+				} else {
+				}
+			}
+
+			bufferedReader.close();
+			removeUser(client);
+			client.close();
+		} catch (Exception exception) {
+			removeUser(client);
+		}
+	}
 }
