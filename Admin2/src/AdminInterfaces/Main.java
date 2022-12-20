@@ -40,6 +40,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -431,11 +434,15 @@ public class Main extends JFrame {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
 			while (true) {
-				String receivedMessage = bufferedReader.readLine();
+				String receivedMessage = bufferedReader.readLine() + "";
 
 				if (receivedMessage.contains("Command_CloseConnect")) {
-					String[] str = receivedMessage.split("`");						
-					break;
+					sendMessage(client, "Command_CloseConnect");
+					int i = getAccountIndex(users.get(client).getInfor().getUsername());
+					accounts.get(i).getInfor().setStatus(false);
+					bufferedReader.close();
+					removeUser(client);
+					client.close();
 
 				} else if (receivedMessage.contains("Command_SignedIn")) {
 					String[] str = receivedMessage.split("`");
@@ -451,8 +458,14 @@ public class Main extends JFrame {
 					} else if (accounts.get(i).getInfor().getPassword().equals(str[2])) {
 						if (containUser(str[1]))
 							sendMessage(client, "Command_AccountVerifyAlready");
-						else
+						else if (accounts.get(i).getInfor().getBlocked())
+							sendMessage(client, "Command_AccountVerifyBlocked");
+						else {
 							sendMessage(client, "Command_AccountVerifyAccepted");
+							accounts.get(i).getInfor().setStatus(true);
+							accounts.get(i).getTimeLogin().add(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
+							userController.addLogin(accounts.get(i).getId());
+						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
 					}
@@ -581,13 +594,9 @@ public class Main extends JFrame {
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
 						}
 
-				} else {
 				}
 			}
 
-			bufferedReader.close();
-			removeUser(client);
-			client.close();
 		} catch (Exception exception) {
 			removeUser(client);
 		}

@@ -36,11 +36,16 @@ public class SignIn extends JFrame {
         /**
          * Sign in successful
          */
-        Accepted
+        Accepted,
+        
+		/**
+		 * Account has been blocked
+		 */
+		Blocked
     }
 
     /**
-     * Attribute: SignInStatus - status
+     * @Attribute: SignInStatus - status
      * The status of Sign In Request
      */
     public static SignInStatus status;
@@ -132,11 +137,15 @@ public class SignIn extends JFrame {
             while (status == SignInStatus.Waiting) System.out.print("");
 
             if (status == SignInStatus.Accepted) {
+            	Main.username = username;
                 Main.sendMessage("Command_SignedIn`" + username);
                 new Main();
                 dispose();
             } else if (status == SignInStatus.Already) {
                 JOptionPane.showMessageDialog(this, "Tài khoản đang được đăng nhập trên thiết bị khác!",
+                        "Lỗi", JOptionPane.WARNING_MESSAGE);
+            } else if (status == SignInStatus.Blocked) {
+                JOptionPane.showMessageDialog(this, "Tài khoản đã bị khóa!",
                         "Lỗi", JOptionPane.WARNING_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng.",
