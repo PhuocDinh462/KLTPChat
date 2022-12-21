@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 
 import javax.swing.SwingConstants;
@@ -67,16 +68,16 @@ public class Main extends JFrame {
 
 	/**
 	 * @Attribute: Boolean - Waiting Client Response True if server are waiting for
-	 * client's response False if server are not waiting, or just got response
+	 *             client's response False if server are not waiting, or just got
+	 *             response
 	 */
 	private boolean waitingClientResponse;
-	
+
 	/**
 	 * @Attribute: int - port
 	 *
 	 */
 	private static int port = 8080;
-
 
 	/**
 	 * @Attribute: HashMap - Users Online users list
@@ -90,13 +91,13 @@ public class Main extends JFrame {
 //	private HashMap<String, String> accounts;
 
 	private ArrayList<User> accounts;
-	
+
 	/**
 	 * @Attribute: username
 	 */
 	private int getAccountIndex(String username) {
 		for (int i = 0; i < accounts.size(); i++) {
-			if(accounts.get(i).getInfor().getUsername().equals(username))
+			if (accounts.get(i).getInfor().getUsername().equals(username))
 				return i;
 		}
 		return -1;
@@ -106,7 +107,7 @@ public class Main extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Main frame = new Main();
+					Frame frame = new Main();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -123,9 +124,10 @@ public class Main extends JFrame {
 		groupController = new GroupController();
 		messageController = new MessageController();
 		accounts = userController.getAllUsers();
-
 		initUI();
-		waitClients();
+		Thread openServer = new Thread(() -> waitClients());
+		openServer.start();
+
 	}
 
 	// Setting display component content
@@ -189,6 +191,7 @@ public class Main extends JFrame {
 	}
 
 	private void initUI() {
+
 		setResizable(false);
 
 		// Setting content panel
@@ -330,12 +333,6 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Update history Login
-	 *
-	 *
-	 */
-
-	/**
 	 * Add online user
 	 * 
 	 * @param socket   Socket
@@ -452,7 +449,7 @@ public class Main extends JFrame {
 					addUserLogin(client, str[1]);
 
 				}
-				
+
 				else if (receivedMessage.contains("Command_AccountVerify")) {
 					String[] str = receivedMessage.split("`");
 					int i = getAccountIndex(str[1]);
@@ -466,7 +463,8 @@ public class Main extends JFrame {
 						else {
 							sendMessage(client, "Command_AccountVerifyAccepted");
 							accounts.get(i).getInfor().setStatus(true);
-							accounts.get(i).getTimeLogin().add(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
+							accounts.get(i).getTimeLogin().add(
+									DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
 							userController.addLogin(accounts.get(i).getId());
 						}
 					} else {
@@ -474,7 +472,7 @@ public class Main extends JFrame {
 					}
 
 				}
-				
+
 //					else if (receivedMessage.contains("Command_CreateAccount")) {
 //					String[] str = receivedMessage.split("`");
 //					String query = accounts.get(str[1]);
@@ -487,7 +485,7 @@ public class Main extends JFrame {
 //					}
 //
 //				}
-				
+
 //				else if (receivedMessage.contains("Command_SendMessage")) {
 //					String[] str = receivedMessage.split("`");
 //					if (containUser(str[1])) {
@@ -530,7 +528,7 @@ public class Main extends JFrame {
 //					}
 //
 //				}
-				
+
 //				else if (receivedMessage.contains("Command_AddFriendRequest")) {
 //					// ******************
 //					String[] str = receivedMessage.split("`");
@@ -556,7 +554,7 @@ public class Main extends JFrame {
 //						sendMessage(client, "Command_AddFriendRequestFailed");
 //
 //				}
-				
+
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 					users.get(client).addFriend(str[1]);
