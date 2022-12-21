@@ -8,9 +8,9 @@ public class Group {
 	private String _id;
 	private String name;
 	private String createTime;
-	private ArrayList<String> listManagers;	//Id
-	private ArrayList<String> listUsers;	//Id
-	private ArrayList<String> messageId;	//Id
+	private ArrayList<String> listManagers; // Id
+	private ArrayList<String> listUsers; // Id
+	private ArrayList<String> listMessage; // Id
 
 	public Group() {
 		_id = UUID.randomUUID().toString();
@@ -18,7 +18,16 @@ public class Group {
 		createTime = new String();
 		listManagers = new ArrayList<String>();
 		listUsers = new ArrayList<String>();
-		messageId = new ArrayList<String>();
+		listMessage = new ArrayList<String>();
+	}
+
+	public Group(Group newGroup) {
+		_id = newGroup.getGroupId();
+		name = newGroup.getGroupName();
+		createTime = newGroup.getCreateTime();
+		listManagers = newGroup.getManagers();
+		listUsers = newGroup.getlistUsers();
+		listMessage = newGroup.getmessageId();
 	}
 
 	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers,
@@ -28,7 +37,7 @@ public class Group {
 		createTime = new String();
 		this.listManagers = managers;
 		this.listUsers = listUsers;
-		this.messageId = messageId;
+		this.listMessage = messageId;
 	}
 
 	public String getGroupId() {
@@ -43,7 +52,7 @@ public class Group {
 		this.name = groupName;
 	}
 
-	public List<String> getManagers() {
+	public ArrayList<String> getManagers() {
 		return listManagers;
 	}
 
@@ -51,7 +60,7 @@ public class Group {
 		this.listManagers = managers;
 	}
 
-	public List<String> getlistUsers() {
+	public ArrayList<String> getlistUsers() {
 		return listUsers;
 	}
 
@@ -59,12 +68,12 @@ public class Group {
 		this.listUsers = listUsers;
 	}
 
-	public List<String> getmessageId() {
-		return messageId;
+	public ArrayList<String> getmessageId() {
+		return listMessage;
 	}
 
 	public void setmessageId(ArrayList<String> messageId) {
-		this.messageId = messageId;
+		this.listMessage = messageId;
 	}
 
 	public String getCreateTime() {

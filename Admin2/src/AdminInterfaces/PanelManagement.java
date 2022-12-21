@@ -6,18 +6,333 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import Server.Classes.User;
+import Server.Controllers.UserController;
 
 import javax.swing.JTable;
-
 import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
+
+public class PanelManagement extends JPanel {
+
+	private JTable tableUsers;
+	private DefaultTableModel userTableModel;
+	private JTextField textFindUser;
+	private String[] titleTable;
+
+	private UserController userController;
+
+	private ArrayList<User> accounts;
+
+	public PanelManagement() {
+		userController = new UserController();
+		accounts = userController.getAllUsers();
+
+		initTableModel();
+		JScrollPane scrollPane = new JScrollPane(tableUsers);
+		scrollPane.setBounds(10, 45, 1050, 415);
+		scrollPane.setVisible(true);
+		add(scrollPane);
+
+		JTableHeader tHeader = tableUsers.getTableHeader();
+		tHeader.setFont(new Font("Tahome", Font.BOLD, 12));
+
+		textFindUser = new JTextField();
+		textFindUser.setBounds(15, 8, 200, 30);
+		add(textFindUser);
+		textFindUser.setColumns(10);
+
+		// Filter User
+		JButton btnFind = new JButton("Tìm kiếm");
+		btnFind.setBounds(225, 11, 90, 25);
+		add(btnFind);
+
+		JButton btnAddNewAccount = new JButton("Thêm tài khoản");
+		btnAddNewAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnAddNewAccount.setBounds(930, 7, 130, 30);
+		add(btnAddNewAccount);
+
+		JButton btnDeleteAccount = new JButton("Xóa tài khoản");
+		btnDeleteAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnDeleteAccount.setBounds(800, 7, 120, 30);
+		add(btnDeleteAccount);
+
+		JButton btnBlockAccount = new JButton("Khóa tài khoản");
+		btnBlockAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnBlockAccount.setBounds(660, 7, 130, 30);
+		add(btnBlockAccount);
+
+		JComboBox comboBoxSorted = new JComboBox();
+		comboBoxSorted.setFont(new Font("Dialog", Font.PLAIN, 13));
+		comboBoxSorted.setModel(new DefaultComboBoxModel(new String[] { "Tăng dần", "Giảm dần" }));
+		comboBoxSorted.setBounds(390, 8, 90, 30);
+		add(comboBoxSorted);
+
+		JLabel lblSorted = new JLabel("Sắp xếp:");
+		lblSorted.setFont(new Font("Dialog", Font.PLAIN, 13));
+		lblSorted.setBounds(335, 8, 65, 30);
+		add(lblSorted);
+
+		JButton btnUnblocked = new JButton("Mở tài khoản");
+		btnUnblocked.setFont(new Font("Dialog", Font.PLAIN, 13));
+		btnUnblocked.setBounds(530, 7, 120, 30);
+		add(btnUnblocked);
+
+		// Button Features
+		btnFind.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] ObjButtons = { "Tên đăng nhập", " Họ Tên" };
+
+				int promptResult = JOptionPane.showOptionDialog(null, "Tìm kiếm theo?", "Xác nhận",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, ObjButtons, ObjButtons[1]);
+
+				setListItems(filterBy(textFindUser.getText().trim(), promptResult));
+			}
+		});
+
+		comboBoxSorted.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int type = comboBoxSorted.getSelectedIndex();
+				setListItems(sortUsers(type));
+			}
+		});
+
+		btnUnblocked.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteOrBlockedAccount(10);
+			}
+		});
+
+		btnBlockAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] ObjButtons = { "Yes", "No" };
+
+				int promptResult = JOptionPane.showOptionDialog(null, "Bạn có chắc chắn muốn khóa tài khoản?",
+						"Xác nhận", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons,
+						ObjButtons[1]);
+				if (promptResult == 0)
+					deleteOrBlockedAccount(1);
+			}
+		});
+
+		btnDeleteAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] ObjButtons = { "Yes", "No" };
+
+				int promptResult = JOptionPane.showOptionDialog(null, "Bạn có chắc chắn muốn xóa?", "Xác nhận",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
+				if (promptResult == 0)
+					deleteOrBlockedAccount(0);
+			}
+		});
+
+		btnAddNewAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+	}
+
+	private void initTableModel() {
+		setLayout(null);
+		setBounds(0, 0, 1070, 470);
+		titleTable = new String[] { "STT", "Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email",
+				"Trạng thái", "Ngày tạo", "Lựa chọn", "Chức năng" };
+
+		// Create Table
+		tableUsers = new JTable();
+		tableUsers.setRowSelectionAllowed(false);
+		tableUsers.setFillsViewportHeight(true);
+		tableUsers.setFont(new Font("Dialog", Font.PLAIN, 12));
+
+		// Initialize row content of the table
+		setListItems(accounts);
+		setColSpaceTable();
+	}
+
+	public void setColSpaceTable() {
+		tableUsers.getColumnModel().getColumn(0).setPreferredWidth(35);
+		tableUsers.getColumnModel().getColumn(0).setMaxWidth(35);
+		tableUsers.getColumnModel().getColumn(1).setPreferredWidth(110);
+		tableUsers.getColumnModel().getColumn(1).setMaxWidth(200);
+		tableUsers.getColumnModel().getColumn(2).setPreferredWidth(170);
+		tableUsers.getColumnModel().getColumn(2).setMaxWidth(200);
+		tableUsers.getColumnModel().getColumn(3).setPreferredWidth(150);
+		tableUsers.getColumnModel().getColumn(4).setPreferredWidth(100);
+		tableUsers.getColumnModel().getColumn(4).setMaxWidth(150);
+		tableUsers.getColumnModel().getColumn(5).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(6).setPreferredWidth(150);
+		tableUsers.getColumnModel().getColumn(6).setMaxWidth(250);
+		tableUsers.getColumnModel().getColumn(7).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(8).setPreferredWidth(140);
+		tableUsers.getColumnModel().getColumn(8).setMaxWidth(170);
+		tableUsers.getColumnModel().getColumn(9).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(10).setMaxWidth(75);
+		tableUsers.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
+		tableUsers.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
+	}
+
+	public ArrayList<User> filterBy(String name, int type) {
+		ArrayList<User> users = new ArrayList<User>(accounts);
+		ArrayList<User> filterUsers = new ArrayList<User>();
+
+		if (type == 0)
+			for (User e : users) {
+				if (e.getInfor().getUsername().toLowerCase().contains(name.toLowerCase()))
+					filterUsers.add(e);
+			}
+		else
+			for (User e : users) {
+				if (e.getInfor().getFullname().toLowerCase().contains(name.toLowerCase()))
+					filterUsers.add(e);
+			}
+		System.out.println("Filter complete!");
+		return filterUsers;
+	}
+
+	public void setListItems(ArrayList<User> users) {
+		ArrayList<User> items = new ArrayList<User>(users);
+
+		userTableModel = new DefaultTableModel() {
+			Class[] columnTypes = new Class[] { String.class, String.class, String.class, String.class, String.class,
+					String.class, String.class, String.class, String.class, Boolean.class, Object.class };
+
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		};
+
+		// Initialize title of the table
+		for (int i = 0; i < titleTable.length; i++) {
+			userTableModel.addColumn(titleTable[i]);
+		}
+
+		// Initialize row item
+		if (items.isEmpty()) {
+			if (!accounts.isEmpty()) {
+				String[] ObjButtons = { "Cancel" };
+				JOptionPane.showOptionDialog(null, "Không tìm thấy", "Xác nhận", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE, null, ObjButtons, ObjButtons[0]);
+			}
+		} else {
+			int cnt = 0;
+			for (User e : items) {
+				String status = e.getInfor().getStatus() ? "Online" : "Offline";
+				status = e.getInfor().getBlocked() ? "Blocked" : status;
+
+				Object[] obj = { ++cnt, e.getInfor().getUsername(), e.getInfor().getFullname(),
+						e.getInfor().getAddress(), e.getInfor().getDOB(), e.getInfor().getGender(),
+						e.getInfor().getEmail(), status, e.getCreateTime(), false, "...`" + e.getId() };
+				userTableModel.addRow(obj);
+			}
+		}
+
+		// Set model for table users
+		tableUsers.setModel(userTableModel);
+		setColSpaceTable();
+	}
+
+	public void deleteOrBlockedAccount(int type) {
+		int sizeRow = tableUsers.getRowCount();
+		Boolean checkChange = false;
+		String title = new String();
+
+		for (int i = 0; i < sizeRow; i++) {
+			Boolean selectedUser = (Boolean) tableUsers.getValueAt(i, 9);
+
+			selectedUser = (selectedUser == null || selectedUser == false) ? false : true;
+
+			if (selectedUser == true) {
+				String name = (String) tableUsers.getValueAt(i, 1);
+				if (type == 0) {
+					title = "Xóa thành công!";
+					userController.deleteByUsername(name);
+				} else {
+					title = type / 10 == 1 ? "Mở khóa tài khoản thành công!" : "Khóa tài khoản thành công";
+					userController.updateBlock(name, type / 10 == 1 ? false : true);
+				}
+				checkChange = true;
+			}
+		}
+
+		if (checkChange) {
+			accounts = userController.getAllUsers();
+			setListItems(accounts);
+		}
+		else title = "Không có gì để cập nhật!";
+
+		String[] ObjButtons = { "OK" };
+		JOptionPane.showOptionDialog(null, title, "Xác nhận", JOptionPane.DEFAULT_OPTION, JOptionPane.NO_OPTION, null,
+				ObjButtons, ObjButtons[0]);
+
+		System.out.println("Update status done!");
+	}
+
+	/**
+	 * Sort list users
+	 * 
+	 * @param type (0: Increasing, 1: Descending)
+	 */
+	public ArrayList<User> sortUsers(int type) {
+		ArrayList<User> users = new ArrayList<User>(accounts);
+		Collections.sort(users, new ComparatorIncreasing());
+
+		if (type == 1)
+			Collections.reverse(users);
+
+		System.out.println("Sorted complete!");
+		return users;
+	}
+
+	public static class ComparatorIncreasing implements Comparator<User> {
+		@Override
+		public int compare(User s, User t) {
+			String[] str1 = s.getInfor().getFullname().split(" ");
+			String[] str2 = t.getInfor().getFullname().split(" ");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date d1 = null;
+			Date d2 = null;
+			try {
+				d1 = (Date) formatter.parse(s.getCreateTime());
+				d2 = (Date) formatter.parse(t.getCreateTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			//Compare username
+			int checkName = 0;
+			for (int i = str1.length - 1, j = str2.length - 1; i >= 0; i--, j--) {
+				int check;
+				if (i < 0 || j < 0) {
+					checkName = i < j ? -1 : 1;
+					break;
+				}
+				check = str1[i].compareTo(str2[j]);
+				if (check != 0) {
+					checkName = check;
+					break;
+				}
+			}
+
+			return (checkName != 0) ? checkName : d1.compareTo(d2);
+		}
+	}
+}
 
 //BUTTON RENDERER CLASS
 class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -51,7 +366,7 @@ class ButtonEditor extends DefaultCellEditor {
 	 */
 	private static final long serialVersionUID = 1L;
 	protected JButton btn;
-	private String lbl;
+	private String[] textButton;
 	private Boolean clicked;
 
 	public ButtonEditor(JTextField txt) {
@@ -76,8 +391,9 @@ class ButtonEditor extends DefaultCellEditor {
 	public Component getTableCellEditorComponent(JTable table, Object obj, boolean selected, int row, int col) {
 
 		// SET TEXT TO BUTTON,SET CLICKED TO TRUE,THEN RETURN THE BTN OBJECT
-		lbl = (obj == null) ? "" : obj.toString();
-		btn.setText(lbl);
+		textButton = ((String) obj).split("`");
+
+		btn.setText(textButton[0]);
 		clicked = true;
 		return btn;
 	}
@@ -88,12 +404,12 @@ class ButtonEditor extends DefaultCellEditor {
 
 		if (clicked) {
 			// SHOW US SOME MESSAGE
-			FeaturesManagement FM = new FeaturesManagement();
+			new FeaturesManagement(textButton[1]);
 
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
 		clicked = false;
-		return new String(lbl);
+		return new String(textButton[0] + "`" + textButton[1]);
 	}
 
 	@Override
@@ -107,118 +423,5 @@ class ButtonEditor extends DefaultCellEditor {
 	@Override
 	protected void fireEditingStopped() {
 		super.fireEditingStopped();
-	}
-}
-
-public class PanelManagement extends JPanel {
-
-	private JTable tableUsers;
-	private DefaultTableModel userTableModel;
-	private JTextField textFindUser;
-	private Main mainInter;
-
-	public PanelManagement(Main mainInter) {
-		this.mainInter = mainInter;
-		init();
-		JScrollPane scrollPane = new JScrollPane(tableUsers);
-		scrollPane.setBounds(10, 45, 1050, 415);
-		scrollPane.setVisible(true);
-		add(scrollPane);
-
-		JTableHeader tHeader = tableUsers.getTableHeader();
-		tHeader.setFont(new Font("Tahome", Font.BOLD, 12));
-
-		textFindUser = new JTextField();
-		textFindUser.setBounds(15, 8, 200, 30);
-		add(textFindUser);
-		textFindUser.setColumns(10);
-
-		JButton btnFind = new JButton("Tìm kiếm");
-		btnFind.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		btnFind.setBounds(225, 11, 90, 25);
-		add(btnFind);
-
-		JButton btnAddNewAccount = new JButton("Thêm tài khoản");
-		btnAddNewAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
-		btnAddNewAccount.setBounds(930, 7, 130, 30);
-		add(btnAddNewAccount);
-
-		JButton btnDeleteAccount = new JButton("Xóa tài khoản");
-		btnDeleteAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
-		btnDeleteAccount.setBounds(800, 7, 120, 30);
-		add(btnDeleteAccount);
-
-		JButton btnBlockAccount = new JButton("Khóa tài khoản");
-		btnBlockAccount.setFont(new Font("Dialog", Font.PLAIN, 13));
-		btnBlockAccount.setBounds(660, 7, 130, 30);
-		add(btnBlockAccount);
-	}
-
-	private void init() {
-		setLayout(null);
-		setBounds(0, 0, 1070, 470);
-		String[] titleTable = new String[] { "STT", "Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính",
-				"Email", "Trạng thái", "Ngày tạo", "Lựa chọn", "Chức năng" };
-
-		userTableModel = new DefaultTableModel() {
-			Class[] columnTypes = new Class[] { Object.class, Object.class, Object.class, Object.class, Object.class,
-					Object.class, Object.class, Object.class, Object.class, Boolean.class, Object.class };
-
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		};
-		
-		//Initialize title of the table
-		for (int i = 0; i < titleTable.length; i++) {
-			userTableModel.addColumn(titleTable[i]);
-		}
-		//Initialize row content of the table
-		setListItems();
-		
-		//Create Table
-		tableUsers = new JTable();
-		tableUsers.setRowSelectionAllowed(false);
-		tableUsers.setFillsViewportHeight(true);
-		tableUsers.setFont(new Font("Dialog", Font.PLAIN, 12));
-
-		tableUsers.setModel(userTableModel);
-		tableUsers.getColumnModel().getColumn(0).setPreferredWidth(35);
-		tableUsers.getColumnModel().getColumn(0).setMaxWidth(35);
-		tableUsers.getColumnModel().getColumn(1).setPreferredWidth(120);
-		tableUsers.getColumnModel().getColumn(1).setMaxWidth(200);
-		tableUsers.getColumnModel().getColumn(2).setPreferredWidth(120);
-		tableUsers.getColumnModel().getColumn(2).setMaxWidth(200);
-		tableUsers.getColumnModel().getColumn(3).setPreferredWidth(170);
-		tableUsers.getColumnModel().getColumn(4).setPreferredWidth(100);
-		tableUsers.getColumnModel().getColumn(4).setMaxWidth(150);
-		tableUsers.getColumnModel().getColumn(5).setMaxWidth(75);
-		tableUsers.getColumnModel().getColumn(6).setPreferredWidth(150);
-		tableUsers.getColumnModel().getColumn(6).setMaxWidth(250);
-		tableUsers.getColumnModel().getColumn(7).setMaxWidth(75);
-		tableUsers.getColumnModel().getColumn(8).setPreferredWidth(140);
-		tableUsers.getColumnModel().getColumn(8).setMaxWidth(170);
-		tableUsers.getColumnModel().getColumn(9).setMaxWidth(75);
-		tableUsers.getColumnModel().getColumn(10).setMaxWidth(75);
-		tableUsers.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
-		tableUsers.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
-	}
-
-	public void setListItems() {
-		ArrayList<User> users = mainInter.getAccounts();
-		int cnt = 0;
-		for (User e : users) {
-			String status = e.getInfor().getStatus() ? "Online" : "Offline";
-			status = e.getInfor().getBlocked() ? "Blocked" : status;
-
-			Object[] obj = { ++cnt, e.getInfor().getUsername(), e.getInfor().getFullname(), e.getInfor().getAddress(),
-					e.getInfor().getDOB(), e.getInfor().getGender(), e.getInfor().getEmail(), status,
-					e.getCreateTime() };
-			userTableModel.addRow(obj);
-		}
 	}
 }

@@ -3,20 +3,16 @@ package Server.Controllers;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import org.bson.Document;
-
 import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 
 import Server.Classes.InforUser;
-import Server.Classes.Message;
 import Server.Classes.User;
 import Server.Models.UserModel;
 
@@ -46,6 +42,15 @@ public class UserController extends UserModel {
 		System.out.println("successful");
 	}
 
+	public Document getDocumentInforUser(User user) {
+		Document document = new Document("username", user.getInfor().getUsername())
+				.append("password", user.getInfor().getPassword()).append("fullName", user.getInfor().getFullname())
+				.append("dob", user.getInfor().getDOB()).append("gender", user.getInfor().getGender())
+				.append("address", user.getInfor().getAddress()).append("email", user.getInfor().getEmail())
+				.append("blocked", user.getInfor().getBlocked());
+		return document;
+	}
+
 	public void read() {
 
 		MongoCursor<Document> document = CollectionUser().find().iterator();
@@ -57,7 +62,7 @@ public class UserController extends UserModel {
 		} finally {
 			document.close();
 		}
-		System.out.print("Successfull");
+		System.out.println("Successful");
 	}
 
 	public ArrayList<User> getAllUsers() {
@@ -79,7 +84,7 @@ public class UserController extends UserModel {
 		} finally {
 			document.close();
 		}
-		System.out.print("Successful");
+		System.out.println("Successful");
 		return users;
 	}
 
@@ -89,42 +94,56 @@ public class UserController extends UserModel {
 		doc.append("_id", id);
 		MongoCursor<Document> document = CollectionUser().find(doc).iterator();
 
-		System.out.print("Successful");
+		System.out.println("Successful get User");
 
 		return gson.fromJson(document.next().toJson(), User.class);
 	}
 
 	public User getUserByUsername(String username) {
-		Document doc = new Document();
-		Gson gson = new Gson();
-		doc.append("InforUser", new Document("username", username));
-		MongoCursor<Document> document = CollectionUser().find(doc).iterator();
-
-		System.out.print("Successful");
-
-		return gson.fromJson(document.next().toJson(), User.class);
+		ArrayList<User> getUsers = getAllUsers();
+		String id = "";
+		for (User e : getUsers) {
+			if (e.getInfor().getUsername().equals(username))
+				id = e.getId();
+		}
+		System.out.println("Successful get User");
+		return getUserById(id);
 	}
 
-	public void update(String id, InforUser user) {
-		CollectionUser().updateOne(eq("_id", id),
-				combine(set("username", user.getUsername()), set("fullName", user.getFullname()),
-						set("dob", user.getDOB()), set("gender", user.getGender()), set("address", user.getAddress()),
-						set("email", user.getEmail())));
+	public void update(String username, InforUser user) {
+		User getUser = getUserByUsername(username);
+		getUser.setInfor(user);
+		Document doc = getDocumentInforUser(getUser);
+
+		CollectionUser().updateOne(eq("_id", getUser.getId()), combine(set("InforUser", doc)));
 		System.out.println("successful");
 	}
 
-	public void updatePassword(String id, String newPass) {
-		CollectionUser().updateOne(eq("_id", id), combine(set("password", newPass)));
+	public void updatePassword(String username, String newPass) {
+		User getUser = getUserByUsername(username);
+		getUser.getInfor().setPassword(newPass);
+		Document doc = getDocumentInforUser(getUser);
+
+		CollectionUser().updateOne(eq("_id", getUser.getId()), combine(set("InforUser", doc)));
 		System.out.println("successful");
 	}
 
-	public void updateBlock(String id, Boolean blocked) {
-		CollectionUser().updateOne(eq("_id", id), combine(set("blocked", blocked)));
+	public void updateBlock(String username, Boolean blocked) {
+		User getUser = getUserByUsername(username);
+		if (getUser.getInfor().getBlocked() != blocked) {
+			getUser.getInfor().setBlocked(blocked);
+			Document doc = getDocumentInforUser(getUser);
+
+			CollectionUser().updateOne(eq("_id", getUser.getId()), combine(set("InforUser", doc)),
+					new UpdateOptions().upsert(true));
+		}
 		System.out.println("successful");
 	}
 
-	public void delete(String id) {
-		CollectionUser().deleteMany(eq("_id", id));
+	public void deleteByUsername(String username) {
+		User getUser = getUserByUsername(username);
+
+		CollectionUser().deleteMany(eq("_id", getUser.getId()));
 		System.out.println("successful");
 	}
 
@@ -231,7 +250,7 @@ public class UserController extends UserModel {
 	}
 
 	public void addLogin(String id) {
-		ArrayList<String> listData = getListFriendById(id);
+		ArrayList<String> listData = getHistoryLoginById(id);
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();

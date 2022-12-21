@@ -6,12 +6,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 
-import Server.Classes.User;
 import Server.Classes.Group;
-import Server.Classes.InforUser;
-import Server.Classes.Message;
+import Server.Classes.User;
 import Server.Controllers.GroupController;
 import Server.Controllers.MessageController;
 import Server.Controllers.UserController;
@@ -28,20 +25,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.awt.Color;
 
@@ -95,7 +82,7 @@ public class Main extends JFrame {
 			public void run() {
 				try {
 					Main frame = new Main();
-					frame.setVisible(false);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -110,8 +97,16 @@ public class Main extends JFrame {
 		userController = new UserController();
 		groupController = new GroupController();
 		messageController = new MessageController();
-
-//		accounts = userController.getAllUsers();
+//		User newU = new User();
+//		newU.getInfor().setUsername("Long"); newU.getInfor().setFullname("Tran Bao Long");
+//		newU.getInfor().setUsername("Phuoc"); newU.getInfor().setFullname("Dinh Cao Hong Phuoc");
+//		newU.getInfor().setUsername("Tien"); newU.getInfor().setFullname("Tran Dung Tien");
+//		newU.getInfor().setUsername("Kien"); newU.getInfor().setFullname("Nguyen Trung Kien");
+//		userController.create(newU);
+//		Group g = new Group();
+//		g.setGroupName("klm");
+//		groupController.create(g);
+		accounts = userController.getAllUsers();
 
 		initUI();
 
@@ -188,7 +183,8 @@ public class Main extends JFrame {
 				String[] ObjButtons = { "Yes", "No" };
 				int PromptResult = JOptionPane.showOptionDialog(null, "Are you sure you want to exit?", "Confirmation",
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
-				if (PromptResult == JOptionPane.YES_OPTION) {
+
+				if (PromptResult == 0) {
 					System.exit(0);
 				}
 			}
@@ -201,7 +197,7 @@ public class Main extends JFrame {
 		setContentPane(contentPane);
 
 		// Init component
-		PanelManage = new PanelManagement(this);
+		PanelManage = new PanelManagement();
 		PanelLoginHis = new LoginHistory();
 		PanelGroupChat = new GroupChat();
 
@@ -380,6 +376,18 @@ public class Main extends JFrame {
 
 	public void setAccounts(ArrayList<User> accounts) {
 		this.accounts = accounts;
+	}
+
+	public GroupController getGroupController() {
+		return groupController;
+	}
+
+	public MessageController getMessageController() {
+		return messageController;
+	}
+
+	public UserController getUserController() {
+		return userController;
 	}
 
 //

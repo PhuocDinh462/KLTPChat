@@ -7,8 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import org.bson.Document;
+
+import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import Server.Classes.Group;
+import Server.Classes.InforUser;
+import Server.Classes.Message;
+import Server.Classes.User;
 import Server.Models.GroupModel;
 
 public class GroupController extends GroupModel {
@@ -34,6 +39,24 @@ public class GroupController extends GroupModel {
 			document.close();
 		}
 		System.out.println("successful");
+	}
+
+	public ArrayList<Group> getAllGroups() {
+		MongoCursor<Document> document = CollectionGroup().find().iterator();
+		ArrayList<Group> groups = new ArrayList<Group>();
+		Gson gson = new Gson();
+
+		try {
+			while (document.hasNext()) {
+				Document doc = document.next();
+				Group addGroup = gson.fromJson(doc.toJson(), Group.class);
+				groups.add(addGroup);
+			}
+		} finally {
+			document.close();
+		}
+		System.out.println("Successful");
+		return groups;
 	}
 
 	public Boolean addPeopleGroup(String idUser, String idGroup) {

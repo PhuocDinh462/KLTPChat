@@ -7,17 +7,17 @@ public class User {
 	private String _id;
 	private InforUser InforUser;
 	private String createTime;
-	private ArrayList<String> timeLogin;
-	private ArrayList<String> friend;    //Username not Id
-	private ArrayList<String> addFriendRequest; //Username not Id
+	private ArrayList<String> historyLogin;
+	private ArrayList<String> listFriend; // Username not Id
+	private ArrayList<String> listAddFriend; // Username not Id
 
 	public User() {
 		this._id = UUID.randomUUID().toString();
 		InforUser = new InforUser();
 		createTime = new String();
-		timeLogin = new ArrayList<String>();
-		friend = new ArrayList<String>();
-		addFriendRequest = new ArrayList<String>();
+		historyLogin = new ArrayList<String>();
+		listFriend = new ArrayList<String>();
+		listAddFriend = new ArrayList<String>();
 	}
 
 	public User(String username, String password, String fullname, String address, String DOB, String gender,
@@ -25,9 +25,9 @@ public class User {
 		this._id = UUID.randomUUID().toString();
 		InforUser = new InforUser(username, password, fullname, address, DOB, gender, email);
 		createTime = new String();
-		timeLogin = new ArrayList<String>();
-		friend = new ArrayList<String>();
-		addFriendRequest = new ArrayList<String>();
+		historyLogin = new ArrayList<String>();
+		listFriend = new ArrayList<String>();
+		listAddFriend = new ArrayList<String>();
 	}
 
 	public String getId() {
@@ -35,35 +35,35 @@ public class User {
 	}
 
 	public ArrayList<String> getTimeLogin() {
-		return timeLogin;
+		return historyLogin;
 	}
 
 	public ArrayList<String> getFriend() {
-		return friend;
+		return listFriend;
 	}
 
 	public void setFriend(ArrayList<String> friend) {
-		this.friend = friend;
+		this.listFriend = friend;
 	}
 
 	public void addFriend(String username) {
-		this.friend.add(username);
+		this.listFriend.add(username);
 	}
 
 	public void deleteFriend(String username) {
-		this.friend.remove(this.friend.indexOf(username));
+		this.listFriend.remove(this.listFriend.indexOf(username));
 	}
 
 	public ArrayList<String> getAddFriendRequest() {
-		return addFriendRequest;
+		return listAddFriend;
 	}
 
 	public void addAddFriendRequest(String username) {
-		this.addFriendRequest.add(username);
+		this.listAddFriend.add(username);
 	}
 
 	public void deleteAddFriendRequest(String username) {
-		this.addFriendRequest.remove(this.addFriendRequest.indexOf(username));
+		this.listAddFriend.remove(this.listAddFriend.indexOf(username));
 	}
 
 	public InforUser getInfor() {

@@ -17,48 +17,38 @@ import Server.Classes.User;
 public class LoginHistory extends JPanel {
 	private JTable tableLogin;
 	private DefaultTableModel logsTableModel;
-	Vector<Vector<String>> rowData = new Vector<Vector<String>>();
-	Vector<String> titleTable = new Vector<String>();
+	private int number = 0;
 
-	// Sign in => save to list
-	// Sign out => remove from list
 	public LoginHistory() {
-		init();
-	}
-	
-	public LoginHistory(ArrayList<User> data) {
-		initRowData(data);
-		init();
-	}
-	
-	private void init() {
 		setLayout(null);
 		setBounds(0, 0, 1025, 470);
 		setVisible(true);
 		tableLogin = new JTable();
 		tableLogin.setEnabled(false);
 
-		titleTable.add("STT");
-		titleTable.add("Tên đăng nhập");
-		titleTable.add("Họ tên");
-		titleTable.add("Thời gian đăng nhập");
+		String[] titleTable = { "STT", "Tên đăng nhập", "Họ tên", "Thời gian đăng nhập" };
 
-		Vector<String> obj1 = new Vector<String>();
-		obj1.add("1");
-		obj1.add("1");
-		obj1.add("1");
-		obj1.add("1");
-
-		rowData.add(obj1);
-		logsTableModel = new DefaultTableModel(rowData, titleTable) {
-			Class[] columnTypes = new Class[] { String.class, String.class, String.class, String.class };
-
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		};
+		logsTableModel = new DefaultTableModel();
+		for (int i = 0; i < titleTable.length; i++) {
+			logsTableModel.addColumn(titleTable[i]);
+		}
 
 		tableLogin.setModel(logsTableModel);
+		setColSpaceTable();
+
+		JScrollPane scrollPane = new JScrollPane(tableLogin);
+		scrollPane.setBounds(10, 10, 1005, 450);
+		add(scrollPane);
+	}
+
+	public void addToListUser(User newUser) {
+		int numberOfLogin = newUser.getTimeLogin().size();
+		Object[] newObj = { ++number, newUser.getInfor().getUsername(), newUser.getInfor().getFullname(),
+				newUser.getTimeLogin().get(numberOfLogin - 1) };
+		logsTableModel.addRow(newObj);
+	}
+
+	public void setColSpaceTable() {
 		tableLogin.getColumnModel().getColumn(0).setPreferredWidth(35);
 		tableLogin.getColumnModel().getColumn(0).setMinWidth(35);
 		tableLogin.getColumnModel().getColumn(0).setMaxWidth(35);
@@ -71,68 +61,45 @@ public class LoginHistory extends JPanel {
 		tableLogin.getColumnModel().getColumn(3).setPreferredWidth(120);
 		tableLogin.getColumnModel().getColumn(3).setMinWidth(120);
 		tableLogin.setFont(new Font("Dialog", Font.PLAIN, 12));
-
-		JScrollPane scrollPane = new JScrollPane(tableLogin);
-		scrollPane.setBounds(10, 10, 1005, 450);
-		add(scrollPane);
 	}
 
-	private void addToListUser(User newUser) {
-		int numberOfLogin = newUser.getTimeLogin().size();
-
-		// init new status login for user
-		Vector<String> newData = new Vector<String>();
-		newData.add("1");
-		newData.add(newUser.getTimeLogin().get(numberOfLogin - 1));
-		newData.add(newUser.getInfor().getUsername());
-		newData.add(newUser.getInfor().getFullname());
-
-		// Add to table to display
-		rowData.insertElementAt(newData, 0);
-
-		// Reset No.
-		for (int i = 0; i < rowData.size(); i++) {
-			rowData.get(i).set(0, String.valueOf(i + 1));
-		}
-	}
-
-	private void initRowData(ArrayList<User> data) {
-		for (int i = 0; i < data.size(); i++) {
-			User userLogin = data.get(i);
-			int k = 0;
-
-			for (int j = 0; j < userLogin.getTimeLogin().size(); j++) {
-				for (; k < rowData.size(); k++) {
-					try {
-						//Real-time check
-						if (!compareDates(rowData.get(k).get(1), userLogin.getTimeLogin().get(j)) || k == rowData.size() - 1) {
-							Vector<String> newData = new Vector<String>();
-							newData.add(String.valueOf(k + 1));
-							newData.add(userLogin.getTimeLogin().get(j));
-							newData.add(userLogin.getInfor().getUsername());
-							newData.add(userLogin.getInfor().getFullname());
-							
-							rowData.insertElementAt(newData, k++);
-							break;
-						}
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
-
-			}
-		}
-	}
-
-	private boolean compareDates(String psDate1, String psDate2) throws ParseException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		Date date1 = dateFormat.parse(psDate1);
-		Date date2 = dateFormat.parse(psDate2);
-
-		if (date2.after(date1)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	private void initRowData(ArrayList<User> data) {
+//		for (int i = 0; i < data.size(); i++) {
+//			User userLogin = data.get(i);
+//			int k = 0;
+//
+//			for (int j = 0; j < userLogin.getTimeLogin().size(); j++) {
+//				for (; k < rowData.size(); k++) {
+//					try {
+//						//Real-time check
+//						if (!compareDates(rowData.get(k).get(1), userLogin.getTimeLogin().get(j)) || k == rowData.size() - 1) {
+//							Vector<String> newData = new Vector<String>();
+//							newData.add(String.valueOf(k + 1));
+//							newData.add(userLogin.getTimeLogin().get(j));
+//							newData.add(userLogin.getInfor().getUsername());
+//							newData.add(userLogin.getInfor().getFullname());
+//							
+//							rowData.insertElementAt(newData, k++);
+//							break;
+//						}
+//					} catch (ParseException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//
+//			}
+//		}
+//	}
+//
+//	private boolean compareDates(String psDate1, String psDate2) throws ParseException {
+//		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+//		Date date1 = dateFormat.parse(psDate1);
+//		Date date2 = dateFormat.parse(psDate2);
+//
+//		if (date2.after(date1)) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 }

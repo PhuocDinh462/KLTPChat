@@ -2,55 +2,93 @@ package AdminInterfaces;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import Server.Classes.User;
+import Server.Controllers.UserController;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class UpdatePassword extends JPanel {
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField textOldPass;
+	private JTextField textNewPass;
+	private JTextField textRePass;
+
+	private UserController userController;
+	private User user;
 
 	/**
 	 * Create the panel.
 	 */
-	public UpdatePassword() {
+	public UpdatePassword(User user) {
+		userController = new UserController();
+		this.user = user;
+
 		setBounds(0, 0, 430, 460);
 		setLayout(null);
-		
-		textField = new JTextField();
-		textField.setBounds(170, 75, 220, 25);
-		add(textField);
-		textField.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("Mật khẩu cũ");
-		lblNewLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNewLabel.setBounds(40, 75, 85, 25);
-		add(lblNewLabel);
-		
-		JLabel lblMtKhuMi = new JLabel("Mật khẩu mới");
-		lblMtKhuMi.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblMtKhuMi.setBounds(40, 105, 90, 25);
-		add(lblMtKhuMi);
-		
-		JLabel lblNhpLiMt = new JLabel("Nhập lại mật khẩu");
-		lblNhpLiMt.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNhpLiMt.setBounds(40, 135, 120, 25);
-		add(lblNhpLiMt);
-		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(170, 105, 220, 25);
-		add(textField_1);
-		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(170, 135, 220, 25);
-		add(textField_2);
-		
-		JButton btnNewButton = new JButton("Cập nhật");
-		btnNewButton.setFont(new Font("Dialog", Font.PLAIN, 14));
-		btnNewButton.setBounds(170, 170, 100, 25);
-		add(btnNewButton);
+
+		JLabel lblOldPass = new JLabel("Mật khẩu cũ");
+		lblOldPass.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblOldPass.setBounds(40, 75, 85, 25);
+		add(lblOldPass);
+
+		JLabel lblNewPass = new JLabel("Mật khẩu mới");
+		lblNewPass.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblNewPass.setBounds(40, 105, 90, 25);
+		add(lblNewPass);
+
+		JLabel lblRePass = new JLabel("Nhập lại mật khẩu");
+		lblRePass.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRePass.setBounds(40, 135, 120, 25);
+		add(lblRePass);
+
+		textOldPass = new JTextField();
+		textOldPass.setBounds(170, 75, 220, 25);
+		add(textOldPass);
+		textOldPass.setColumns(10);
+
+		textNewPass = new JTextField();
+		textNewPass.setColumns(10);
+		textNewPass.setBounds(170, 105, 220, 25);
+		add(textNewPass);
+
+		textRePass = new JTextField();
+		textRePass.setColumns(10);
+		textRePass.setBounds(170, 135, 220, 25);
+		add(textRePass);
+
+		JButton btnUpdate = new JButton("Cập nhật");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String title = new String();
+				String error = "Error";
+				if (!textOldPass.getText().equals(user.getInfor().getPassword())) {
+					title = "Mật khẩu cũ của bạn không đúng!";
+				} else if (textNewPass.getText().equals("")) {
+					title = "Bạn chưa nhập mật khẩu mới!";
+				} else if (!textNewPass.getText().equals(textRePass.getText())) {
+					title = "Mật khẩu không trùng khớp!";
+				} else {
+					title = "Cập nhật mật khẩu thành công!";
+					error = "";
+					user.getInfor().setPassword(textNewPass.getText());
+					userController.updatePassword(user.getInfor().getUsername(), textNewPass.getText());
+				}
+
+				String[] ObjButtons = { "OK" };
+
+				JOptionPane.showOptionDialog(null, title, error != "" ? error : "Xác nhận", JOptionPane.DEFAULT_OPTION,
+						error != "" ? JOptionPane.ERROR_MESSAGE : JOptionPane.NO_OPTION, null, ObjButtons,
+						ObjButtons[0]);
+			}
+		});
+		btnUpdate.setFont(new Font("Dialog", Font.PLAIN, 14));
+		btnUpdate.setBounds(170, 170, 100, 25);
+		add(btnUpdate);
 	}
 }
