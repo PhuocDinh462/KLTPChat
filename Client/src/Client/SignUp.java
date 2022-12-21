@@ -284,7 +284,7 @@ public class SignUp extends JFrame {
 //            User createUser = new User(username, password, fullname, address, date.toString(),gender, email);
 //            Main.sendMessage("Command_CreateAccount`" + username + "`" + password);
             Main.sendMessage("Command_CreateAccount`" + username + "`" + password + "`" + fullname + "`" + address + "`" +
-            				date.toString()+ "`" + gender + "`" + email);
+    				date.toString()+ "`" + gender + "`" + email);
             while (status == SignUp.SignUpStatus.Waiting) System.out.print("");
 
             if (status == SignUp.SignUpStatus.Accepted) {
