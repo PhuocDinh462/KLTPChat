@@ -102,6 +102,14 @@ public class Main extends JFrame {
 		}
 		return -1;
 	}
+	
+	private boolean containUsername(String username) {
+		for (User user : accounts) {
+			if(user.getInfor().getUsername().equals(username))
+				return true;
+		}
+		return false;
+	}
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -448,6 +456,13 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					addUserLogin(client, str[1]);
 
+					// Gửi danh sách lời mời kết bạn cho client:
+					String str2 = "Command_NewAddFriendRequest`";
+					ArrayList<String> listData = users.get(client).getListAddFriend();
+					for (String string : listData) {
+						str2 += string + "`";
+					}
+					sendMessage(client, str2);
 				}
 
 				else if (receivedMessage.contains("Command_AccountVerify")) {
@@ -529,73 +544,100 @@ public class Main extends JFrame {
 //
 //				}
 
-//				else if (receivedMessage.contains("Command_AddFriendRequest")) {
-//					// ******************
-//					String[] str = receivedMessage.split("`");
-//					if (str[1].equals(users.get(client).getInfor().getUsername()))
-//						sendMessage(client, "Command_AddFriendRequestSelf");
-//
-//					else if (users.get(client).getFriend().contains(str[1]))
-//						sendMessage(client, "Command_AddFriendRequestIsFriend");
-//
-//					else if (accounts.containsKey(str[1])) {
-//						for (Socket socket : users.keySet())
-//							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-//								if (!users.get(socket).getAddFriendRequest()
-//										.contains(users.get(client).getInfor().getUsername())) {
-//									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
-//									
-//									sendMessage(socket, "Command_NewAddFriendRequest`"
-//											+ users.get(client).getInfor().getUsername());
-//								}
-//							}
-//						sendMessage(client, "Command_AddFriendRequestAccepted");
-//					} else
-//						sendMessage(client, "Command_AddFriendRequestFailed");
-//
-//				}
+				else if (receivedMessage.contains("Command_AddFriendRequest")) {
+					// ******************
+					String[] str = receivedMessage.split("`");
+					if (str[1].equals(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_AddFriendRequestSelf");
 
+					else if (users.get(client).getFriend().contains(str[1]))
+						sendMessage(client, "Command_AddFriendRequestIsFriend");
+
+					else if (containUsername(str[1])) {
+						// Gửi lời mời kết bạn đến socket của client nếu người đó đang onl:
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+								if (!users.get(socket).getListAddFriend()
+										.contains(users.get(client).getInfor().getUsername())) {
+									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
+									
+									sendMessage(socket, "Command_NewAddFriendRequest`"
+											+ users.get(client).getInfor().getUsername());
+								}
+							}
+						
+						// Lưu vào account:
+						accounts.get(getAccountIndex(str[1])).addAddFriendRequest(users.get(client).getInfor().getUsername());
+						
+						// Lưu vào db:
+						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(), users.get(client).getInfor().getUsername());
+						
+						sendMessage(client, "Command_AddFriendRequestAccepted");
+					} else
+						sendMessage(client, "Command_AddFriendRequestFailed");
+
+				}
+				
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 					users.get(client).addFriend(str[1]);
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
-					users.get(client).deleteAddFriendRequest(str[1]);
 
+					// Thêm bạn:
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							// Thêm bạn vào users:
 							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-
+							users.get(client).addFriend(users.get(socket).getInfor().getUsername());
+							
+							// Thêm bạn vào accounts:
+							accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
+							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
+							
+							// Thêm bạn vào db:
+							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
+							userController.addFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
 						}
-
-				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
-					String[] str = receivedMessage.split("`");
+					
+					// Xóa lời mời kết bạn trong users:
 					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
+							+ users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-
-				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
-					String str = "Command_ShowFriendListRequest`";
-
-					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
-						str += users.get(client).getFriend().get(i) + "`";
-					if (users.get(client).getFriend().size() > 0)
-						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
-
-					sendMessage(client, str);
-
-				} else if (receivedMessage.contains("Command_unfriend")) {
-					String[] str = receivedMessage.split("`");
-					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
-					users.get(client).deleteFriend(str[1]);
-					for (Socket socket : users.keySet())
-						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
-									.indexOf(users.get(client).getInfor().getUsername()));
-							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
-						}
-
+					
+					// Xóa lời mời kết bạn trong accounts:
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
+					
+					// Xóa lời mời kết bạn trong db:
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
 				}
+				
+//				else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
+//					String[] str = receivedMessage.split("`");
+//					sendMessage(client, "Command_deleteAddFriendRequest`"
+//							+ users.get(client).getAddFriendRequest().indexOf(str[1]));
+//					users.get(client).deleteAddFriendRequest(str[1]);
+//
+//				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
+//					String str = "Command_ShowFriendListRequest`";
+//
+//					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
+//						str += users.get(client).getFriend().get(i) + "`";
+//					if (users.get(client).getFriend().size() > 0)
+//						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
+//
+//					sendMessage(client, str);
+//
+//				} else if (receivedMessage.contains("Command_unfriend")) {
+//					String[] str = receivedMessage.split("`");
+//					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
+//					users.get(client).deleteFriend(str[1]);
+//					for (Socket socket : users.keySet())
+//						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+//							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
+//									.indexOf(users.get(client).getInfor().getUsername()));
+//							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
+//						}
+//
+//				}
 			}
 
 		} catch (Exception exception) {

@@ -659,8 +659,8 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					if (str.length > 1) {
-						Object[] rowObjects = { str[1], "Command_AcceptAddFriendRequest`" + str[1], "Command_deleteAddFriendRequest`" + str[1] };
+					for(int i = 1; i < str.length; i++) {
+						Object[] rowObjects = { str[i], "Command_AcceptAddFriendRequest`" + str[i], "Command_deleteAddFriendRequest`" + str[i] };
 						addFriendRequestTableModel.addRow(rowObjects);
 					}
 

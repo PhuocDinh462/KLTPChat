@@ -54,7 +54,7 @@ public class User {
 		this.listFriend.remove(this.listFriend.indexOf(username));
 	}
 
-	public ArrayList<String> getAddFriendRequest() {
+	public ArrayList<String> getListAddFriend() {
 		return listAddFriend;
 	}
 
