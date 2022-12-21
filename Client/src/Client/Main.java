@@ -17,6 +17,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.border.MatteBorder;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 //BUTTON RENDERER CLASS
 class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -144,6 +146,18 @@ public class Main extends JFrame {
 	 * Attribute: Socket - server
 	 */
 	private static Socket server;
+	
+	/**
+	 * @Attribute: int - port
+	 *
+	 */
+	private static int port = 8080;
+	
+    /**
+     * @Attribute: String
+     * username of account
+     */
+    public static String username;
 
 	/**
 	 * Attribute: String[] - users List of online users
@@ -194,7 +208,7 @@ public class Main extends JFrame {
 	 */
 	private static boolean connectServer() {
 		try {
-			server = new Socket("localhost", 8080);
+			server = new Socket("localhost", port);
 			Thread receiveServerMessagesThread = new Thread(Main::receiveServerMessages);
 			receiveServerMessagesThread.start();
 			return true;
@@ -207,10 +221,16 @@ public class Main extends JFrame {
 	 * Default constructor
 	 */
 	public Main() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				sendMessage("Command_CloseConnect");
+			}
+		});
 		addComponents();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("KLTP Chat App");
+		setTitle("KLTP Chat App - " + username);
 		setVisible(true);
 		setResizable(false);
 	}
@@ -565,10 +585,11 @@ public class Main extends JFrame {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
 
 			while (true) {
-				String receivedMessage = bufferedReader.readLine();
+				String receivedMessage = bufferedReader.readLine() + "";
 
 				if (receivedMessage.contains("Command_CloseConnect")) {
-					System.out.println("Máy chủ không hoạt động!");
+					bufferedReader.close();
+					server.close();
 					break;
 
 				} else if (receivedMessage.contains("Command_UserList")) {
@@ -585,6 +606,9 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_AccountVerifyFailed")) {
 					SignIn.status = SignIn.SignInStatus.Failed;
+
+				} else if (receivedMessage.contains("Command_AccountVerifyBlocked")) {
+					SignIn.status = SignIn.SignInStatus.Blocked;
 
 				} else if (receivedMessage.contains("Command_CreateAccountAccepted")) {
 					SignUp.status = SignUp.SignUpStatus.Accepted;
@@ -657,8 +681,6 @@ public class Main extends JFrame {
 				}
 			}
 
-			bufferedReader.close();
-			server.close();
 		} catch (Exception exception) {
 			System.out.println("Lỗi hệ thống: " + exception);
 		}
