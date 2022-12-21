@@ -472,18 +472,18 @@ public class Main extends JFrame {
 
 				}
 				
-//					else if (receivedMessage.contains("Command_CreateAccount")) {
-//					String[] str = receivedMessage.split("`");
-//					String query = accounts.get(str[1]);
-//					if (query == null) {
-//						accounts.put(str[1], str[2]);
-//						saveAccounts();
-//						sendMessage(client, "Command_CreateAccountAccepted");
-//					} else {
-//						sendMessage(client, "Command_CreateAccountFailed");
-//					}
-//
-//				}
+					else if (receivedMessage.contains("Command_CreateAccount")) {
+						String[] str = receivedMessage.split("`");
+						
+						User createUser = new User(str[1], str[2], str[3], str[4], str[5],str[6], str[7]);
+						Boolean created = userController.create(createUser);
+						if (created) {
+							sendMessage(client, "Command_CreateAccountAccepted");
+						} else {
+							sendMessage(client, "Command_CreateAccountFailed");
+						}
+
+				}
 				
 //				else if (receivedMessage.contains("Command_SendMessage")) {
 //					String[] str = receivedMessage.split("`");

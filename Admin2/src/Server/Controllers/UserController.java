@@ -17,8 +17,17 @@ import Server.Classes.User;
 import Server.Models.UserModel;
 
 public class UserController extends UserModel {
-	public void create(User newUser) {
-
+	public Boolean create(User newUser) {
+		
+		ArrayList<User> users = getAllUsers();
+		
+		for (int i = 0; i < users.size(); i++) {
+			if (users.get(i).getInfor().getUsername().equals(newUser.getInfor().getUsername())|| 
+					users.get(i).getInfor().getEmail().equals(newUser.getInfor().getEmail())) {
+				System.out.println("Already have username or email in database");
+				return false;
+			}
+		}
 		ArrayList<String> listFriend = new ArrayList<String>();
 		ArrayList<String> listAddFriend = new ArrayList<String>();
 		ArrayList<String> historyLogin = new ArrayList<String>();
@@ -40,6 +49,7 @@ public class UserController extends UserModel {
 		CollectionUser().insertOne(document);
 
 		System.out.println("successful");
+		return true;
 	}
 
 	public Document getDocumentInforUser(User user) {

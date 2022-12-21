@@ -1,5 +1,6 @@
 package Server.Classes;
 
+
 public class InforUser {
 
 	private String username;
@@ -25,14 +26,14 @@ public class InforUser {
 		this.status = false;
 	}
 
-	public InforUser(String username, String password, String fullName, String email, String address, String dob,
-			String gender) {
+	public InforUser(String username, String password, String fullname, String address, String DOB, String gender,
+			String email) {
 
 		this.username = username;
 		this.password = password;
-		this.fullName = fullName;
+		this.fullName = fullname;
 		this.address = address;
-		this.dob = dob;
+		this.dob = DOB;
 		this.gender = gender;
 		this.email = email;
 		this.blocked = false;
