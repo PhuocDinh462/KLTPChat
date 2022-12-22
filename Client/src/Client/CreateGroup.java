@@ -3,18 +3,47 @@ package Client;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Client.SignUp.SignUpStatus;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.util.Date;
+
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import java.awt.Component;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.Color;
 
 public class CreateGroup extends JFrame {
+	
+	public enum CreateGroupStatus {
+        /**
+         * Waiting for response
+         */
+        Waiting,
+
+        /**
+         * Failed
+         */
+        Failed,
+
+        /**
+         * Create successful
+         */
+        Accepted
+    }
+
+    /**
+     * Attribute: SignUpStatus - status
+     * The status of Sign Up Request
+     */
+    public static CreateGroupStatus status;
 
 	/**
 	 * 
@@ -96,5 +125,29 @@ public class CreateGroup extends JFrame {
 		separator_1.setForeground(Color.LIGHT_GRAY);
 		separator_1.setBounds(170, 124, 3, 228);
 		contentPane.add(separator_1);
+		
+		createGroupBtn.addActionListener(e -> createGroupButtonEventHandler(groupNameTextField.getText()));
 	}
+	
+	void createGroupButtonEventHandler(String groupName) {
+ 
+    	if (groupName.isEmpty()){
+        	JOptionPane.showMessageDialog(this, "Bạn chưa nhập tên nhóm!",
+                  "Lỗi", JOptionPane.WARNING_MESSAGE);
+        }
+    	else {
+            status = CreateGroup.CreateGroupStatus.Waiting;
+
+            Main.sendMessage("Command_CreateNewGroup`" + groupName );
+            while (status == CreateGroup.CreateGroupStatus.Waiting) System.out.print("");
+
+            if (status == CreateGroup.CreateGroupStatus.Accepted) {
+            	 JOptionPane.showMessageDialog(this, "Tạo thành công!",
+                         "Thành công", JOptionPane.OK_OPTION);
+            } else {
+                JOptionPane.showMessageDialog(this, "Tạo thất bại!",
+                        "Lỗi", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
 }

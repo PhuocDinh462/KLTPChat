@@ -102,10 +102,10 @@ public class Main extends JFrame {
 		}
 		return -1;
 	}
-	
+
 	private boolean containUsername(String username) {
 		for (User user : accounts) {
-			if(user.getInfor().getUsername().equals(username))
+			if (user.getInfor().getUsername().equals(username))
 				return true;
 		}
 		return false;
@@ -487,17 +487,17 @@ public class Main extends JFrame {
 					}
 
 				}
-				
-					else if (receivedMessage.contains("Command_CreateAccount")) {
-						String[] str = receivedMessage.split("`");
-						
-						User createUser = new User(str[1], str[2], str[3], str[4], str[5],str[6], str[7]);
-						Boolean created = userController.create(createUser);
-						if (created) {
-							sendMessage(client, "Command_CreateAccountAccepted");
-						} else {
-							sendMessage(client, "Command_CreateAccountFailed");
-						}
+
+				else if (receivedMessage.contains("Command_CreateAccount")) {
+					String[] str = receivedMessage.split("`");
+
+					User createUser = new User(str[1], str[2], str[3], str[4], str[5], str[6], str[7]);
+					Boolean created = userController.create(createUser);
+					if (created) {
+						sendMessage(client, "Command_CreateAccountAccepted");
+					} else {
+						sendMessage(client, "Command_CreateAccountFailed");
+					}
 
 				}
 //				else if (receivedMessage.contains("Command_SendMessage")) {
@@ -559,24 +559,26 @@ public class Main extends JFrame {
 								if (!users.get(socket).getListAddFriend()
 										.contains(users.get(client).getInfor().getUsername())) {
 									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
-									
+
 									sendMessage(socket, "Command_NewAddFriendRequest`"
 											+ users.get(client).getInfor().getUsername());
 								}
 							}
-						
+
 						// Lưu vào account:
-						accounts.get(getAccountIndex(str[1])).addAddFriendRequest(users.get(client).getInfor().getUsername());
-						
+						accounts.get(getAccountIndex(str[1]))
+								.addAddFriendRequest(users.get(client).getInfor().getUsername());
+
 						// Lưu vào db:
-						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(), users.get(client).getInfor().getUsername());
-						
+						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(),
+								users.get(client).getInfor().getUsername());
+
 						sendMessage(client, "Command_AddFriendRequestAccepted");
 					} else
 						sendMessage(client, "Command_AddFriendRequestFailed");
 
 				}
-				
+
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 
@@ -584,49 +586,58 @@ public class Main extends JFrame {
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Thêm bạn vào users:
-							if(!users.get(socket).getListAddFriend().contains(users.get(client).getInfor().getUsername()))
+							if (!users.get(socket).getListAddFriend()
+									.contains(users.get(client).getInfor().getUsername()))
 								users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-							if(!users.get(client).getListAddFriend().contains(users.get(socket).getInfor().getUsername()))
+							if (!users.get(client).getListAddFriend()
+									.contains(users.get(socket).getInfor().getUsername()))
 								users.get(client).addFriend(users.get(socket).getInfor().getUsername());
-							
+
 							// Thêm bạn vào accounts:
-							if(getAccountIndex(str[1]) == -1)
-								accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
-							if(getAccountIndex(users.get(client).getInfor().getUsername()) == -1)
-								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
-							
+							if (getAccountIndex(str[1]) == -1)
+								accounts.get(getAccountIndex(str[1]))
+										.addFriend(users.get(client).getInfor().getUsername());
+							if (getAccountIndex(users.get(client).getInfor().getUsername()) == -1)
+								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+										.addFriend(str[1]);
+
 							// Thêm bạn vào db:
-							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
-							userController.addFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
+							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(),
+									users.get(client).getInfor().getUsername());
+							userController.addFriend(
+									accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(),
+									str[1]);
 						}
-					
+
 					// Xóa lời mời kết bạn trong users:
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getListAddFriend().indexOf(str[1]));
+					sendMessage(client,
+							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-					
+
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
-					
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+							.deleteAddFriendRequest(str[1]);
+
 					// Xóa lời mời kết bạn trong db:
-					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
 				}
-				
+
 				else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					
+
 					// Xóa lời mời kết bạn trong users:
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getListAddFriend().indexOf(str[1]));
+					sendMessage(client,
+							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-					
+
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
-					
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+							.deleteAddFriendRequest(str[1]);
+
 					// Xóa lời mời kết bạn trong db:
-					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
 				}
-				
+
 //				else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
 //					String str = "Command_ShowFriendListRequest`";
 //
@@ -649,6 +660,18 @@ public class Main extends JFrame {
 //						}
 //
 //				}
+				else if (receivedMessage.contains("Command_CreateNewGroup")) {
+					String[] str = receivedMessage.split("`");
+					String userID = users.get(client).getId();
+					Group createGroup = new Group(str[1], userID);
+					Boolean created = groupController.create(createGroup);
+					if (created) {
+						sendMessage(client, "Command_CreateGroupAccepted");
+					} else {
+						sendMessage(client, "Command_CreateGroupFailed");
+					}
+
+				}
 			}
 
 		} catch (Exception exception) {

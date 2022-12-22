@@ -17,8 +17,15 @@ import Server.Classes.User;
 import Server.Models.GroupModel;
 
 public class GroupController extends GroupModel {
-	public void create(Group grp) {
+	public Boolean create(Group grp) {
+		ArrayList<Group> groups = getAllGroups();
 
+		for (int i = 0; i < groups.size(); i++) {
+			if (groups.get(i).getGroupName().equals(grp.getGroupName())) {
+				System.out.println("Already have username or email in database");
+				return false;
+			}
+		}
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 
@@ -27,6 +34,7 @@ public class GroupController extends GroupModel {
 				.append("listMessage", grp.getmessageId()).append("createTime", formatter.format(date));
 		CollectionGroup().insertOne(document);
 		System.out.println("successful");
+		return true;
 	}
 
 	public void read() {
