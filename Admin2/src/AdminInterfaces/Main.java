@@ -578,8 +578,22 @@ public class Main extends JFrame {
 				}
 				
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
-					String[] str = receivedMessage.split("`");
-
+					String[] str = receivedMessage.split("`");	
+					
+					// Xóa lời mời kết bạn trên interface:
+					sendMessage(client, "Command_deleteAddFriendRequest`"
+							+ users.get(client).getListAddFriend().indexOf(str[1]));
+					
+					// Xóa lời mời kết bạn trong users:
+					users.get(client).deleteAddFriendRequest(str[1]);
+					
+					// Xóa lời mời kết bạn trong accounts:
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
+					
+					// Xóa lời mời kết bạn trong db:
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
+					
+					
 					// Thêm bạn:
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {						
@@ -594,20 +608,7 @@ public class Main extends JFrame {
 							// Thêm bạn vào db:
 							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
 							userController.addFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
-						}	
-					
-					// Xóa lời mời kết bạn trên interface:
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getListAddFriend().indexOf(str[1]));
-					
-					// Xóa lời mời kết bạn trong users:
-					users.get(client).deleteAddFriendRequest(str[1]);
-					
-					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
-					
-					// Xóa lời mời kết bạn trong db:
-					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
+						}
 				}
 				
 				else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {

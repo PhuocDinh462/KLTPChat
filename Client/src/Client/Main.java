@@ -29,7 +29,7 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 		 */
 	private static final long serialVersionUID = 1L;
 
-// CONSTRUCTOR
+//CONSTRUCTOR
 	public ButtonRenderer() {
 		// SET BUTTON PROPERTIES
 		setOpaque(true);
@@ -39,8 +39,9 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object obj, boolean selected, boolean focused, int row,
 			int col) {
 
+		String[] str = obj.toString().split(":");
 		// SET PASSED OBJECT AS BUTTON TEXT
-		setText((obj == null) ? "" : obj.toString());
+		setText(str[0]);
 
 		return this;
 	}
@@ -54,6 +55,7 @@ class ButtonEditor extends DefaultCellEditor {
 	private static final long serialVersionUID = 1L;
 	protected JButton btn;
 	private String lbl;
+	private String command;
 	private Boolean clicked;
 
 	public ButtonEditor(JTextField txt) {
@@ -73,25 +75,28 @@ class ButtonEditor extends DefaultCellEditor {
 		});
 	}
 
-// OVERRIDE A COUPLE OF METHODS
+//OVERRIDE A COUPLE OF METHODS
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object obj, boolean selected, int row, int col) {
+		String[] str = obj.toString().split(":");
+		lbl = str[0];
+		
+		if(str.length > 1)
+			command = str[1];
 
-		// SET TEXT TO BUTTON,SET CLICKED TO TRUE,THEN RETURN THE BTN OBJECT
-		lbl = (obj == null) ? "" : obj.toString();
 		btn.setText(lbl);
+		
 		clicked = true;
 		return btn;
 	}
 
-// IF BUTTON CELL VALUE CHNAGES,IF CLICKED THAT IS
+//IF BUTTON CELL VALUE CHNAGES,IF CLICKED THAT IS
 	@Override
 	public Object getCellEditorValue() {
 
 		if (clicked) {
-			// SHOW US SOME MESSAGE
-			JOptionPane.showMessageDialog(btn, lbl + " Clicked");
-			Main.sendMessage(lbl);
+			if(!command.isBlank())
+				Main.sendMessage(command);
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
 		clicked = false;
@@ -664,8 +669,8 @@ public class Main extends JFrame {
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 					for (int i = 1; i < str.length; i++) {
-						Object[] rowObjects = { str[i], "Command_AcceptAddFriendRequest`" + str[i],
-								"Command_deleteAddFriendRequest`" + str[i] };
+						Object[] rowObjects = { str[i], "Đồng ý:" + "Command_AcceptAddFriendRequest`" + str[i],
+								"Xóa:" + "Command_deleteAddFriendRequest`" + str[i] };
 						addFriendRequestTableModel.addRow(rowObjects);
 					}
 
