@@ -216,7 +216,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean addRequestFriend(String id, String idRequest) {
-		ArrayList<String> listData = getListFriendById(id);
+		ArrayList<String> listData = getListRequestFriendById(id);
 
 		if (listData.contains(idRequest))
 			return false;
@@ -230,7 +230,7 @@ public class UserController extends UserModel {
 	}
 
 	public Boolean deleteRequestFriend(String id, String idRequest) {
-		ArrayList<String> listData = getListFriendById(id);
+		ArrayList<String> listData = getListRequestFriendById(id);
 
 		for (int i = 0; i < listData.size(); i++) {
 			if (listData.get(i).equals(idRequest)) {
@@ -238,7 +238,6 @@ public class UserController extends UserModel {
 
 				CollectionUser().updateOne(eq("_id", id), combine(set("listAddFriend", listData)));
 
-				System.out.println("successful");
 				return true;
 			}
 		}
