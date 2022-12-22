@@ -559,127 +559,77 @@ public class Main extends JFrame {
 								if (!users.get(socket).getListAddFriend()
 										.contains(users.get(client).getInfor().getUsername())) {
 									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
-
+									
 									sendMessage(socket, "Command_NewAddFriendRequest`"
 											+ users.get(client).getInfor().getUsername());
 								}
 							}
-
+						
 						// Lưu vào account:
-						accounts.get(getAccountIndex(str[1]))
-								.addAddFriendRequest(users.get(client).getInfor().getUsername());
-
-						// Lưu vào db:
-						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(),
-								users.get(client).getInfor().getUsername());
-
+						accounts.get(getAccountIndex(str[1])).addAddFriendRequest(users.get(client).getInfor().getUsername());
+						
 						sendMessage(client, "Command_AddFriendRequestAccepted");
+						
+						// Lưu vào db:
+						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(), users.get(client).getInfor().getUsername());
 					} else
 						sendMessage(client, "Command_AddFriendRequestFailed");
 
 				}
-
+				
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
 
 					// Thêm bạn:
 					for (Socket socket : users.keySet())
-						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {						
 							// Thêm bạn vào users:
-							if (!users.get(socket).getListAddFriend()
-									.contains(users.get(client).getInfor().getUsername()))
-								users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-							if (!users.get(client).getListAddFriend()
-									.contains(users.get(socket).getInfor().getUsername()))
-								users.get(client).addFriend(users.get(socket).getInfor().getUsername());
-
+							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
+							users.get(client).addFriend(str[1]);
+							
 							// Thêm bạn vào accounts:
-							if (getAccountIndex(str[1]) == -1)
-								accounts.get(getAccountIndex(str[1]))
-										.addFriend(users.get(client).getInfor().getUsername());
-							if (getAccountIndex(users.get(client).getInfor().getUsername()) == -1)
-								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
-										.addFriend(str[1]);
-
+							accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
+							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
+							
 							// Thêm bạn vào db:
-							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(),
-									users.get(client).getInfor().getUsername());
-							userController.addFriend(
-									accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(),
-									str[1]);
-						}
-
+							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
+							userController.addFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
+						}	
+					
+					// Xóa lời mời kết bạn trên interface:
+					sendMessage(client, "Command_deleteAddFriendRequest`"
+							+ users.get(client).getListAddFriend().indexOf(str[1]));
+					
 					// Xóa lời mời kết bạn trong users:
-					sendMessage(client,
-							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-
+					
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
-							.deleteAddFriendRequest(str[1]);
-
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
+					
 					// Xóa lời mời kết bạn trong db:
 					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
 				}
-
+				
 				else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-
+					
 					// Xóa lời mời kết bạn trong users:
-					sendMessage(client,
-							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
+					sendMessage(client, "Command_deleteAddFriendRequest`"
+							+ users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-
+					
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
-							.deleteAddFriendRequest(str[1]);
-
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
+					
 					// Xóa lời mời kết bạn trong db:
-					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
-				}
-
-//				else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
-//					String str = "Command_ShowFriendListRequest`";
-//
-//					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
-//						str += users.get(client).getFriend().get(i) + "`";
-//					if (users.get(client).getFriend().size() > 0)
-//						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
-//
-//					sendMessage(client, str);
-//
-//				} else if (receivedMessage.contains("Command_unfriend")) {
-//					String[] str = receivedMessage.split("`");
-//					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
-//					users.get(client).deleteFriend(str[1]);
-//					for (Socket socket : users.keySet())
-//						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-//							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
-//									.indexOf(users.get(client).getInfor().getUsername()));
-//							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
-//						}
-//
-//				}
-				else if (receivedMessage.contains("Command_CreateNewGroup")) {
-					String[] str = receivedMessage.split("`");
-					String userID = users.get(client).getId();
-					Group createGroup = new Group(str[1], userID);
-					Boolean created = groupController.create(createGroup);
-					if (created) {
-						sendMessage(client, "Command_CreateGroupAccepted");
-					} else {
-						sendMessage(client, "Command_CreateGroupFailed");
-					}
-
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
 				}
 				
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String str = "Command_ShowFriendList`";
 
-					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
+					for (int i = 0; i < users.get(client).getFriend().size(); i++)
 						str += users.get(client).getFriend().get(i) + "`";
-					if (users.get(client).getFriend().size() > 0)
-						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
 
 					sendMessage(client, str);
 
@@ -701,15 +651,26 @@ public class Main extends JFrame {
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
 							
 							// Xóa bạn trong account:
-							if(getAccountIndex(str[1]) != -1)
-								accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
-							if(getAccountIndex(users.get(client).getInfor().getUsername()) != -1)
-								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
+							accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
+							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
 							
 							// Xóa bạn trong db:
 							userController.deleteFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
 							userController.deleteFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
 						}
+				}
+				
+				else if (receivedMessage.contains("Command_CreateNewGroup")) {
+					String[] str = receivedMessage.split("`");
+					String userID = users.get(client).getId();
+					Group createGroup = new Group(str[1], userID);
+					Boolean created = groupController.create(createGroup);
+					if (created) {
+						sendMessage(client, "Command_CreateGroupAccepted");
+					} else {
+						sendMessage(client, "Command_CreateGroupFailed");
+					}
+
 				}
 			}
 
