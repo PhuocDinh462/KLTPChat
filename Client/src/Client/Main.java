@@ -415,7 +415,7 @@ public class Main extends JFrame {
 		JButton showFriendButton = new JButton("Bạn bè");
 		showFriendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sendMessage("Command_ShowFriendListRequest");
+				sendMessage("Command_ShowFriendList");
 			}
 		});
 		showFriendButton.setBounds(178, 75, 112, 24);
@@ -668,7 +668,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					((DefaultTableModel)addFriendRequestTable.getModel()).removeRow(Integer.parseInt(str[1]));
 					
-				} else if (receivedMessage.contains("Command_ShowFriendListRequest")) {
+				} else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String[] str = receivedMessage.split("`");
 					new FriendList(str);
 					

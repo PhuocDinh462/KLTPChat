@@ -672,6 +672,45 @@ public class Main extends JFrame {
 					}
 
 				}
+				
+				else if (receivedMessage.contains("Command_ShowFriendList")) {
+					String str = "Command_ShowFriendList`";
+
+					for (int i = 0; i < users.get(client).getFriend().size() - 1; i++)
+						str += users.get(client).getFriend().get(i) + "`";
+					if (users.get(client).getFriend().size() > 0)
+						str += users.get(client).getFriend().get(users.get(client).getFriend().size() - 1);
+
+					sendMessage(client, str);
+
+				}
+				
+				else if (receivedMessage.contains("Command_unfriend")) {
+					String[] str = receivedMessage.split("`");
+					
+					// Xóa bạn trên interface:
+					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
+					// Xóa bạn trong users:
+					users.get(client).deleteFriend(str[1]);
+					for (Socket socket : users.keySet())
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							// Xóa bạn trên interface:
+							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
+									.indexOf(users.get(client).getInfor().getUsername()));
+							// Xóa bạn trong users:
+							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
+							
+							// Xóa bạn trong account:
+							if(getAccountIndex(str[1]) != -1)
+								accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
+							if(getAccountIndex(users.get(client).getInfor().getUsername()) != -1)
+								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
+							
+							// Xóa bạn trong db:
+							userController.deleteFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
+							userController.deleteFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
+						}
+				}
 			}
 
 		} catch (Exception exception) {
