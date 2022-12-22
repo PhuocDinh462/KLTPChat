@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -146,18 +147,17 @@ public class Main extends JFrame {
 	 * Attribute: Socket - server
 	 */
 	private static Socket server;
-	
+
 	/**
 	 * @Attribute: int - port
 	 *
 	 */
 	private static int port = 8080;
-	
-    /**
-     * @Attribute: String
-     * username of account
-     */
-    public static String username;
+
+	/**
+	 * @Attribute: String username of account
+	 */
+	public static String username;
 
 	/**
 	 * Attribute: String[] - users List of online users
@@ -616,6 +616,10 @@ public class Main extends JFrame {
 				} else if (receivedMessage.contains("Command_CreateAccountFailed")) {
 					SignUp.status = SignUp.SignUpStatus.Failed;
 
+				} else if (receivedMessage.contains("Command_CreateGroupAccepted")) {
+					CreateGroup.status = CreateGroup.CreateGroupStatus.Accepted;
+				} else if (receivedMessage.contains("Command_CreateGroupFailed")) {
+					CreateGroup.status = CreateGroup.CreateGroupStatus.Failed;
 				} else if (receivedMessage.contains("Command_SendMessageAccepted")) {
 					messageStatus = MessageStatus.Accepted;
 					messageTextField.setText("");
@@ -659,23 +663,24 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_NewAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					for(int i = 1; i < str.length; i++) {
-						Object[] rowObjects = { str[i], "Command_AcceptAddFriendRequest`" + str[i], "Command_deleteAddFriendRequest`" + str[i] };
+					for (int i = 1; i < str.length; i++) {
+						Object[] rowObjects = { str[i], "Command_AcceptAddFriendRequest`" + str[i],
+								"Command_deleteAddFriendRequest`" + str[i] };
 						addFriendRequestTableModel.addRow(rowObjects);
 					}
 
 				} else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					((DefaultTableModel)addFriendRequestTable.getModel()).removeRow(Integer.parseInt(str[1]));
-					
+					((DefaultTableModel) addFriendRequestTable.getModel()).removeRow(Integer.parseInt(str[1]));
+
 				} else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String[] str = receivedMessage.split("`");
 					new FriendList(str);
-					
-				}  else if (receivedMessage.contains("Command_unfriend")) {
+
+				} else if (receivedMessage.contains("Command_unfriend")) {
 					String[] str = receivedMessage.split("`");
 					FriendList.deleteRow(Integer.parseInt(str[1]));
-					
+
 				} else {
 					System.out.println(receivedMessage);
 				}
