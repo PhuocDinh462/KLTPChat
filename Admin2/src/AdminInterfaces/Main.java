@@ -585,12 +585,16 @@ public class Main extends JFrame {
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Thêm bạn vào users:
-							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-							users.get(client).addFriend(users.get(socket).getInfor().getUsername());
+							if(users.get(socket).getListAddFriend().contains(users.get(client).getInfor().getUsername()))
+								users.get(socket).addFriend(users.get(client).getInfor().getUsername());
+							if(users.get(client).getListAddFriend().contains(users.get(socket).getInfor().getUsername()))
+								users.get(client).addFriend(users.get(socket).getInfor().getUsername());
 							
 							// Thêm bạn vào accounts:
-							accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
-							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
+							if(getAccountIndex(str[1]) == -1)
+								accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
+							if(getAccountIndex(users.get(client).getInfor().getUsername()) == -1)
+								accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
 							
 							// Thêm bạn vào db:
 							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
