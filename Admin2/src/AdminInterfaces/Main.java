@@ -585,9 +585,9 @@ public class Main extends JFrame {
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Thêm bạn vào users:
-							if(users.get(socket).getListAddFriend().contains(users.get(client).getInfor().getUsername()))
+							if(!users.get(socket).getListAddFriend().contains(users.get(client).getInfor().getUsername()))
 								users.get(socket).addFriend(users.get(client).getInfor().getUsername());
-							if(users.get(client).getListAddFriend().contains(users.get(socket).getInfor().getUsername()))
+							if(!users.get(client).getListAddFriend().contains(users.get(socket).getInfor().getUsername()))
 								users.get(client).addFriend(users.get(socket).getInfor().getUsername());
 							
 							// Thêm bạn vào accounts:
