@@ -47,11 +47,13 @@ public class User {
 	}
 
 	public void addFriend(String username) {
-		this.listFriend.add(username);
+		if(!listFriend.contains(username))
+			this.listFriend.add(username);
 	}
 
 	public void deleteFriend(String username) {
-		this.listFriend.remove(this.listFriend.indexOf(username));
+		if(listFriend.contains(username))
+			this.listFriend.remove(this.listFriend.indexOf(username));
 	}
 
 	public ArrayList<String> getListAddFriend() {
@@ -59,11 +61,13 @@ public class User {
 	}
 
 	public void addAddFriendRequest(String username) {
-		this.listAddFriend.add(username);
+		if(!listAddFriend.contains(username))
+			this.listAddFriend.add(username);
 	}
 
 	public void deleteAddFriendRequest(String username) {
-		this.listAddFriend.remove(this.listAddFriend.indexOf(username));
+		if(listAddFriend.contains(username))
+			this.listAddFriend.remove(this.listAddFriend.indexOf(username));
 	}
 
 	public InforUser getInfor() {
