@@ -28,6 +28,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
@@ -38,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.awt.Color;
 
 import javax.swing.GroupLayout;
@@ -91,6 +94,8 @@ public class Main extends JFrame {
 //	private HashMap<String, String> accounts;
 
 	private ArrayList<User> accounts;
+	
+	
 
 	/**
 	 * @Attribute: username
@@ -378,14 +383,14 @@ public class Main extends JFrame {
 	 * Send online users list to every user
 	 */
 	public void sendUserList() {
-//		for (Socket socket : users.keySet()) {
-//			StringBuilder userList = new StringBuilder("Command_UserList");
-//			for (User user : users.values())
-//				if (!user.getInfor().getUsername().equals(users.get(socket).getInfor().getUsername())) {
-//					userList.append("`").append(user.getInfor().getUsername());
-//				}
-//			sendMessage(socket, userList.toString());
-//		}
+		for (Socket socket : users.keySet()) {
+			StringBuilder userList = new StringBuilder("Command_UserList");
+			for (User user : users.values())
+				if (!user.getInfor().getUsername().equals(users.get(socket).getInfor().getUsername())) {
+					userList.append("`").append(user.getInfor().getUsername());
+				}
+			sendMessage(socket, userList.toString());
+		}
 
 		for (int i = 0; i < users.size(); i++) {
 
@@ -440,10 +445,12 @@ public class Main extends JFrame {
 	private void receiveClientMessages(Socket client) {
 		try {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
+		
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
-
+				if(receivedMessage != null) {
+					System.out.print(receivedMessage);
+				}
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					sendMessage(client, "Command_CloseConnect");
 					int i = getAccountIndex(users.get(client).getInfor().getUsername());
@@ -625,7 +632,7 @@ public class Main extends JFrame {
 					// Xóa lời mời kết bạn trong db:
 					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
 				}
-				
+				//hiển thị danh sách bạn bè
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String str = "Command_ShowFriendList`";
 
@@ -635,7 +642,7 @@ public class Main extends JFrame {
 					sendMessage(client, str);
 
 				}
-				
+				//hủy kết bạn
 				else if (receivedMessage.contains("Command_unfriend")) {
 					String[] str = receivedMessage.split("`");
 					
@@ -671,7 +678,48 @@ public class Main extends JFrame {
 					} else {
 						sendMessage(client, "Command_CreateGroupFailed");
 					}
-
+				//
+				}else if (receivedMessage.contains("Command_SendMessage")) {
+					String[] str =  receivedMessage.split("`");
+					if(containUsername(str[1])) {
+						for (Socket socket : users.keySet()) {
+							if(users.get(socket).getInfor().getUsername().equals(str[1]))
+								sendMessage(socket, 
+										"Command_Message`"
+												+ users.get(client).getInfor().getUsername()//lấy thông tin người gửi tin nhắn kèm vào message
+												+"`"+str[2]);
+						}
+						sendMessage(client, "Command_SendMessageAccepted");
+						
+					}else {
+						sendMessage(client, "Command_SendMessageFailed");
+					}
+					//gửi File
+				}else if(receivedMessage.contains("Command_SendFile")) {
+					String[] str = receivedMessage.split("`");
+					if(containUser(str[1])) {
+						sendMessage(client, "Command_SendMessageAccepted");//server kiểm tra tồn tại người nhận hay ko có thì trả về lệnh hệ thống messageaccepted
+						
+						DataInputStream dataInputStream = new DataInputStream(client.getInputStream());//
+						byte[] data = new byte[dataInputStream.readInt()];
+						dataInputStream.readFully(data, 0, data.length);
+						
+						for(Socket socket : users.keySet()) {
+							if(users.get(socket).getInfor().getUsername().equals(str[1])) {
+								waitingClientResponse = true;
+								sendMessage(socket, 
+										"Command_File`"
+												+ users.get(client).getInfor().getUsername() + "`" + str[2]);
+								while(waitingClientResponse)
+									System.out.print("");
+								DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+								dataOutputStream.writeInt(data.length);
+								dataOutputStream.write(data);
+							}
+						}
+					}else {
+						sendMessage(client, "Command_SendMessageFailed");
+					}
 				}
 			}
 

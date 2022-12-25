@@ -193,6 +193,12 @@ public class Main extends JFrame {
 	private static JTextField messageTextField;
 	private static DefaultTableModel addFriendRequestTableModel;
 
+//	public boolean containUser(String username) {
+//		for (User user : users)
+//			if (user.getInfor().getUsername().equals(username))
+//				return true;
+//		return false;
+//	}
 	/**
 	 * Main function
 	 * 
@@ -591,7 +597,10 @@ public class Main extends JFrame {
 
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
-
+				if(receivedMessage != null) {
+					System.out.print(receivedMessage);
+				}
+				
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					bufferedReader.close();
 					server.close();
@@ -602,6 +611,7 @@ public class Main extends JFrame {
 					users = new String[str.length - 1];
 					System.arraycopy(str, 1, users, 0, str.length - 1);
 					usersList.setListData(users);
+					System.out.print(usersList);
 
 				} else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
 					SignIn.status = SignIn.SignInStatus.Accepted;
@@ -686,7 +696,32 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					FriendList.deleteRow(Integer.parseInt(str[1]));
 
-				} else {
+				} else if (receivedMessage.contains("Command_SendMessageAccepted")) {
+                    messageStatus = MessageStatus.Accepted;
+
+                } else if (receivedMessage.contains("Command_SendMessageFailed")) {
+                    messageStatus = MessageStatus.Failed;
+
+                } else if (receivedMessage.contains("Command_Message")) {
+                    String[] str = receivedMessage.split("`");
+                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+
+                } else if (receivedMessage.contains("Command_File")) {
+                    sendMessage("Command_Accepted");
+                    String[] str = receivedMessage.split("`");
+
+                    DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
+                    byte[] data = new byte[dataInputStream.readInt()];
+                    dataInputStream.readFully(data, 0, data.length);
+
+                    FileOutputStream fileOutputStream = new FileOutputStream(str[2]);
+                    fileOutputStream.write(data);
+                    fileOutputStream.close();
+
+                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+
+				}
+				else {
 					System.out.println(receivedMessage);
 				}
 			}
