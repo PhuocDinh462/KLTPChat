@@ -168,11 +168,21 @@ public class Main extends JFrame {
 	 * @Attribute: String[] - List of users
 	 */
 	private static String[] users;
+	
+	/**
+	 * @Attribute: String[] - List of groups
+	 */
+	private static String[] groups;
 
 	/**
-	 * @Attribute: JList - usersList Display List of online users
+	 * @Attribute: JList - usersList Display List of users
 	 */
 	private static final JList<String> usersList = new JList<>();
+	
+	/**
+	 * @Attribute: JList - groupList Display List of groups
+	 */
+	private static final JList<String> groupList = new JList<>();
 
 	/**
 	 * @Attribute: JLabel - conversationTitle Display who user are chatting with
@@ -355,7 +365,6 @@ public class Main extends JFrame {
 		groupScroll.setBounds(10, 437, 180, 134);
 		userPanel.add(groupScroll);
 
-		JList<String> groupList = new JList<String>();
 		groupList.setVisibleRowCount(10);
 		groupScroll.setColumnHeaderView(groupList);
 
@@ -670,7 +679,17 @@ public class Main extends JFrame {
 					usersList.setListData(users);
 //					System.out.print(usersList.ge);
 
-				} else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
+				}
+				
+				else if (receivedMessage.contains("Command_GroupList")) {
+					String[] str = receivedMessage.split("`");
+					groups = new String[str.length - 1];
+					System.arraycopy(str, 1, groups, 0, str.length - 1);
+					groupList.removeAll();
+					groupList.setListData(groups);
+				}
+				
+				else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
 					SignIn.status = SignIn.SignInStatus.Accepted;
 
 				} else if (receivedMessage.contains("Command_AccountVerifyAlready")) {

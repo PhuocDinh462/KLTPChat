@@ -88,10 +88,12 @@ public class Main extends JFrame {
 	/**
 	 * @Attribute: HashMap - Accounts database
 	 */
-
-//	private HashMap<String, String> accounts;
-
 	private ArrayList<User> accounts;
+
+	/**
+	 * @Attribute: HashMap - Groups database
+	 */
+	private ArrayList<Group> groups;
 
 	/**
 	 * @Attribute: username
@@ -133,10 +135,10 @@ public class Main extends JFrame {
 		groupController = new GroupController();
 		messageController = new MessageController();
 		accounts = userController.getAllUsers();
+		groups = groupController.getAllGroups();
 		initUI();
 		Thread openServer = new Thread(() -> waitClients());
 		openServer.start();
-
 	}
 
 	// Setting display component content
@@ -352,6 +354,7 @@ public class Main extends JFrame {
 
 		users.put(socket, getUser);
 		sendUserList(socket, getUser);
+		sendGroupList(socket, getUser);
 
 		System.out.println(username + "connection success!");
 	}
@@ -375,10 +378,10 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Send users list to every user
+	 * Send user list to user
 	 * 
-	 * @param socket Socket
-	 * @param User   user
+	 * @param socket - Socket
+	 * @param User   - user
 	 */
 	public void sendUserList(Socket socket, User user) {
 		StringBuilder userList = new StringBuilder("Command_UserList");
@@ -387,6 +390,22 @@ public class Main extends JFrame {
 			userList.append("`").append(user.getFriend().get(i));
 
 		sendMessage(socket, userList.toString());
+	}
+
+	/**
+	 * Send group list to user
+	 * 
+	 * @param socket - Socket
+	 * @param User   - user
+	 */
+	public void sendGroupList(Socket socket, User user) {
+		StringBuilder groupList = new StringBuilder("Command_GroupList");
+
+		for (int i = 0; i < groups.size(); i++)
+			if (groups.get(i).getlistUsers().contains(user.getInfor().getUsername()))
+				groupList.append("`").append(groups.get(i).getGroupName());
+
+		sendMessage(socket, groupList.toString());
 	}
 
 	public ArrayList<User> getAccounts() {
@@ -571,7 +590,7 @@ public class Main extends JFrame {
 					// Thêm bạn vào accounts:
 					accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
 					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
-					
+
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Thêm bạn vào users:
@@ -579,9 +598,10 @@ public class Main extends JFrame {
 							users.get(client).addFriend(str[1]);
 
 							// Thêm vào danh sách người liên hệ:
-							sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
+							sendUserList(socket,
+									accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
 						}
-					
+
 					// Thêm vào danh sách người liên hệ:
 					sendUserList(client, accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())));
 
@@ -630,7 +650,7 @@ public class Main extends JFrame {
 							"Command_unfriend`"
 									+ accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
 											.getFriend().indexOf(str[1]));
-					
+
 					// Xóa bạn trong account:
 					accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
 					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
@@ -649,11 +669,12 @@ public class Main extends JFrame {
 							// Xóa bạn trong users:
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
 							users.get(client).deleteFriend(users.get(socket).getInfor().getUsername());
-							
+
 							// Xóa trong danh sách người liên hệ:
-							sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
+							sendUserList(socket,
+									accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
 						}
-					
+
 					// Xóa trong danh sách người liên hệ:
 					sendUserList(client, accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())));
 
