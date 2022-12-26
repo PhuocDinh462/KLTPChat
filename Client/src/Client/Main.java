@@ -144,12 +144,12 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Attribute: MessageStatus - messageStatus Status of Message
+	 * @Attribute: MessageStatus - messageStatus Status of Message
 	 */
 	public static MessageStatus messageStatus;
 
 	/**
-	 * Attribute: Socket - server
+	 * @Attribute: Socket - server
 	 */
 	private static Socket server;
 
@@ -165,27 +165,27 @@ public class Main extends JFrame {
 	public static String username;
 
 	/**
-	 * Attribute: String[] - users List of online users
+	 * @Attribute: String[] - List of users
 	 */
 	private static String[] users;
 
 	/**
-	 * Attribute: JList - usersList Display List of online users
+	 * @Attribute: JList - usersList Display List of online users
 	 */
 	private static final JList<String> usersList = new JList<>();
 
 	/**
-	 * Attribute: JLabel - conversationTitle Display who user are chatting with
+	 * @Attribute: JLabel - conversationTitle Display who user are chatting with
 	 */
 	private static JLabel conversationTitle;
 
 	/**
-	 * Attribute: JPanel - conversationPanel Display conversation
+	 * @Attribute: JPanel - conversationPanel Display conversation
 	 */
 	private static JPanel conversationPanel;
 
 	/**
-	 * Attribute: HashMap - conversations List of conversations
+	 * @Attribute: HashMap - conversations List of conversations
 	 */
 	private static final HashMap<String, JPanel> conversations = new HashMap<>();
 	private JTextField addFriendTextField;
@@ -447,6 +447,10 @@ public class Main extends JFrame {
 		JButton deleteButton = new JButton("🗑");
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
+		
+		JButton groupBtn = new JButton("👥");
+		groupBtn.setBounds(429, 10, 50, 23);
+		middlePanel.add(groupBtn);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
 		
 		JButton changePasswordBtn = new JButton("🔧");
@@ -662,6 +666,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					users = new String[str.length - 1];
 					System.arraycopy(str, 1, users, 0, str.length - 1);
+					usersList.removeAll();
 					usersList.setListData(users);
 //					System.out.print(usersList.ge);
 

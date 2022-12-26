@@ -92,8 +92,6 @@ public class Main extends JFrame {
 //	private HashMap<String, String> accounts;
 
 	private ArrayList<User> accounts;
-	
-	
 
 	/**
 	 * @Attribute: username
@@ -353,7 +351,7 @@ public class Main extends JFrame {
 		User getUser = userController.getUserByUsername(username);
 
 		users.put(socket, getUser);
-		sendUserList();
+		sendUserList(socket, getUser);
 
 		System.out.println(username + "connection success!");
 	}
@@ -365,7 +363,6 @@ public class Main extends JFrame {
 	 */
 	public void removeUser(Socket socket) {
 		users.remove(socket);
-		sendUserList();
 	}
 
 	// Check friend
@@ -378,21 +375,18 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Send online users list to every user
+	 * Send users list to every user
+	 * 
+	 * @param socket Socket
+	 * @param User   user
 	 */
-	public void sendUserList() {
-		for (Socket socket : users.keySet()) {
-			StringBuilder userList = new StringBuilder("Command_UserList");
-			for (User user : users.values())
-				if (!user.getInfor().getUsername().equals(users.get(socket).getInfor().getUsername())) {
-					userList.append("`").append(user.getInfor().getUsername());
-				}
-			sendMessage(socket, userList.toString());
-		}
+	public void sendUserList(Socket socket, User user) {
+		StringBuilder userList = new StringBuilder("Command_UserList");
 
-		for (int i = 0; i < users.size(); i++) {
+		for (int i = 0; i < user.getFriend().size(); i++)
+			userList.append("`").append(user.getFriend().get(i));
 
-		}
+		sendMessage(socket, userList.toString());
 	}
 
 	public ArrayList<User> getAccounts() {
@@ -458,10 +452,10 @@ public class Main extends JFrame {
 	private void receiveClientMessages(Socket client) {
 		try {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		
+
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
-				if(receivedMessage != null) {
+				if (receivedMessage != null) {
 					System.out.println(receivedMessage);
 				}
 				if (receivedMessage.contains("Command_CloseConnect")) {
@@ -537,108 +531,139 @@ public class Main extends JFrame {
 								if (!users.get(socket).getListAddFriend()
 										.contains(users.get(client).getInfor().getUsername())) {
 									users.get(socket).addAddFriendRequest(users.get(client).getInfor().getUsername());
-									
+
 									sendMessage(socket, "Command_NewAddFriendRequest`"
 											+ users.get(client).getInfor().getUsername());
 								}
 							}
-						
+
 						// Lưu vào account:
-						accounts.get(getAccountIndex(str[1])).addAddFriendRequest(users.get(client).getInfor().getUsername());
-						
+						accounts.get(getAccountIndex(str[1]))
+								.addAddFriendRequest(users.get(client).getInfor().getUsername());
+
 						sendMessage(client, "Command_AddFriendRequestAccepted");
-						
+
 						// Lưu vào db:
-						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(), users.get(client).getInfor().getUsername());
+						userController.addRequestFriend(userController.getUserByUsername(str[1]).getId(),
+								users.get(client).getInfor().getUsername());
 					} else
 						sendMessage(client, "Command_AddFriendRequestFailed");
 
 				}
-				
+
 				else if (receivedMessage.contains("Command_AcceptAddFriendRequest")) {
-					String[] str = receivedMessage.split("`");	
-					
+					String[] str = receivedMessage.split("`");
+
 					// Xóa lời mời kết bạn trên interface:
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getListAddFriend().indexOf(str[1]));
-					
+					sendMessage(client,
+							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
+
 					// Xóa lời mời kết bạn trong users:
 					users.get(client).deleteAddFriendRequest(str[1]);
-					
+
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
-					
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+							.deleteAddFriendRequest(str[1]);
+
 					// Xóa lời mời kết bạn trong db:
 					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
+
+					// Thêm bạn vào accounts:
+					accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
 					
-					
-					// Thêm bạn:
 					for (Socket socket : users.keySet())
-						if (users.get(socket).getInfor().getUsername().equals(str[1])) {						
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Thêm bạn vào users:
 							users.get(socket).addFriend(users.get(client).getInfor().getUsername());
 							users.get(client).addFriend(str[1]);
-							
-							// Thêm bạn vào accounts:
-							accounts.get(getAccountIndex(str[1])).addFriend(users.get(client).getInfor().getUsername());
-							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).addFriend(str[1]);
-							
-							// Thêm bạn vào db:
-							userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
-							userController.addFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
+
+							// Thêm vào danh sách người liên hệ:
+							sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
 						}
+					
+					// Thêm vào danh sách người liên hệ:
+					sendUserList(client, accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())));
+
+					// Thêm bạn vào db:
+					userController.addFriend(accounts.get(getAccountIndex(str[1])).getId(),
+							users.get(client).getInfor().getUsername());
+					userController.addFriend(
+							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
 				}
-				
+
 				else if (receivedMessage.contains("Command_deleteAddFriendRequest")) {
 					String[] str = receivedMessage.split("`");
-					
+
 					// Xóa lời mời kết bạn trong users:
-					sendMessage(client, "Command_deleteAddFriendRequest`"
-							+ users.get(client).getListAddFriend().indexOf(str[1]));
+					sendMessage(client,
+							"Command_deleteAddFriendRequest`" + users.get(client).getListAddFriend().indexOf(str[1]));
 					users.get(client).deleteAddFriendRequest(str[1]);
-					
+
 					// Xóa lời mời kết bạn trong accounts:
-					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteAddFriendRequest(str[1]);
-					
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+							.deleteAddFriendRequest(str[1]);
+
 					// Xóa lời mời kết bạn trong db:
-					userController.deleteRequestFriend(users.get(client).getId(), str[1]);	
+					userController.deleteRequestFriend(users.get(client).getId(), str[1]);
 				}
-				//hiển thị danh sách bạn bè
+
+				// Hiển thị danh sách bạn bè
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String str = "Command_ShowFriendList`";
 
-					for (int i = 0; i < users.get(client).getFriend().size(); i++)
-						str += users.get(client).getFriend().get(i) + "`";
+					for (int i = 0; i < accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+							.getFriend().size(); i++)
+						str += accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getFriend()
+								.get(i) + "`";
 
 					sendMessage(client, str);
 
 				}
-				//hủy kết bạn
+
+				// Hủy kết bạn
 				else if (receivedMessage.contains("Command_unfriend")) {
 					String[] str = receivedMessage.split("`");
-					
+
 					// Xóa bạn trên interface:
-					sendMessage(client, "Command_unfriend`" + users.get(client).getFriend().indexOf(str[1]));
+					sendMessage(client,
+							"Command_unfriend`"
+									+ accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
+											.getFriend().indexOf(str[1]));
+					
+					// Xóa bạn trong account:
+					accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
+					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
+
 					// Xóa bạn trong users:
 					users.get(client).deleteFriend(str[1]);
+
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Xóa bạn trên interface:
-							sendMessage(socket, "Command_unfriend`" + users.get(socket).getFriend()
-									.indexOf(users.get(client).getInfor().getUsername()));
+							sendMessage(socket,
+									"Command_unfriend`"
+											+ accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername()))
+													.getFriend().indexOf(users.get(client).getInfor().getUsername()));
+
 							// Xóa bạn trong users:
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
+							users.get(client).deleteFriend(users.get(socket).getInfor().getUsername());
 							
-							// Xóa bạn trong account:
-							accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
-							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
-							
-							// Xóa bạn trong db:
-							userController.deleteFriend(accounts.get(getAccountIndex(str[1])).getId(), users.get(client).getInfor().getUsername());
-							userController.deleteFriend(accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
+							// Xóa trong danh sách người liên hệ:
+							sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
 						}
+					
+					// Xóa trong danh sách người liên hệ:
+					sendUserList(client, accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())));
+
+					// Xóa bạn trong db:
+					userController.deleteFriend(accounts.get(getAccountIndex(str[1])).getId(),
+							users.get(client).getInfor().getUsername());
+					userController.deleteFriend(
+							accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getId(), str[1]);
 				}
-				
+
 				else if (receivedMessage.contains("Command_CreateNewGroup")) {
 					String[] str = receivedMessage.split("`");
 					String userID = users.get(client).getId();
@@ -649,73 +674,80 @@ public class Main extends JFrame {
 					} else {
 						sendMessage(client, "Command_CreateGroupFailed");
 					}
-				//
-				}else if (receivedMessage.contains("Command_SendMessage")) {
-					String[] str =  receivedMessage.split("`");
-					if(containUsername(str[1])) {
+					//
+				} else if (receivedMessage.contains("Command_SendMessage")) {
+					String[] str = receivedMessage.split("`");
+					if (containUsername(str[1])) {
 						System.out.print("người nhận: " + str[1] + " người gửi: " + str[3]);
 						for (Socket socket : users.keySet()) {
-							if(users.get(socket).getInfor().getUsername().equals(str[1])) {
-								sendMessage(socket, 
-										"Command_Message`"
-												+ users.get(client).getInfor().getUsername()//lấy thông tin người gửi tin nhắn kèm vào message
-												+"`"+str[2]);//gửi dạng command + người nhận + nội dung
-								//lưu message gửi thành công vào database
-								messageController.create(new  Message(str[3], str[1] , str[2]));
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+								sendMessage(socket, "Command_Message`" + users.get(client).getInfor().getUsername()// lấy
+																													// thông
+																													// tin
+																													// người
+																													// gửi
+																													// tin
+																													// nhắn
+																													// kèm
+																													// vào
+																													// message
+										+ "`" + str[2]);// gửi dạng command + người nhận + nội dung
+								// lưu message gửi thành công vào database
+								messageController.create(new Message(str[3], str[1], str[2]));
 							}
-								
-								
+
 						}
 						sendMessage(client, "Command_SendMessageAccepted");
-						
-					}else {
+
+					} else {
 						sendMessage(client, "Command_SendMessageFailed");
 					}
-					//gửi File
-				}else if(receivedMessage.contains("Command_SendFile")) {
+					// gửi File
+				} else if (receivedMessage.contains("Command_SendFile")) {
 					String[] str = receivedMessage.split("`");
-					if(containUser(str[1])) {
-						sendMessage(client, "Command_SendMessageAccepted");//server kiểm tra tồn tại người nhận hay ko có thì trả về lệnh hệ thống messageaccepted
-						
+					if (containUser(str[1])) {
+						sendMessage(client, "Command_SendMessageAccepted");// server kiểm tra tồn tại người nhận hay ko
+																			// có thì trả về lệnh hệ thống
+																			// messageaccepted
+
 						DataInputStream dataInputStream = new DataInputStream(client.getInputStream());//
 						byte[] data = new byte[dataInputStream.readInt()];
 						dataInputStream.readFully(data, 0, data.length);
-						
-						for(Socket socket : users.keySet()) {
-							if(users.get(socket).getInfor().getUsername().equals(str[1])) {
+
+						for (Socket socket : users.keySet()) {
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 								waitingClientResponse = true;
-								sendMessage(socket, 
-										"Command_File`"
-												+ users.get(client).getInfor().getUsername() + "`" + str[2]);
-								while(waitingClientResponse)
+								sendMessage(socket,
+										"Command_File`" + users.get(client).getInfor().getUsername() + "`" + str[2]);
+								while (waitingClientResponse)
 									System.out.print("");
 								DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 								dataOutputStream.writeInt(data.length);
 								dataOutputStream.write(data);
 							}
 						}
-					}else {
+					} else {
 						sendMessage(client, "Command_SendMessageFailed");
 					}
-				}else if(receivedMessage.contains("Command_MessageHistory")) {
+				} else if (receivedMessage.contains("Command_MessageHistory")) {
 					String[] str = receivedMessage.split("`");
 					MessageController messGetFdataBase = new MessageController();
-					if(str[2].equals("(Tin nhắn mới)")) {
+					if (str[2].equals("(Tin nhắn mới)")) {
 						str[2] = str[2].replace(" (Tin nhắn mới)", "");
 					}
-				
-					ArrayList<Message> historyMess= messGetFdataBase.findMessageBySender(str[1], str[2]);
+
+					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
 					Object[] objArr = historyMess.toArray();
 					String[] stringArray = Arrays.copyOf(objArr, objArr.length, String[].class);
-					System.out.print("710"+stringArray);
-					for(Socket socket : users.keySet()) {
-						if(users.get(socket).getInfor().getUsername().equals(str[1])) {
-							sendMessage(socket, "Command_SendHistoryMessage`" + "`" +str[1] + "`" + stringArray );
+					System.out.print("710" + stringArray);
+					for (Socket socket : users.keySet()) {
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							sendMessage(socket, "Command_SendHistoryMessage`" + "`" + str[1] + "`" + stringArray);
 						}
 					}
-					
+
 				}
-				
+
 				else if (receivedMessage.contains("Command_ForgotPassword")) {
 					String[] str = receivedMessage.split("`");
 					int i = getAccountIndex(str[1]);
@@ -734,7 +766,7 @@ public class Main extends JFrame {
 							accounts.get(i).getInfor().setPassword(newPassword);
 							userController.updatePassword(str[1], newPassword);
 							ForgotPassword.sendEmail("kltpchat@gmail.com", "bxqokcenihyxekfr", email, "Quên mật khẩu",
-									"Mật khẩu mới của bạn là: " + newPassword);
+									"Chào " + str[1] + ".\nMật khẩu mới của bạn là: " + newPassword);
 							sendMessage(client, "Command_ForgotPasswordSuccessful");
 						}
 					}
@@ -757,7 +789,7 @@ public class Main extends JFrame {
 						sendMessage(client, "Command_ChangePasswordSuccessful");
 					}
 				}
-				
+
 			}
 
 		} catch (Exception exception) {
