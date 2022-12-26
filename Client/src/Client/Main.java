@@ -202,6 +202,7 @@ public class Main extends JFrame {
 	private static JTable addFriendRequestTable;
 	private static JTextField messageTextField;
 	private static DefaultTableModel addFriendRequestTableModel;
+	private static JButton groupBtn;
 
 //	public boolean containUser(String username) {
 //		for (User user : users)
@@ -288,6 +289,18 @@ public class Main extends JFrame {
 				String friendChat = usersList.getSelectedValue();
 				changeConversation(friendChat);
 				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				groupBtn.setVisible(false);
+			}
+		});
+		
+		groupList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+//				String friendChat = usersList.getSelectedValue();
+//				changeConversation(friendChat);
+//				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				groupBtn.setVisible(true);
 			}
 		});
 
@@ -457,7 +470,13 @@ public class Main extends JFrame {
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
 		
-		JButton groupBtn = new JButton("👥");
+		groupBtn = new JButton("👥");
+		groupBtn.setVisible(false);
+		groupBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new GroupManagement();
+			}
+		});
 		groupBtn.setBounds(429, 10, 50, 23);
 		middlePanel.add(groupBtn);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
