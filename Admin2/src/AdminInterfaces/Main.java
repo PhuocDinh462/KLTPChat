@@ -715,6 +715,49 @@ public class Main extends JFrame {
 					}
 					
 				}
+				
+				else if (receivedMessage.contains("Command_ForgotPassword")) {
+					String[] str = receivedMessage.split("`");
+					int i = getAccountIndex(str[1]);
+					System.out.println(str[1]);
+					System.out.println("i = " + i);
+					System.out.println(accounts.get(1).getInfor().getUsername());
+
+					if (i == -1)
+						sendMessage(client, "Command_ForgotPasswordFail");
+					else {
+						String email = accounts.get(i).getInfor().getEmail();
+						if (email.isBlank())
+							sendMessage(client, "Command_ForgotPasswordInvalid");
+						else {
+							String newPassword = ForgotPassword.randomPassword(6);
+							accounts.get(i).getInfor().setPassword(newPassword);
+							userController.updatePassword(str[1], newPassword);
+							ForgotPassword.sendEmail("kltpchat@gmail.com", "bxqokcenihyxekfr", email, "Quên mật khẩu",
+									"Mật khẩu mới của bạn là: " + newPassword);
+							sendMessage(client, "Command_ForgotPasswordSuccessful");
+						}
+					}
+				}
+
+				else if (receivedMessage.contains("Command_ChangePassword")) {
+					String[] str = receivedMessage.split("`");
+					String username = users.get(client).getInfor().getUsername();
+					int i = getAccountIndex(username);
+
+					if (!accounts.get(i).getInfor().getPassword().equals(str[1]))
+						sendMessage(client, "Command_ChangePasswordFailed");
+
+					else {
+						// Đổi mật khẩu trong accounts:
+						accounts.get(i).getInfor().setPassword(str[2]);
+						// Đổi mật khẩu trên db:
+						userController.updatePassword(username, str[2]);
+						// Gửi thông báo về client:
+						sendMessage(client, "Command_ChangePasswordSuccessful");
+					}
+				}
+				
 			}
 
 		} catch (Exception exception) {

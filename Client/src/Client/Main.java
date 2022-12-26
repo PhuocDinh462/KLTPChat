@@ -448,10 +448,53 @@ public class Main extends JFrame {
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
+		
+		JButton changePasswordBtn = new JButton("🔧");
+		changePasswordBtn.addActionListener(e -> changePasswordBtnEventHandler());
+		changePasswordBtn.setBounds(240, 10, 50, 23);
+		friendPanel.add(changePasswordBtn);
 
 		setPreferredSize(new Dimension(1125, 650));
 		setContentPane(contentPane);
 		pack();
+	}
+	
+	/**
+	 * Change password Button Event Handler
+	 * 
+	 */
+	void changePasswordBtnEventHandler() {
+		JPasswordField password = new JPasswordField();
+		JPasswordField newPassword = new JPasswordField();
+		JPasswordField reNewPassword = new JPasswordField();
+		Object[] object = { "Nhập mật khẩu hiện tại:", password, "Nhập mật khẩu mới:", newPassword,
+				"Nhập lại mật khẩu mới:", reNewPassword };
+
+		int option = JOptionPane.showConfirmDialog(null, object, "Đổi mật khẩu", JOptionPane.OK_CANCEL_OPTION);
+
+		if (option == JOptionPane.OK_OPTION) {
+			if (String.valueOf((password.getPassword())).isBlank()
+					|| String.valueOf((newPassword.getPassword())).isBlank()
+					|| String.valueOf((reNewPassword.getPassword())).isBlank()) {
+				JOptionPane.showMessageDialog(this, "Bạn chưa nhập đầy đủ thông tin!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+			else if (!String.valueOf((newPassword.getPassword()))
+					.equals(String.valueOf((reNewPassword.getPassword())))) {
+				JOptionPane.showMessageDialog(this, "Mật khẩu và mật khẩu nhập lại không trùng khớp!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+			else if (String.valueOf((password.getPassword())).equals(String.valueOf((newPassword.getPassword())))) {
+				JOptionPane.showMessageDialog(this, "Mật khẩu mới giống mật khẩu cũ!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+			else {
+				sendMessage("Command_ChangePassword`" + String.valueOf((password.getPassword())) + "`" + String.valueOf((newPassword.getPassword())));
+			}
+		}
 	}
 
 	/**
@@ -732,6 +775,29 @@ public class Main extends JFrame {
 				}else if(receivedMessage.contains("Command_SendHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
 				}
+							
+				else if (receivedMessage.contains("Command_ForgotPasswordFail")) {
+					SignIn.forgotPasswordStatus = SignIn.ForgotPasswordStatus.Failed;
+				}
+
+				else if (receivedMessage.contains("Command_ForgotPasswordInvalid")) {
+					SignIn.forgotPasswordStatus = SignIn.ForgotPasswordStatus.Invalid;
+				}
+
+				else if (receivedMessage.contains("Command_ForgotPasswordSuccessful")) {
+					SignIn.forgotPasswordStatus = SignIn.ForgotPasswordStatus.Successful;
+				}
+
+				else if (receivedMessage.contains("Command_ChangePasswordFailed")) {
+					JOptionPane.showMessageDialog(null, "Mật khẩu hiện tại không đúng.", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+				else if (receivedMessage.contains("Command_ChangePasswordSuccessful")) {
+					JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công.", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				
 				else {
 					System.out.println(receivedMessage);
 				}
