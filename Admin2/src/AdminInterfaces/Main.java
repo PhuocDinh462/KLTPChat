@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import Server.Classes.Group;
+import Server.Classes.Message;
 import Server.Classes.User;
 import Server.Controllers.GroupController;
 import Server.Controllers.MessageController;
@@ -35,14 +36,11 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.awt.Color;
-
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
@@ -436,6 +434,21 @@ public class Main extends JFrame {
 		}
 	}
 
+//	public void sendMessage(Socket client, Message message) {
+//		try {
+//			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+//			 String array[] = new String[message.size()];// ArrayList to String Array conversion                
+//	            for(int j =0;j<message.size();j++){  
+//	              array[j] = message.get(j);  
+//	            }  
+//			bufferedWriter.write(message);
+//			bufferedWriter.newLine();
+//			bufferedWriter.flush();
+//
+//		} catch (Exception exception) {
+//			removeUser(client);
+//		}
+//	}
 //	/**
 //	 * Receive and Process Message from client
 //	 * 
@@ -449,7 +462,7 @@ public class Main extends JFrame {
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
 				if(receivedMessage != null) {
-					System.out.print(receivedMessage);
+					System.out.println(receivedMessage);
 				}
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					sendMessage(client, "Command_CloseConnect");
@@ -507,48 +520,6 @@ public class Main extends JFrame {
 					}
 
 				}
-//				else if (receivedMessage.contains("Command_SendMessage")) {
-//					String[] str = receivedMessage.split("`");
-//					if (containUser(str[1])) {
-//						for (Socket socket : users.keySet()) {
-//							if (users.get(socket).getInfor().getUsername().equals(str[1]))
-//								sendMessage(socket,
-//										"Command_Message`" + users.get(client).getInfor().getUsername() + "`" + str[2]);
-//						}
-//						sendMessage(client, "Command_SendMessageAccepted");
-//					} else {
-//						sendMessage(client, "Command_SendMessageFailed");
-//					}
-//
-//				} else if (receivedMessage.contains("Command_Accepted")) {
-//					waitingClientResponse = false;
-//
-//				} else if (receivedMessage.contains("Command_SendFile")) {
-//					String[] str = receivedMessage.split("`");
-//					if (containUser(str[1])) {
-//						sendMessage(client, "Command_SendMessageAccepted");
-//
-//						DataInputStream dataInputStream = new DataInputStream(client.getInputStream());
-//						byte[] data = new byte[dataInputStream.readInt()];
-//						dataInputStream.readFully(data, 0, data.length);
-//
-//						for (Socket socket : users.keySet()) {
-//							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-//								waitingClientResponse = true;
-//								sendMessage(socket,
-//										"Command_File`" + users.get(client).getInfor().getUsername() + "`" + str[2]);
-//								while (waitingClientResponse)
-//									System.out.print("");
-//								DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-//								dataOutputStream.writeInt(data.length);
-//								dataOutputStream.write(data);
-//							}
-//						}
-//					} else {
-//						sendMessage(client, "Command_SendMessageFailed");
-//					}
-//
-//				}
 
 				else if (receivedMessage.contains("Command_AddFriendRequest")) {
 					// ******************
@@ -682,12 +653,18 @@ public class Main extends JFrame {
 				}else if (receivedMessage.contains("Command_SendMessage")) {
 					String[] str =  receivedMessage.split("`");
 					if(containUsername(str[1])) {
+						System.out.print("người nhận: " + str[1] + " người gửi: " + str[3]);
 						for (Socket socket : users.keySet()) {
-							if(users.get(socket).getInfor().getUsername().equals(str[1]))
+							if(users.get(socket).getInfor().getUsername().equals(str[1])) {
 								sendMessage(socket, 
 										"Command_Message`"
 												+ users.get(client).getInfor().getUsername()//lấy thông tin người gửi tin nhắn kèm vào message
-												+"`"+str[2]);
+												+"`"+str[2]);//gửi dạng command + người nhận + nội dung
+								//lưu message gửi thành công vào database
+								messageController.create(new  Message(str[3], str[1] , str[2]));
+							}
+								
+								
 						}
 						sendMessage(client, "Command_SendMessageAccepted");
 						
@@ -720,6 +697,23 @@ public class Main extends JFrame {
 					}else {
 						sendMessage(client, "Command_SendMessageFailed");
 					}
+				}else if(receivedMessage.contains("Command_MessageHistory")) {
+					String[] str = receivedMessage.split("`");
+					MessageController messGetFdataBase = new MessageController();
+					if(str[2].equals("(Tin nhắn mới)")) {
+						str[2] = str[2].replace(" (Tin nhắn mới)", "");
+					}
+				
+					ArrayList<Message> historyMess= messGetFdataBase.findMessageBySender(str[1], str[2]);
+					Object[] objArr = historyMess.toArray();
+					String[] stringArray = Arrays.copyOf(objArr, objArr.length, String[].class);
+					System.out.print("710"+stringArray);
+					for(Socket socket : users.keySet()) {
+						if(users.get(socket).getInfor().getUsername().equals(str[1])) {
+							sendMessage(socket, "Command_SendHistoryMessage`" + "`" +str[1] + "`" + stringArray );
+						}
+					}
+					
 				}
 			}
 

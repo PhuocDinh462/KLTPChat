@@ -263,11 +263,21 @@ public class Main extends JFrame {
 		userTitle.setBounds(10, 10, 180, 24);
 		userTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
+//		usersList.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				super.mouseClicked(e);
+//				changeConversation(usersList.getSelectedValue());
+//				System.out.print("onclick userlist: " + usersList.getSelectedValue() + "\n");
+//			}
+//		});
 		usersList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				changeConversation(usersList.getSelectedValue());
+				String friendChat = usersList.getSelectedValue();
+				changeConversation(friendChat);
+				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
 			}
 		});
 
@@ -331,13 +341,7 @@ public class Main extends JFrame {
 		friendTitle.setBounds(10, 10, 180, 24);
 		friendTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-		usersList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				changeConversation(usersList.getSelectedValue());
-			}
-		});
+
 
 		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 
@@ -465,7 +469,7 @@ public class Main extends JFrame {
 
 				// Send file
 				messageStatus = MessageStatus.Waiting;
-				sendMessage("Command_SendFile`" + conversationTitle.getText() + "`"
+				sendMessage("Command_SendFile`" + conversationTitle.getText() + "`"//command+ người nhận + nội dung
 						+ fileChooser.getSelectedFile().getName());
 				while (messageStatus == MessageStatus.Waiting)
 					System.out.print("");
@@ -502,7 +506,7 @@ public class Main extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 		} else {
 			messageStatus = MessageStatus.Waiting;
-			sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message);
+			sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
 			while (messageStatus == MessageStatus.Waiting)
 				System.out.print("");
 
@@ -521,10 +525,15 @@ public class Main extends JFrame {
 	 * @param conversationUser String: Selected user
 	 */
 	private void changeConversation(String conversationUser) {
+		System.out.print("check conversation: " + conversationUser);
 		for (int i = 0; i < users.length; i++) {
 			if (users[i].contains(conversationUser)) {
 				users[i] = users[i].replace(" (Tin nhắn mới)", "");
+				
 				conversationUser = users[i];
+//				JPanel chatPanel = new JPanel();
+//				chatPanel.setBackground(Color.WHITE);
+//				chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			}
 		}
 		usersList.setListData(users);
@@ -532,11 +541,11 @@ public class Main extends JFrame {
 		conversationTitle.setText(conversationUser);
 
 		JPanel chatPanel = conversations.get(conversationUser);
-		if (chatPanel == null) {
-			chatPanel = new JPanel();
-			chatPanel.setBackground(Color.WHITE);
-			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-			conversations.put(conversationUser, chatPanel);
+		if (chatPanel == null) {//nếu mà đang ko chat vs ai 
+			 chatPanel = new JPanel();
+	            chatPanel.setBackground(Color.WHITE);
+	            chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+	            conversations.put(conversationUser, chatPanel);
 		}
 
 		conversationPanel.removeAll();
@@ -598,7 +607,7 @@ public class Main extends JFrame {
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
 				if(receivedMessage != null) {
-					System.out.print(receivedMessage);
+					System.out.println("610 "+receivedMessage);
 				}
 				
 				if (receivedMessage.contains("Command_CloseConnect")) {
@@ -611,7 +620,7 @@ public class Main extends JFrame {
 					users = new String[str.length - 1];
 					System.arraycopy(str, 1, users, 0, str.length - 1);
 					usersList.setListData(users);
-					System.out.print(usersList);
+//					System.out.print(usersList.ge);
 
 				} else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
 					SignIn.status = SignIn.SignInStatus.Accepted;
@@ -720,6 +729,8 @@ public class Main extends JFrame {
 
                     addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
 
+				}else if(receivedMessage.contains("Command_SendHistoryMessage")) {
+					System.out.println("\nget data base: " + receivedMessage);
 				}
 				else {
 					System.out.println(receivedMessage);
