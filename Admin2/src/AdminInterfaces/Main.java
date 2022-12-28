@@ -114,6 +114,11 @@ public class Main extends JFrame {
 		return false;
 	}
 
+	/**
+	 * Main Function
+	 * 
+	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -230,7 +235,9 @@ public class Main extends JFrame {
 		// Init component
 		PanelManage = new PanelManagement();
 		PanelLoginHis = new LoginHistory();
+		PanelLoginHis.setBounds(0, 0, 1070, 470);
 		PanelGroupChat = new GroupChat();
+		PanelGroupChat.setBounds(0, 0, 1070, 470);
 
 		// Panel Logo
 		JPanel panelAdmin = new JPanel();
@@ -481,6 +488,10 @@ public class Main extends JFrame {
 					sendMessage(client, "Command_CloseConnect");
 					int i = getAccountIndex(users.get(client).getInfor().getUsername());
 					accounts.get(i).getInfor().setStatus(false);
+
+					// Chuyển trạng thái offline cho user
+					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
+
 					bufferedReader.close();
 					removeUser(client);
 					client.close();
@@ -514,6 +525,12 @@ public class Main extends JFrame {
 							accounts.get(i).getTimeLogin().add(
 									DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
 							userController.addLogin(accounts.get(i).getId());
+
+							// Chuyển trạng thái online cho user
+							PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Online");
+							
+							//Thêm vào danh sách lịch sử đăng nhập
+							PanelLoginHis.addToListUser(accounts.get(i));
 						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
@@ -689,16 +706,16 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_CreateNewGroup")) {
 					String[] str = receivedMessage.split("`");
 					String creator = users.get(client).getInfor().getUsername();
-					ArrayList<String> members= new ArrayList<String>();
-					ArrayList<String> managers= new ArrayList<String>();
+					ArrayList<String> members = new ArrayList<String>();
+					ArrayList<String> managers = new ArrayList<String>();
 					members.add(creator);
 					managers.add(creator);
-					for(int i=2;i<str.length;i++) {
+					for (int i = 2; i < str.length; i++) {
 						members.add(str[i]);
 					}
 					Group createGroup = new Group(str[1], managers, members);
 					Boolean created = groupController.create(createGroup);
-					
+
 					if (created) {
 						sendMessage(client, "Command_CreateGroupAccepted");
 						groups.add(createGroup);

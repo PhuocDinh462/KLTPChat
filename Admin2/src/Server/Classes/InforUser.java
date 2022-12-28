@@ -1,6 +1,5 @@
 package Server.Classes;
 
-
 public class InforUser {
 
 	private String username;
@@ -11,7 +10,7 @@ public class InforUser {
 	private String gender;
 	private String email;
 	private Boolean blocked;
-	private Boolean status;
+	private Boolean online;
 
 	public InforUser() {
 
@@ -23,7 +22,7 @@ public class InforUser {
 		this.gender = "";
 		this.email = "";
 		this.blocked = false;
-		this.status = false;
+		this.online = false;
 	}
 
 	public InforUser(String username, String password, String fullname, String address, String DOB, String gender,
@@ -37,7 +36,7 @@ public class InforUser {
 		this.gender = gender;
 		this.email = email;
 		this.blocked = false;
-		this.status = false;
+		this.online = false;
 	}
 
 	public String getUsername() {
@@ -105,10 +104,10 @@ public class InforUser {
 	}
 
 	public Boolean getStatus() {
-		return status;
+		return online;
 	}
 
 	public void setStatus(Boolean status) {
-		this.status = status;
+		this.online = status;
 	}
 }

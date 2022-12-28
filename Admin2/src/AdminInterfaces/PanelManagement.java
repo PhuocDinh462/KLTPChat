@@ -127,6 +127,8 @@ public class PanelManagement extends JPanel {
 						ObjButtons[1]);
 				if (promptResult == 0)
 					deleteOrBlockedAccount(1);
+
+				// Gui yeu cau khoa client
 			}
 		});
 
@@ -143,7 +145,7 @@ public class PanelManagement extends JPanel {
 
 		btnAddNewAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				new CreateAccount(PanelManagement.this);
 			}
 		});
 	}
@@ -163,6 +165,10 @@ public class PanelManagement extends JPanel {
 		// Initialize row content of the table
 		setListItems(accounts);
 		setColSpaceTable();
+	}
+
+	public void refreshList() {
+		accounts = userController.getAllUsers();
 	}
 
 	public void setColSpaceTable() {
@@ -273,14 +279,38 @@ public class PanelManagement extends JPanel {
 		if (checkChange) {
 			accounts = userController.getAllUsers();
 			setListItems(accounts);
-		}
-		else title = "Không có gì để cập nhật!";
+		} else
+			title = "Không có gì để cập nhật!";
 
 		String[] ObjButtons = { "OK" };
 		JOptionPane.showOptionDialog(null, title, "Xác nhận", JOptionPane.DEFAULT_OPTION, JOptionPane.NO_OPTION, null,
 				ObjButtons, ObjButtons[0]);
 
 		System.out.println("Update status done!");
+	}
+
+	private int getAccountIndex(String username) {
+		for (int i = 0; i < accounts.size(); i++) {
+			if (accounts.get(i).getInfor().getUsername().equals(username))
+				return i;
+		}
+		return -1;
+	}
+
+	public Boolean changeStatusUserByUsername(String username, String status) {
+		int sizeRow = tableUsers.getRowCount();
+		int index = getAccountIndex(username);
+		Boolean online = status.equals("Online") ? true : false;
+
+		accounts.get(index).getInfor().setStatus(online);
+
+		for (int i = 0; i < sizeRow; i++) {
+			if (username.equals(tableUsers.getModel().getValueAt(i, 1))) {
+				tableUsers.getModel().setValueAt(status, i, 7);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -314,7 +344,7 @@ public class PanelManagement extends JPanel {
 				e.printStackTrace();
 			}
 
-			//Compare username
+			// Compare username
 			int checkName = 0;
 			for (int i = str1.length - 1, j = str2.length - 1; i >= 0; i--, j--) {
 				int check;

@@ -18,12 +18,12 @@ import Server.Models.UserModel;
 
 public class UserController extends UserModel {
 	public Boolean create(User newUser) {
-		
+
 		ArrayList<User> users = getAllUsers();
-		
+
 		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getInfor().getUsername().equals(newUser.getInfor().getUsername())|| 
-					users.get(i).getInfor().getEmail().equals(newUser.getInfor().getEmail())) {
+			if (users.get(i).getInfor().getUsername().equals(newUser.getInfor().getUsername())
+					|| users.get(i).getInfor().getEmail().equals(newUser.getInfor().getEmail())) {
 				System.out.println("Already have username or email in database");
 				return false;
 			}
@@ -147,6 +147,17 @@ public class UserController extends UserModel {
 			CollectionUser().updateOne(eq("_id", getUser.getId()), combine(set("InforUser", doc)),
 					new UpdateOptions().upsert(true));
 		}
+		System.out.println("successful");
+	}
+
+	public void updateStatus(String username, Boolean status) {
+		User getUser = getUserByUsername(username);
+		getUser.getInfor().setStatus(status);
+		Document doc = getDocumentInforUser(getUser);
+
+		CollectionUser().updateOne(eq("_id", getUser.getId()), combine(set("InforUser", doc)),
+				new UpdateOptions().upsert(true));
+
 		System.out.println("successful");
 	}
 
