@@ -12,5 +12,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="jgoodies-common-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/Users/trandungtien/Desktop/Java/jcalendar-1/lib/jcalendar-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -13,7 +13,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,12 +79,12 @@ class ButtonEditor extends DefaultCellEditor {
 	public Component getTableCellEditorComponent(JTable table, Object obj, boolean selected, int row, int col) {
 		String[] str = obj.toString().split(":");
 		lbl = str[0];
-		
-		if(str.length > 1)
+
+		if (str.length > 1)
 			command = str[1];
 
 		btn.setText(lbl);
-		
+
 		clicked = true;
 		return btn;
 	}
@@ -95,7 +94,7 @@ class ButtonEditor extends DefaultCellEditor {
 	public Object getCellEditorValue() {
 
 		if (clicked) {
-			if(!command.isBlank())
+			if (!command.isBlank())
 				Main.sendMessage(command);
 		}
 		// SET IT TO FALSE NOW THAT ITS CLICKED
@@ -168,7 +167,7 @@ public class Main extends JFrame {
 	 * @Attribute: String[] - List of users
 	 */
 	private static String[] users;
-	
+
 	/**
 	 * @Attribute: String[] - List of groups
 	 */
@@ -178,7 +177,7 @@ public class Main extends JFrame {
 	 * @Attribute: JList - usersList Display List of users
 	 */
 	private static final JList<String> usersList = new JList<>();
-	
+	private static final ArrayList<String> friendsList= new ArrayList<String>();
 	/**
 	 * @Attribute: JList - groupList Display List of groups
 	 */
@@ -274,14 +273,7 @@ public class Main extends JFrame {
 		userTitle.setBounds(10, 10, 180, 24);
 		userTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-//		usersList.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				super.mouseClicked(e);
-//				changeConversation(usersList.getSelectedValue());
-//				System.out.print("onclick userlist: " + usersList.getSelectedValue() + "\n");
-//			}
-//		});
+
 		usersList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -292,7 +284,7 @@ public class Main extends JFrame {
 				groupBtn.setVisible(false);
 			}
 		});
-		
+
 		groupList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -364,8 +356,6 @@ public class Main extends JFrame {
 		friendTitle.setBounds(10, 10, 180, 24);
 		friendTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-
-
 		userScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 
 		JLabel groupTitle = new JLabel("Nhóm");
@@ -389,7 +379,7 @@ public class Main extends JFrame {
 		JButton createGroupButton = new JButton("Tạo nhóm");
 		createGroupButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CreateGroup();
+				new CreateGroup(friendsList);
 			}
 		});
 		createGroupButton.setBounds(10, 582, 180, 21);
@@ -469,7 +459,7 @@ public class Main extends JFrame {
 		JButton deleteButton = new JButton("🗑");
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
-		
+
 		groupBtn = new JButton("👥");
 		groupBtn.setVisible(false);
 		groupBtn.addActionListener(new ActionListener() {
@@ -480,7 +470,7 @@ public class Main extends JFrame {
 		groupBtn.setBounds(429, 10, 50, 23);
 		middlePanel.add(groupBtn);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
-		
+
 		JButton changePasswordBtn = new JButton("🔧");
 		changePasswordBtn.addActionListener(e -> changePasswordBtnEventHandler());
 		changePasswordBtn.setBounds(240, 10, 50, 23);
@@ -490,7 +480,7 @@ public class Main extends JFrame {
 		setContentPane(contentPane);
 		pack();
 	}
-	
+
 	/**
 	 * Change password Button Event Handler
 	 * 
@@ -524,7 +514,8 @@ public class Main extends JFrame {
 			}
 
 			else {
-				sendMessage("Command_ChangePassword`" + String.valueOf((password.getPassword())) + "`" + String.valueOf((newPassword.getPassword())));
+				sendMessage("Command_ChangePassword`" + String.valueOf((password.getPassword())) + "`"
+						+ String.valueOf((newPassword.getPassword())));
 			}
 		}
 	}
@@ -544,7 +535,7 @@ public class Main extends JFrame {
 
 				// Send file
 				messageStatus = MessageStatus.Waiting;
-				sendMessage("Command_SendFile`" + conversationTitle.getText() + "`"//command+ người nhận + nội dung
+				sendMessage("Command_SendFile`" + conversationTitle.getText() + "`"// command+ người nhận + nội dung
 						+ fileChooser.getSelectedFile().getName());
 				while (messageStatus == MessageStatus.Waiting)
 					System.out.print("");
@@ -604,7 +595,7 @@ public class Main extends JFrame {
 		for (int i = 0; i < users.length; i++) {
 			if (users[i].contains(conversationUser)) {
 				users[i] = users[i].replace(" (Tin nhắn mới)", "");
-				
+
 				conversationUser = users[i];
 //				JPanel chatPanel = new JPanel();
 //				chatPanel.setBackground(Color.WHITE);
@@ -616,11 +607,11 @@ public class Main extends JFrame {
 		conversationTitle.setText(conversationUser);
 
 		JPanel chatPanel = conversations.get(conversationUser);
-		if (chatPanel == null) {//nếu mà đang ko chat vs ai 
-			 chatPanel = new JPanel();
-	            chatPanel.setBackground(Color.WHITE);
-	            chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-	            conversations.put(conversationUser, chatPanel);
+		if (chatPanel == null) {// nếu mà đang ko chat vs ai
+			chatPanel = new JPanel();
+			chatPanel.setBackground(Color.WHITE);
+			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+			conversations.put(conversationUser, chatPanel);
 		}
 
 		conversationPanel.removeAll();
@@ -681,10 +672,10 @@ public class Main extends JFrame {
 
 			while (true) {
 				String receivedMessage = bufferedReader.readLine() + "";
-				if(receivedMessage != null) {
-					System.out.println("610 "+receivedMessage);
+				if (receivedMessage != null) {
+					System.out.println("610 " + receivedMessage);
 				}
-				
+
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					bufferedReader.close();
 					server.close();
@@ -696,10 +687,13 @@ public class Main extends JFrame {
 					System.arraycopy(str, 1, users, 0, str.length - 1);
 					usersList.removeAll();
 					usersList.setListData(users);
+					for (String e: users) {
+						friendsList.add(e);
+					}
 //					System.out.print(usersList.ge);
 
 				}
-				
+
 				else if (receivedMessage.contains("Command_GroupList")) {
 					String[] str = receivedMessage.split("`");
 					groups = new String[str.length - 1];
@@ -707,7 +701,7 @@ public class Main extends JFrame {
 					groupList.removeAll();
 					groupList.setListData(groups);
 				}
-				
+
 				else if (receivedMessage.contains("Command_AccountVerifyAccepted")) {
 					SignIn.status = SignIn.SignInStatus.Accepted;
 
@@ -792,33 +786,33 @@ public class Main extends JFrame {
 					FriendList.deleteRow(Integer.parseInt(str[1]));
 
 				} else if (receivedMessage.contains("Command_SendMessageAccepted")) {
-                    messageStatus = MessageStatus.Accepted;
+					messageStatus = MessageStatus.Accepted;
 
-                } else if (receivedMessage.contains("Command_SendMessageFailed")) {
-                    messageStatus = MessageStatus.Failed;
+				} else if (receivedMessage.contains("Command_SendMessageFailed")) {
+					messageStatus = MessageStatus.Failed;
 
-                } else if (receivedMessage.contains("Command_Message")) {
-                    String[] str = receivedMessage.split("`");
-                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+				} else if (receivedMessage.contains("Command_Message")) {
+					String[] str = receivedMessage.split("`");
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
 
-                } else if (receivedMessage.contains("Command_File")) {
-                    sendMessage("Command_Accepted");
-                    String[] str = receivedMessage.split("`");
+				} else if (receivedMessage.contains("Command_File")) {
+					sendMessage("Command_Accepted");
+					String[] str = receivedMessage.split("`");
 
-                    DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
-                    byte[] data = new byte[dataInputStream.readInt()];
-                    dataInputStream.readFully(data, 0, data.length);
+					DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
+					byte[] data = new byte[dataInputStream.readInt()];
+					dataInputStream.readFully(data, 0, data.length);
 
-                    FileOutputStream fileOutputStream = new FileOutputStream(str[2]);
-                    fileOutputStream.write(data);
-                    fileOutputStream.close();
+					FileOutputStream fileOutputStream = new FileOutputStream(str[2]);
+					fileOutputStream.write(data);
+					fileOutputStream.close();
 
-                    addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
 
-				}else if(receivedMessage.contains("Command_SendHistoryMessage")) {
+				} else if (receivedMessage.contains("Command_SendHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
 				}
-							
+
 				else if (receivedMessage.contains("Command_ForgotPasswordFail")) {
 					SignIn.forgotPasswordStatus = SignIn.ForgotPasswordStatus.Failed;
 				}
@@ -840,7 +834,7 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
+
 				else {
 					System.out.println(receivedMessage);
 				}

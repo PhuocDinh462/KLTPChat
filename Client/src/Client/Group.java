@@ -29,6 +29,14 @@ public class Group {
 		listUsers = newGroup.getlistUsers();
 		listMessage = newGroup.getmessageId();
 	}
+	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers) {
+		this._id = UUID.randomUUID().toString();
+		this.name = groupName;
+		createTime = new String();
+		this.listManagers = managers;
+		this.listUsers = listUsers;
+		this.listMessage = null;
+	}
 
 	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers,
 			ArrayList<String> messageId) {

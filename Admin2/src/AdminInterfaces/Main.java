@@ -526,6 +526,7 @@ public class Main extends JFrame {
 
 					User createUser = new User(str[1], str[2], str[3], str[4], str[5], str[6], str[7]);
 					Boolean created = userController.create(createUser);
+					accounts.add(createUser);
 					if (created) {
 						sendMessage(client, "Command_CreateAccountAccepted");
 					} else {
@@ -687,8 +688,15 @@ public class Main extends JFrame {
 
 				else if (receivedMessage.contains("Command_CreateNewGroup")) {
 					String[] str = receivedMessage.split("`");
-					String userID = users.get(client).getId();
-					Group createGroup = new Group(str[1], userID);
+					String creator = users.get(client).getInfor().getUsername();
+					ArrayList<String> members= new ArrayList<String>();
+					ArrayList<String> managers= new ArrayList<String>();
+					members.add(creator);
+					managers.add(creator);
+					for(int i=2;i<str.length;i++) {
+						members.add(str[i]);
+					}
+					Group createGroup = new Group(str[1], managers, members);
 					Boolean created = groupController.create(createGroup);
 					if (created) {
 						sendMessage(client, "Command_CreateGroupAccepted");
@@ -809,6 +817,11 @@ public class Main extends JFrame {
 						// Gửi thông báo về client:
 						sendMessage(client, "Command_ChangePasswordSuccessful");
 					}
+				}
+
+				else if (receivedMessage.contains("Command_AddUserGroupList")) {
+					String[] str = receivedMessage.split("`");
+
 				}
 
 			}
