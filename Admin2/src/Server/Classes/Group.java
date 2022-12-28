@@ -36,7 +36,7 @@ public class Group {
 		createTime = new String();
 		this.listManagers = managers;
 		this.listUsers = listUsers;
-		this.listMessage = null;
+		this.listMessage = new ArrayList<String>();
 	}
 	public Group(String groupName, ArrayList<String> managers, ArrayList<String> listUsers,
 			ArrayList<String> messageId) {

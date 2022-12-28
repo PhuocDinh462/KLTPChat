@@ -22,7 +22,7 @@ public class GroupController extends GroupModel {
 
 		for (int i = 0; i < groups.size(); i++) {
 			if (groups.get(i).getGroupName().equals(grp.getGroupName())) {
-				System.out.println("Already have username or email in database");
+				System.out.println("Already have this group name in database");
 				return false;
 			}
 		}

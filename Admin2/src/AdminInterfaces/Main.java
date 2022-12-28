@@ -698,8 +698,10 @@ public class Main extends JFrame {
 					}
 					Group createGroup = new Group(str[1], managers, members);
 					Boolean created = groupController.create(createGroup);
+					
 					if (created) {
 						sendMessage(client, "Command_CreateGroupAccepted");
+						groups.add(createGroup);
 					} else {
 						sendMessage(client, "Command_CreateGroupFailed");
 					}

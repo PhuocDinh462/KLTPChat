@@ -13,6 +13,8 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
@@ -61,8 +63,7 @@ public class CreateGroup extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField groupNameTextField;
-	public static ArrayList<String>groupMembers= new ArrayList<String>();
-
+	private static ArrayList<String> groupMembers = new ArrayList<String>();
 
 	/**
 	 * Create the frame.
@@ -117,13 +118,20 @@ public class CreateGroup extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				int i = friendList.getSelectedIndex();
-				listModelGroup.addElement(friendList.getModel().getElementAt(i));
-				groupMembers.add(friendList.getModel().getElementAt(i));
-				System.out.print("size");
-				System.out.println( groupMembers.size());
-				System.out.println(groupMembers.get(0));
-				System.out.println(groupMembers);
-				friendList.remove(i);
+				Boolean check = false;
+				for(int k=0 ;i<listModelGroup.size();k++) {
+					if(listModelGroup.get(k)==friendList.getModel().getElementAt(i)) {
+						check=true;
+						break;
+					}
+				}
+				if(!check) {
+					listModelGroup.addElement(friendList.getModel().getElementAt(i));
+					groupMembers.add(friendList.getModel().getElementAt(i));
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 		});
 
@@ -141,13 +149,28 @@ public class CreateGroup extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				int i = groupMemberList.getSelectedIndex();
-				listModelFriend.addElement(groupMemberList.getModel().getElementAt(i));
+				System.out.println(i);
+				System.out.println(groupMembers.get(0));
+				System.out.println(groupMembers.size());
 				for(int j=0 ;j<groupMembers.size();i++) {
 					if(groupMembers.get(j)==groupMemberList.getModel().getElementAt(i)) {
+						System.out.println(groupMembers.get(0));
 						groupMembers.remove(j);
+						System.out.println(groupMembers.size());
 					}
 				}
-				groupMemberList.remove(i);
+				System.out.println(groupMemberList.getModel().getElementAt(0));
+				String [] ListData = new String[groupMemberList.getModel().getSize()];
+			    for (int t = 0; i < ListData.length; i++) {
+			        if(t == i){
+			            
+			        }else{
+			            ListData[i] = groupMemberList.getModel().getElementAt(t);
+			        }
+			    }
+			    groupMemberList.setListData(ListData);
+			    System.out.println(groupMemberList.getModel().getElementAt(0));
+				groupMemberScroll.setRowHeaderView(groupMemberList);
 			}
 		});
 
@@ -178,23 +201,33 @@ public class CreateGroup extends JFrame {
 		contentPane.add(separator_1);
 
 		createGroupBtn.addActionListener(e -> createGroupButtonEventHandler(groupNameTextField.getText(),groupMembers));
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent we) {
+
+				for(int i=0 ;i<groupMembers.size();i++) {
+					groupMembers.remove(i);
+				}
+				}
+			});
+
 	}
 
 	void createGroupButtonEventHandler(String groupName, ArrayList<String> members) {
 
 		if (groupName.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Bạn chưa nhập tên nhóm!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-		}else if(members.size()==0) {
+		} else if (members.size() == 0) {
 			JOptionPane.showMessageDialog(this, "Bạn chưa thêm bạn bè vào nhóm!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-		} 
-		else {
+		} else {
 			status = CreateGroup.CreateGroupStatus.Waiting;
-			String msg= ("Command_CreateNewGroup`" + groupName);
-			for(int i=0 ; i<members.size();i++) {
-				msg=(msg + "`" + members.get(i));
+			String msg = ("Command_CreateNewGroup`" + groupName);
+			for (int i = 0; i < members.size(); i++) {
+				msg = (msg + "`" + members.get(i));
 			}
 			Main.sendMessage(msg);
-			
+
 			while (status == CreateGroup.CreateGroupStatus.Waiting)
 				System.out.print("");
 
@@ -205,6 +238,5 @@ public class CreateGroup extends JFrame {
 			}
 		}
 	}
-
 
 }
