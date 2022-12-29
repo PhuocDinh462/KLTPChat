@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -109,8 +110,11 @@ public class CreateGroup extends JFrame {
 		DefaultListModel<String> listModelFriend = new DefaultListModel<String>();
 		DefaultListModel<String> listModelGroup = new DefaultListModel<String>();
 		
-		for (String item : friendsList) {
-		    listModelFriend.addElement(item);
+		HashSet<String> set = new HashSet<String>();
+		set.addAll(friendsList);
+		ArrayList<String> uniqueFriendsList = new ArrayList<String>(set);
+		for (String item : uniqueFriendsList) {
+			listModelFriend.addElement(item);
 		}
 		JList<String> friendList = new JList<String>(listModelFriend);
 		friendList.setVisibleRowCount(10);
@@ -255,6 +259,7 @@ public class CreateGroup extends JFrame {
 
 			if (status == CreateGroup.CreateGroupStatus.Accepted) {
 				JOptionPane.showMessageDialog(this, "Tạo thành công!", "Thành công", JOptionPane.OK_OPTION);
+				setVisible(false);
 			} else {
 				JOptionPane.showMessageDialog(this, "Tạo thất bại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
 			}
