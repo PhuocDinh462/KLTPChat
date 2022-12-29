@@ -3,6 +3,7 @@ package Client;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataListener;
 import javax.swing.table.DefaultTableModel;
 
 import Client.Main.MessageStatus;
@@ -64,6 +65,8 @@ public class CreateGroup extends JFrame {
 	private JPanel contentPane;
 	private JTextField groupNameTextField;
 	private static ArrayList<String> groupMembers = new ArrayList<String>();
+	private ArrayList<Boolean> CheckAdding= new ArrayList<Boolean>();
+	
 
 	/**
 	 * Create the frame.
@@ -112,28 +115,10 @@ public class CreateGroup extends JFrame {
 		JList<String> friendList = new JList<String>(listModelFriend);
 		friendList.setVisibleRowCount(10);
 		friendScroll.setViewportView(friendList);
-		
-		friendList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				int i = friendList.getSelectedIndex();
-				Boolean check = false;
-				for(int k=0 ;i<listModelGroup.size();k++) {
-					if(listModelGroup.get(k)==friendList.getModel().getElementAt(i)) {
-						check=true;
-						break;
-					}
-				}
-				if(!check) {
-					listModelGroup.addElement(friendList.getModel().getElementAt(i));
-					groupMembers.add(friendList.getModel().getElementAt(i));
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
-		});
+		for(int l= 0 ; l< listModelFriend.size();l++) {
+			CheckAdding.add(false);
+		}
+
 
 		JScrollPane groupMemberScroll = new JScrollPane((Component) null);
 		groupMemberScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -143,36 +128,73 @@ public class CreateGroup extends JFrame {
 		JList<String> groupMemberList = new JList<String>(listModelGroup);
 		groupMemberList.setVisibleRowCount(10);
 		groupMemberScroll.setRowHeaderView(groupMemberList);
+
+		
+		friendList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				int index = friendList.getSelectedIndex();
+				for(int k=0 ;k<groupMemberList.getModel().getSize();k++) {
+					System.out.println(friendList.getModel().getElementAt(index));
+					if(groupMemberList.getModel().getElementAt(k)==friendList.getModel().getElementAt(index)) {	
+						CheckAdding.set(index,true);
+						break;
+					}
+					else {
+						CheckAdding.set(index, false);
+					}
+				}
+				if(!CheckAdding.get(index)) {
+					listModelGroup.addElement(friendList.getModel().getElementAt(index));
+					String [] ListData = new String[listModelGroup.getSize()];
+				    for (int t = 0; t < listModelGroup.getSize(); t++) {
+				    	ListData[t] = listModelGroup.get(t);
+				    }
+				    groupMemberList.setListData(ListData);
+					groupMembers.add(friendList.getModel().getElementAt(index));
+					groupMemberScroll.setRowHeaderView(groupMemberList);
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
+				}
+				System.out.println(CheckAdding.get(index));
+			}
+		});
 		
 		groupMemberList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				int i = groupMemberList.getSelectedIndex();
-				System.out.println(i);
-				System.out.println(groupMembers.get(0));
-				System.out.println(groupMembers.size());
-				for(int j=0 ;j<groupMembers.size();i++) {
-					if(groupMembers.get(j)==groupMemberList.getModel().getElementAt(i)) {
-						System.out.println(groupMembers.get(0));
+				int index = groupMemberList.getSelectedIndex();
+				for(int j=0 ;j<groupMembers.size();j++) {
+					if(groupMembers.get(j)==groupMemberList.getModel().getElementAt(index)) {
+						for(int s=0;s<listModelFriend.size();s++) {
+							if(groupMembers.get(j)==listModelFriend.get(s)) {
+								CheckAdding.set(s, false);
+								break;
+							}
+						}
 						groupMembers.remove(j);
-						System.out.println(groupMembers.size());
+						break;
 					}
 				}
-				System.out.println(groupMemberList.getModel().getElementAt(0));
 				String [] ListData = new String[groupMemberList.getModel().getSize()];
-			    for (int t = 0; i < ListData.length; i++) {
-			        if(t == i){
+			    for (int t = 0; t < ListData.length; t++) {
+			        if(t == index){
 			            
 			        }else{
-			            ListData[i] = groupMemberList.getModel().getElementAt(t);
+			            ListData[t] = groupMemberList.getModel().getElementAt(t);
 			        }
 			    }
-			    groupMemberList.setListData(ListData);
-			    System.out.println(groupMemberList.getModel().getElementAt(0));
+			    for (int t=0 ; t <ListData.length;t++) {
+			    	listModelGroup.set(t, ListData[t]);
+			    }
+			    groupMemberList.setListData(ListData);;
 				groupMemberScroll.setRowHeaderView(groupMemberList);
 			}
 		});
+		
 
 		JLabel lblDanhSchBn = new JLabel("Danh sách bạn bè");
 		lblDanhSchBn.setFont(new Font("Arial", Font.BOLD, 12));
