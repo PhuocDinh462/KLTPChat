@@ -628,6 +628,7 @@ public class Main extends JFrame {
 	 * @param bubbleType BubbleType
 	 */
 	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType) {
+		System.out.println("code 631: gia tri dau vao: "+ username + " " + content);
 		for (int i = 0; i < users.length; i++) {
 			if (users[i].contains(username) && !users[i].contains(" (Tin nhắn mới)")) {
 				if (!conversationTitle.getText().equals(users[i]))
@@ -645,6 +646,7 @@ public class Main extends JFrame {
 
 		conversations.get(username).add(new ChatBubble(bubbleType, content));
 		conversationPanel.revalidate();
+		System.out.println("code 648: Them tin nhan thanh cong");
 	}
 
 	/**
@@ -811,6 +813,21 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_SendHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
+					String[] str = receivedMessage.split("`");
+					for (int index = 2; index < str.length; index ++) {
+						String[] mess = str[index].split(":");
+						System.out.println("\n code 817: " +"username: "+ str[1] + " " + mess[0] + " " + mess[2] );
+						if(str[1].equals(mess[0])) {
+							System.out.println("code 819: mot tin nhan vua duoc them vao");
+							//nguoi gui = usernam thi them vao ben phai
+							addNewMessage(mess[1], mess[2], ChatBubble.BubbleType.Mine);
+						}else if(!str[1].equals(mess[0]) ) {
+							System.out.println("code 823: mot tin nhan vua duoc them vao");
+							//nguoc lai la ben trai
+							addNewMessage(mess[0], mess[2], ChatBubble.BubbleType.Others);
+						}
+					}
+					
 				}
 
 				else if (receivedMessage.contains("Command_ForgotPasswordFail")) {

@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.awt.Color;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -766,14 +767,28 @@ public class Main extends JFrame {
 					if (str[2].equals("(Tin nhắn mới)")) {
 						str[2] = str[2].replace(" (Tin nhắn mới)", "");
 					}
-
+					String stringArray = "";
+					//lay tin  nhan 1 gui 2
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
-					Object[] objArr = historyMess.toArray();
-					String[] stringArray = Arrays.copyOf(objArr, objArr.length, String[].class);
-					System.out.print("710" + stringArray);
+					for (Message message : historyMess) {
+						stringArray = stringArray.concat(message.getSenderId() + ":" 
+														+ message.getReceiverId() + ":" 
+														+ message.getContent() + "`"
+														);
+					}
+					historyMess = messGetFdataBase.findMessageBySender(str[2], str[1]);
+					for (Message message : historyMess) {
+						stringArray = stringArray.concat(message.getSenderId() + ":" 
+								+ message.getReceiverId() + ":" 
+								+ message.getContent() + "`"
+								);
+					}
+					System.out.print("code 786: " + stringArray);
+					
+					
 					for (Socket socket : users.keySet()) {
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-							sendMessage(socket, "Command_SendHistoryMessage`" + "`" + str[1] + "`" + stringArray);
+							sendMessage(socket, "Command_SendHistoryMessage`" + str[1] + "`" + stringArray);
 						}
 					}
 
