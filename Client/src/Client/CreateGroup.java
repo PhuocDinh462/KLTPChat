@@ -21,9 +21,11 @@ import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
@@ -67,12 +69,12 @@ public class CreateGroup extends JFrame {
 	private JPanel contentPane;
 	private JTextField groupNameTextField;
 	private static ArrayList<String> groupMembers = new ArrayList<String>();
-	private ArrayList<Boolean> CheckAdding= new ArrayList<Boolean>();
-	
+	private ArrayList<Boolean> CheckAdding = new ArrayList<Boolean>();
 
 	/**
 	 * Create the frame.
-	 * @param userslist2 
+	 * 
+	 * @param userslist2
 	 */
 	public CreateGroup(ArrayList<String> friendsList) {
 		setBounds(100, 100, 355, 444);
@@ -106,11 +108,10 @@ public class CreateGroup extends JFrame {
 		friendScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
 		friendScroll.setBounds(10, 114, 150, 238);
 		contentPane.add(friendScroll);
-		
-		
+
 		DefaultListModel<String> listModelFriend = new DefaultListModel<String>();
 		DefaultListModel<String> listModelGroup = new DefaultListModel<String>();
-		
+
 		HashSet<String> set = new HashSet<String>();
 		set.addAll(friendsList);
 		ArrayList<String> uniqueFriendsList = new ArrayList<String>(set);
@@ -121,10 +122,9 @@ public class CreateGroup extends JFrame {
 		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		friendList.setVisibleRowCount(10);
 		friendScroll.setViewportView(friendList);
-		for(int l= 0 ; l< listModelFriend.size();l++) {
+		for (int l = 0; l < listModelFriend.size(); l++) {
 			CheckAdding.add(false);
 		}
-
 
 		JScrollPane groupMemberScroll = new JScrollPane((Component) null);
 		groupMemberScroll.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -136,48 +136,54 @@ public class CreateGroup extends JFrame {
 		groupMemberList.setVisibleRowCount(10);
 		groupMemberScroll.setRowHeaderView(groupMemberList);
 
-		
 		friendList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				int index = friendList.getSelectedIndex();
-				for(int k=0 ;k<groupMemberList.getModel().getSize();k++) {
+				for (int k = 0; k < groupMemberList.getModel().getSize(); k++) {
 					System.out.println(friendList.getModel().getElementAt(index));
-					if(groupMemberList.getModel().getElementAt(k)==friendList.getModel().getElementAt(index)) {	
-						CheckAdding.set(index,true);
+					if (groupMemberList.getModel().getElementAt(k) == friendList.getModel().getElementAt(index)) {
+						CheckAdding.set(index, true);
 						break;
-					}
-					else {
+					} else {
 						CheckAdding.set(index, false);
 					}
 				}
-				if(!CheckAdding.get(index)) {
+				if (!CheckAdding.get(index)) {
 					listModelGroup.addElement(friendList.getModel().getElementAt(index));
-					String [] ListData = new String[listModelGroup.getSize()];
-				    for (int t = 0; t < listModelGroup.getSize(); t++) {
-				    	ListData[t] = listModelGroup.get(t);
-				    }
-				    groupMemberList.setListData(ListData);
+					String[] ListData = new String[listModelGroup.getSize()];
+					for (int t = 0; t < listModelGroup.getSize(); t++) {
+						System.out.println("List Model"+ listModelGroup.get(t));
+						System.out.println("List Data" + ListData[t]);
+						ListData[t] = listModelGroup.get(t);
+					}
+					Set<String> set = new HashSet<>(); 
+
+					for(String str : ListData) { 
+					   set.add(str); 
+					}
+					ListData = set.toArray(new String[0]);
+					groupMemberList.setListData(ListData);
 					groupMembers.add(friendList.getModel().getElementAt(index));
 					groupMemberScroll.setRowHeaderView(groupMemberList);
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 				System.out.println(CheckAdding.get(index));
 			}
 		});
-		
+
 		groupMemberList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				int index = groupMemberList.getSelectedIndex();
-				for(int j=0 ;j<groupMembers.size();j++) {
-					if(groupMembers.get(j)==groupMemberList.getModel().getElementAt(index)) {
-						for(int s=0;s<listModelFriend.size();s++) {
-							if(groupMembers.get(j)==listModelFriend.get(s)) {
+				for (int j = 0; j < groupMembers.size(); j++) {
+					if (groupMembers.get(j) == groupMemberList.getModel().getElementAt(index)) {
+						for (int s = 0; s < listModelFriend.size(); s++) {
+							if (groupMembers.get(j) == listModelFriend.get(s)) {
 								CheckAdding.set(s, false);
 								break;
 							}
@@ -186,28 +192,36 @@ public class CreateGroup extends JFrame {
 						break;
 					}
 				}
-				String [] ListData = new String[groupMemberList.getModel().getSize()];
-			    for (int t = 0; t < ListData.length; t++) {
-			        if(t == index){
-			            
-			        }else{
-			            ListData[t] = groupMemberList.getModel().getElementAt(t);
-			        }
-			    }
-			    for (int t=0 ; t <ListData.length;t++) {
-			    	listModelGroup.set(t, ListData[t]);
-			    }
-			    groupMemberList.setListData(ListData);;
+				String[] ListData = new String[groupMemberList.getModel().getSize()];
+				for (int t = 0; t < ListData.length; t++) {
+					if(t==index) {
+						
+					}
+					else{
+						ListData[t] = groupMemberList.getModel().getElementAt(t);
+					}
+				}
+				Set<String> set = new HashSet<>(); 
+
+				for(String str : ListData) { 
+				   set.add(str); 
+				}
+				ListData = set.toArray(new String[0]);
+
+				for (int t = 0; t < ListData.length; t++) {
+					System.out.println(ListData[t]);
+					listModelGroup.set(t, ListData[t]);
+				}
+				groupMemberList.removeAll();
+				groupMemberList.setListData(ListData);
 				groupMemberScroll.setRowHeaderView(groupMemberList);
 			}
 		});
-		
 
 		JLabel lblDanhSchBn = new JLabel("Danh sách bạn bè");
 		lblDanhSchBn.setFont(new Font("Arial", Font.BOLD, 12));
 		lblDanhSchBn.setBounds(10, 97, 204, 24);
 		contentPane.add(lblDanhSchBn);
-
 
 		JLabel lblDanhSchThnh = new JLabel("Thành viên nhóm");
 		lblDanhSchThnh.setFont(new Font("Arial", Font.BOLD, 12));
@@ -229,17 +243,18 @@ public class CreateGroup extends JFrame {
 		separator_1.setBounds(170, 124, 3, 228);
 		contentPane.add(separator_1);
 
-		createGroupBtn.addActionListener(e -> createGroupButtonEventHandler(groupNameTextField.getText(),groupMembers));
-		
+		createGroupBtn
+				.addActionListener(e -> createGroupButtonEventHandler(groupNameTextField.getText(), groupMembers));
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent we) {
 
-				for(int i=0 ;i<groupMembers.size();i++) {
+				for (int i = 0; i < groupMembers.size(); i++) {
 					groupMembers.remove(i);
 				}
-				}
-			});
+			}
+		});
 
 	}
 
