@@ -869,6 +869,49 @@ public class Main extends JFrame {
 						}
 					}
 				}
+				
+				else if (receivedMessage.contains("Command_ShowGroupManagement")) {
+					String[] str = receivedMessage.split("`");
+					String str1 = "Command_ShowGroupManagement";
+					int index = getGroupIndex(str[1]);
+
+					for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+						if(groups.get(index).getManagers().contains(groups.get(index).getlistUsers().get(i)))
+							str1 += "`" + groups.get(index).getlistUsers().get(i) + ":Quản trị viên";
+						else
+							str1 += "`" + groups.get(index).getlistUsers().get(i) + ":Thành viên";
+					}
+
+					sendMessage(client, str1);
+				}
+				
+				else if (receivedMessage.contains("Command_ChangeGroupName")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+					
+					// Kiểm tra quyền admin:
+					if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_ChangeGroupNameNotPermitted");
+					
+					// Kiểm tra xem tên mới tồn tại hay chưa:
+					else if(getGroupIndex(str[2]) != -1)
+						sendMessage(client, "Command_ChangeGroupNameFail");
+					
+					else {
+						sendMessage(client, "Command_ChangeGroupNameSuccessful");
+						groups.get(index).setGroupName(str[2]);
+						groupController.update(groups.get(index).getGroupId(), str[2]);
+						
+						for(int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+							for (Socket socket : users.keySet()) {
+								if (users.get(socket).getInfor().getUsername().equals(groups.get(index).getlistUsers().get(i))) {
+									sendGroupList(socket, users.get(socket));
+									sendMessage(socket, "Command_ChangeGroupNameSetConversationTitle`" + str[2]);
+								}
+							}
+						}
+					}
+				}
 
 			}
 

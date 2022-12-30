@@ -471,7 +471,8 @@ public class Main extends JFrame {
 		groupBtn.setVisible(false);
 		groupBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GroupManagement();
+				if(conversationStatus == false)
+					sendMessage("Command_ShowGroupManagement`" + conversationTitle.getText());
 			}
 		});
 		groupBtn.setBounds(429, 10, 50, 23);
@@ -897,6 +898,28 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, false);
 
+				}
+				
+				else if (receivedMessage.contains("Command_ShowGroupManagement")) {
+					String[] str = receivedMessage.split("`");
+					new GroupManagement(conversationTitle.getText(), str);
+				}
+				
+				else if (receivedMessage.contains("Command_ChangeGroupNameFail")) {
+					JOptionPane.showMessageDialog(null, "Tên nhóm đã tồn tại, vui lòng chọn tên khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_ChangeGroupNameNotPermitted")) {
+					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_ChangeGroupNameSuccessful")) {
+					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_ChangeGroupNameSetConversationTitle")) {
+					String[] str = receivedMessage.split("`");
+					conversationTitle.setText(str[1]);
 				}
 
 				else {
