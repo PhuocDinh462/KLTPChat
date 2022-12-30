@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.awt.Color;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -114,11 +115,6 @@ public class Main extends JFrame {
 		}
 		return false;
 	}
-
-	/**
-	 * Main Function
-	 * 
-	 */
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -236,9 +232,7 @@ public class Main extends JFrame {
 		// Init component
 		PanelManage = new PanelManagement();
 		PanelLoginHis = new LoginHistory();
-		PanelLoginHis.setBounds(0, 0, 1070, 470);
 		PanelGroupChat = new GroupChat();
-		PanelGroupChat.setBounds(0, 0, 1070, 470);
 
 		// Panel Logo
 		JPanel panelAdmin = new JPanel();
@@ -366,6 +360,14 @@ public class Main extends JFrame {
 
 		System.out.println(username + "connection success!");
 	}
+	public Socket getSocketByUser (String username) {
+		for (Socket socket : users.keySet()) {
+			if (users.get(socket).getInfor().getUsername().equals(username)) {
+				return socket;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Remove online user
@@ -489,10 +491,6 @@ public class Main extends JFrame {
 					sendMessage(client, "Command_CloseConnect");
 					int i = getAccountIndex(users.get(client).getInfor().getUsername());
 					accounts.get(i).getInfor().setStatus(false);
-
-					// Chuyển trạng thái offline cho user
-					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
-
 					bufferedReader.close();
 					removeUser(client);
 					client.close();
@@ -526,12 +524,6 @@ public class Main extends JFrame {
 							accounts.get(i).getTimeLogin().add(
 									DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
 							userController.addLogin(accounts.get(i).getId());
-
-							// Chuyển trạng thái online cho user
-							PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Online");
-							
-							//Thêm vào danh sách lịch sử đăng nhập
-							PanelLoginHis.addToListUser(accounts.get(i));
 						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
@@ -718,8 +710,14 @@ public class Main extends JFrame {
 					Boolean created = groupController.create(createGroup);
 
 					if (created) {
-						sendMessage(client, "Command_CreateGroupAccepted");
 						groups.add(createGroup);
+						sendMessage(client, "Command_CreateGroupAccepted");
+						for(int i =0 ; i <members.size();i++){
+							User testUser = userController.getUserByUsername(members.get(i));
+							Socket testSocket = getSocketByUser(members.get(i));
+							if (testSocket != null)
+								addUserLogin(testSocket, members.get(i));
+						}
 					} else {
 						sendMessage(client, "Command_CreateGroupFailed");
 					}
@@ -784,14 +782,23 @@ public class Main extends JFrame {
 					if (str[2].equals("(Tin nhắn mới)")) {
 						str[2] = str[2].replace(" (Tin nhắn mới)", "");
 					}
-
+					String stringArray = "";
+					// lay tin nhan 1 gui 2
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
-					Object[] objArr = historyMess.toArray();
-					String[] stringArray = Arrays.copyOf(objArr, objArr.length, String[].class);
-					System.out.print("710" + stringArray);
+					for (Message message : historyMess) {
+						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
+								+ message.getContent() + "`");
+					}
+					historyMess = messGetFdataBase.findMessageBySender(str[2], str[1]);
+					for (Message message : historyMess) {
+						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
+								+ message.getContent() + "`");
+					}
+					System.out.print("code 786: " + stringArray);
+
 					for (Socket socket : users.keySet()) {
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-							sendMessage(socket, "Command_SendHistoryMessage`" + "`" + str[1] + "`" + stringArray);
+							sendMessage(socket, "Command_SendHistoryMessage`" + str[1] + "`" + stringArray);
 						}
 					}
 
@@ -837,11 +844,6 @@ public class Main extends JFrame {
 						// Gửi thông báo về client:
 						sendMessage(client, "Command_ChangePasswordSuccessful");
 					}
-				}
-
-				else if (receivedMessage.contains("Command_AddUserGroupList")) {
-					String[] str = receivedMessage.split("`");
-
 				}
 
 			}
