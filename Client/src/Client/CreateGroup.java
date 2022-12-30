@@ -142,7 +142,7 @@ public class CreateGroup extends JFrame {
 				super.mouseClicked(e);
 				int index = friendList.getSelectedIndex();
 				for (int k = 0; k < groupMemberList.getModel().getSize(); k++) {
-					System.out.println(friendList.getModel().getElementAt(index));
+//		          System.out.println(friendList.getModel().getElementAt(index));
 					if (groupMemberList.getModel().getElementAt(k) == friendList.getModel().getElementAt(index)) {
 						CheckAdding.set(index, true);
 						break;
@@ -152,21 +152,24 @@ public class CreateGroup extends JFrame {
 				}
 				if (!CheckAdding.get(index)) {
 					listModelGroup.addElement(friendList.getModel().getElementAt(index));
+
 					String[] ListData = new String[listModelGroup.getSize()];
 					for (int t = 0; t < listModelGroup.getSize(); t++) {
-						System.out.println("List Model"+ listModelGroup.get(t));
-						System.out.println("List Data" + ListData[t]);
+//		            System.out.println("List Model"+ listModelGroup.get(t));
+//		            System.out.println("List Data" + ListData[t]);          
 						ListData[t] = listModelGroup.get(t);
+						System.out.println("List Data Ben Phair " + ListData[t]);
 					}
-					Set<String> set = new HashSet<>(); 
+					Set<String> set = new HashSet<>();
 
-					for(String str : ListData) { 
-					   set.add(str); 
+					for (String str : ListData) {
+						set.add(str);
 					}
 					ListData = set.toArray(new String[0]);
 					groupMemberList.setListData(ListData);
 					groupMembers.add(friendList.getModel().getElementAt(index));
 					groupMemberScroll.setRowHeaderView(groupMemberList);
+					contentPane.add(groupMemberScroll);
 				} else {
 					JOptionPane.showMessageDialog(null, "Đã tồn tại người dùng trong danh sách", "Lỗi",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -192,25 +195,23 @@ public class CreateGroup extends JFrame {
 						break;
 					}
 				}
-				String[] ListData = new String[groupMemberList.getModel().getSize()];
-				for (int t = 0; t < ListData.length; t++) {
-					if(t==index) {
-						
-					}
-					else{
-						ListData[t] = groupMemberList.getModel().getElementAt(t);
-					}
+				String[] ListData = new String[groupMembers.size()];
+				for (int t = 0; t < groupMembers.size(); t++) {
+					ListData[t] = groupMembers.get(t);
 				}
-				Set<String> set = new HashSet<>(); 
 
-				for(String str : ListData) { 
-				   set.add(str); 
+				Set<String> set = new HashSet<>();
+
+				for (String str : ListData) {
+					set.add(str);
 				}
 				ListData = set.toArray(new String[0]);
+				listModelGroup.removeAllElements();
 
 				for (int t = 0; t < ListData.length; t++) {
 					System.out.println(ListData[t]);
-					listModelGroup.set(t, ListData[t]);
+//		          listModelGroup.set(t, ListData[t]);
+					listModelGroup.addElement(ListData[t]);
 				}
 				groupMemberList.removeAll();
 				groupMemberList.setListData(ListData);
