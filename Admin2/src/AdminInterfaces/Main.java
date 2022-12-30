@@ -359,6 +359,14 @@ public class Main extends JFrame {
 
 		System.out.println(username + "connection success!");
 	}
+	public Socket getSocketByUser (String username) {
+		for (Socket socket : users.keySet()) {
+			if (users.get(socket).getInfor().getUsername().equals(username)) {
+				return socket;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Remove online user
@@ -690,19 +698,25 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_CreateNewGroup")) {
 					String[] str = receivedMessage.split("`");
 					String creator = users.get(client).getInfor().getUsername();
-					ArrayList<String> members= new ArrayList<String>();
-					ArrayList<String> managers= new ArrayList<String>();
+					ArrayList<String> members = new ArrayList<String>();
+					ArrayList<String> managers = new ArrayList<String>();
 					members.add(creator);
 					managers.add(creator);
-					for(int i=2;i<str.length;i++) {
+					for (int i = 2; i < str.length; i++) {
 						members.add(str[i]);
 					}
 					Group createGroup = new Group(str[1], managers, members);
 					Boolean created = groupController.create(createGroup);
-					
+
 					if (created) {
-						sendMessage(client, "Command_CreateGroupAccepted");
 						groups.add(createGroup);
+						sendMessage(client, "Command_CreateGroupAccepted");
+						for(int i =0 ; i <members.size();i++){
+							User testUser = userController.getUserByUsername(members.get(i));
+							Socket testSocket = getSocketByUser(members.get(i));
+							if (testSocket != null)
+								addUserLogin(testSocket, members.get(i));
+						}
 					} else {
 						sendMessage(client, "Command_CreateGroupFailed");
 					}
@@ -768,24 +782,19 @@ public class Main extends JFrame {
 						str[2] = str[2].replace(" (Tin nhắn mới)", "");
 					}
 					String stringArray = "";
-					//lay tin  nhan 1 gui 2
+					// lay tin nhan 1 gui 2
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
 					for (Message message : historyMess) {
-						stringArray = stringArray.concat(message.getSenderId() + ":" 
-														+ message.getReceiverId() + ":" 
-														+ message.getContent() + "`"
-														);
+						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
+								+ message.getContent() + "`");
 					}
 					historyMess = messGetFdataBase.findMessageBySender(str[2], str[1]);
 					for (Message message : historyMess) {
-						stringArray = stringArray.concat(message.getSenderId() + ":" 
-								+ message.getReceiverId() + ":" 
-								+ message.getContent() + "`"
-								);
+						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
+								+ message.getContent() + "`");
 					}
 					System.out.print("code 786: " + stringArray);
-					
-					
+
 					for (Socket socket : users.keySet()) {
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							sendMessage(socket, "Command_SendHistoryMessage`" + str[1] + "`" + stringArray);
@@ -835,7 +844,6 @@ public class Main extends JFrame {
 						sendMessage(client, "Command_ChangePasswordSuccessful");
 					}
 				}
-
 
 			}
 

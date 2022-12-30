@@ -723,6 +723,11 @@ public class Main extends JFrame {
 					SignUp.status = SignUp.SignUpStatus.Failed;
 
 				} else if (receivedMessage.contains("Command_CreateGroupAccepted")) {
+//					String[] str = receivedMessage.split("`");
+//					groups = new String[str.length - 1];
+//					System.arraycopy(str, 1, groups, 0, str.length - 1);
+//					groupList.removeAll();
+//					groupList.setListData(groups);
 					CreateGroup.status = CreateGroup.CreateGroupStatus.Accepted;
 				} else if (receivedMessage.contains("Command_CreateGroupFailed")) {
 					CreateGroup.status = CreateGroup.CreateGroupStatus.Failed;

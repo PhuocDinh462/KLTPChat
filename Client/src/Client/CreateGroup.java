@@ -34,6 +34,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.Color;
+import javax.swing.ListSelectionModel;
 
 public class CreateGroup extends JFrame {
 
@@ -117,6 +118,7 @@ public class CreateGroup extends JFrame {
 			listModelFriend.addElement(item);
 		}
 		JList<String> friendList = new JList<String>(listModelFriend);
+		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		friendList.setVisibleRowCount(10);
 		friendScroll.setViewportView(friendList);
 		for(int l= 0 ; l< listModelFriend.size();l++) {
@@ -130,6 +132,7 @@ public class CreateGroup extends JFrame {
 		contentPane.add(groupMemberScroll);
 
 		JList<String> groupMemberList = new JList<String>(listModelGroup);
+		groupMemberList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		groupMemberList.setVisibleRowCount(10);
 		groupMemberScroll.setRowHeaderView(groupMemberList);
 
