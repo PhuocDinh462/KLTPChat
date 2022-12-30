@@ -132,6 +132,7 @@ public class CreateGroup extends JFrame {
 		contentPane.add(groupMemberScroll);
 
 		JList<String> groupMemberList = new JList<String>(listModelGroup);
+		groupMemberList.setBackground(Color.WHITE);
 		groupMemberList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		groupMemberList.setVisibleRowCount(10);
 		groupMemberScroll.setRowHeaderView(groupMemberList);

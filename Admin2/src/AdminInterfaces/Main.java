@@ -107,6 +107,14 @@ public class Main extends JFrame {
 		}
 		return -1;
 	}
+	
+	private int getGroupIndex(String groupName) {
+		for (int i = 0; i < groups.size(); i++) {
+			if (groups.get(i).getGroupName().equals(groupName))
+				return i;
+		}
+		return -1;
+	}
 
 	private boolean containUsername(String username) {
 		for (User user : accounts) {
@@ -843,6 +851,22 @@ public class Main extends JFrame {
 						userController.updatePassword(username, str[2]);
 						// Gửi thông báo về client:
 						sendMessage(client, "Command_ChangePasswordSuccessful");
+					}
+				}
+				
+				else if (receivedMessage.contains("Command_SendGroupMessage")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+					
+					sendMessage(client, "Command_SendMessageAccepted");
+					
+					for(int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
+								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]);
+								// Lưu tin nhắn vào db:
+								// ...
+						}
 					}
 				}
 

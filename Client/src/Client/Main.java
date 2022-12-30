@@ -174,10 +174,16 @@ public class Main extends JFrame {
 	private static String[] groups;
 
 	/**
+	 * @Attribute: conversationStatus conversationStatus = true: Chat with friend.
+	 *             conversationStatus = false: Chat with group.
+	 */
+	private static boolean conversationStatus;
+
+	/**
 	 * @Attribute: JList - usersList Display List of users
 	 */
 	private static final JList<String> usersList = new JList<>();
-	private static final ArrayList<String> friendsList= new ArrayList<String>();
+	private static final ArrayList<String> friendsList = new ArrayList<String>();
 	/**
 	 * @Attribute: JList - groupList Display List of groups
 	 */
@@ -273,13 +279,13 @@ public class Main extends JFrame {
 		userTitle.setBounds(10, 10, 180, 24);
 		userTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-
 		usersList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				String friendChat = usersList.getSelectedValue();
-				changeConversation(friendChat);
+				conversationStatus = true;
+				changeConversation(friendChat, conversationStatus);
 				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
 				groupBtn.setVisible(false);
 			}
@@ -289,9 +295,10 @@ public class Main extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-//				String friendChat = usersList.getSelectedValue();
-//				changeConversation(friendChat);
-//				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				String groupChat = groupList.getSelectedValue();
+				conversationStatus = false;
+				changeConversation(groupChat, conversationStatus);
+				sendMessage("Command_MessageHistory`" + username + "`" + groupChat);
 				groupBtn.setVisible(true);
 			}
 		});
@@ -572,7 +579,10 @@ public class Main extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 		} else {
 			messageStatus = MessageStatus.Waiting;
-			sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
+			if (conversationStatus == true)
+				sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
+			else
+				sendMessage("Command_SendGroupMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
 			while (messageStatus == MessageStatus.Waiting)
 				System.out.print("");
 
@@ -586,23 +596,36 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Change conversation when user click on online users list
+	 * Change conversation when user click on users/groups list
 	 * 
 	 * @param conversationUser String: Selected user
 	 */
-	private void changeConversation(String conversationUser) {
+	private void changeConversation(String conversationUser, boolean conversationStatus) {
 		System.out.print("check conversation: " + conversationUser);
-		for (int i = 0; i < users.length; i++) {
-			if (users[i].contains(conversationUser)) {
-				users[i] = users[i].replace(" (Tin nhắn mới)", "");
 
-				conversationUser = users[i];
+		if (conversationStatus == true) {
+			for (int i = 0; i < users.length; i++) {
+				if (users[i].contains(conversationUser)) {
+					users[i] = users[i].replace(" (Tin nhắn mới)", "");
+
+					conversationUser = users[i];
 //				JPanel chatPanel = new JPanel();
 //				chatPanel.setBackground(Color.WHITE);
 //				chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+				}
 			}
+			usersList.setListData(users);
 		}
-		usersList.setListData(users);
+
+		else {
+			for (int i = 0; i < groups.length; i++) {
+				if (groups[i].contains(conversationUser)) {
+					groups[i] = groups[i].replace(" (Tin nhắn mới)", "");
+					conversationUser = groups[i];
+				}
+			}
+			groupList.setListData(groups);
+		}
 
 		conversationTitle.setText(conversationUser);
 
@@ -627,15 +650,28 @@ public class Main extends JFrame {
 	 * @param content    String
 	 * @param bubbleType BubbleType
 	 */
-	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType) {
-		System.out.println("code 631: gia tri dau vao: "+ username + " " + content);
-		for (int i = 0; i < users.length; i++) {
-			if (users[i].contains(username) && !users[i].contains(" (Tin nhắn mới)")) {
-				if (!conversationTitle.getText().equals(users[i]))
-					users[i] = users[i] + " (Tin nhắn mới)";
+	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType, boolean chatwithUser) {
+		System.out.println("code 631: gia tri dau vao: " + username + " " + content);
+
+		if (chatwithUser == true) {
+			for (int i = 0; i < users.length; i++) {
+				if (users[i].contains(username) && !users[i].contains(" (Tin nhắn mới)")) {
+					if (!conversationTitle.getText().equals(users[i]))
+						users[i] = users[i] + " (Tin nhắn mới)";
+				}
 			}
+			usersList.setListData(users);
 		}
-		usersList.setListData(users);
+		
+		else {
+			for (int i = 0; i < groups.length; i++) {
+				if (groups[i].contains(username) && !groups[i].contains(" (Tin nhắn mới)")) {
+					if (!conversationTitle.getText().equals(groups[i]))
+						groups[i] = groups[i] + " (Tin nhắn mới)";
+				}
+			}
+			groupList.setListData(groups);
+		}
 
 		if (conversations.get(username) == null) {
 			JPanel chatPanel = new JPanel();
@@ -689,7 +725,7 @@ public class Main extends JFrame {
 					System.arraycopy(str, 1, users, 0, str.length - 1);
 					usersList.removeAll();
 					usersList.setListData(users);
-					for (String e: users) {
+					for (String e : users) {
 						friendsList.add(e);
 					}
 //					System.out.print(usersList.ge);
@@ -740,7 +776,7 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_Message")) {
 					String[] str = receivedMessage.split("`");
-					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, true);
 
 				} else if (receivedMessage.contains("Command_File")) {
 					sendMessage("Command_Accepted");
@@ -754,7 +790,7 @@ public class Main extends JFrame {
 					fileOutputStream.write(data);
 					fileOutputStream.close();
 
-					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File, true);
 
 				} else if (receivedMessage.contains("Command_AddFriendRequestAccepted")) {
 					JOptionPane.showMessageDialog(null, "Gửi lời mời kết bạn thành công.", "Thông báo",
@@ -800,7 +836,7 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_Message")) {
 					String[] str = receivedMessage.split("`");
-					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others);
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, true);
 
 				} else if (receivedMessage.contains("Command_File")) {
 					sendMessage("Command_Accepted");
@@ -814,25 +850,25 @@ public class Main extends JFrame {
 					fileOutputStream.write(data);
 					fileOutputStream.close();
 
-					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File);
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.File, true);
 
 				} else if (receivedMessage.contains("Command_SendHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
 					String[] str = receivedMessage.split("`");
-					for (int index = 2; index < str.length; index ++) {
+					for (int index = 2; index < str.length; index++) {
 						String[] mess = str[index].split(":");
-						System.out.println("\n code 817: " +"username: "+ str[1] + " " + mess[0] + " " + mess[2] );
-						if(str[1].equals(mess[0])) {
+						System.out.println("\n code 817: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]);
+						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
-							//nguoi gui = usernam thi them vao ben phai
-							addNewMessage(mess[1], mess[2], ChatBubble.BubbleType.Mine);
-						}else if(!str[1].equals(mess[0]) ) {
+							// nguoi gui = usernam thi them vao ben phai
+							addNewMessage(mess[1], mess[2], ChatBubble.BubbleType.Mine, true);
+						} else if (!str[1].equals(mess[0])) {
 							System.out.println("code 823: mot tin nhan vua duoc them vao");
-							//nguoc lai la ben trai
-							addNewMessage(mess[0], mess[2], ChatBubble.BubbleType.Others);
+							// nguoc lai la ben trai
+							addNewMessage(mess[0], mess[2], ChatBubble.BubbleType.Others, true);
 						}
 					}
-					
+
 				}
 
 				else if (receivedMessage.contains("Command_ForgotPasswordFail")) {
@@ -855,6 +891,12 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_ChangePasswordSuccessful")) {
 					JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_GroupMessage")) {
+					String[] str = receivedMessage.split("`");
+					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, false);
+
 				}
 
 				else {
