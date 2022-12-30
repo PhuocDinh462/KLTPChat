@@ -99,6 +99,7 @@ public class Main extends JFrame {
 	/**
 	 * @Attribute: username
 	 */
+	
 	private int getAccountIndex(String username) {
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i).getInfor().getUsername().equals(username))
