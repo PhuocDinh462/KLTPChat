@@ -698,6 +698,29 @@ public class Main extends JFrame {
 		conversationPanel.revalidate();
 		System.out.println("code 648: Them tin nhan thanh cong");
 	}
+	
+	public static void addNewGroupMessage(String GroupName, String content, ChatBubbleGroup.BubbleType bubbleType,String username) {
+		System.out.println("code 631: gia tri dau vao: " + GroupName + " " + content);
+			for (int i = 0; i < groups.length; i++) {
+				if (groups[i].contains(GroupName) && !groups[i].contains(" (Tin nhắn mới)")) {
+					if (!conversationTitle.getText().equals(groups[i]))
+						groups[i] = groups[i] + " (Tin nhắn mới)";
+				}
+			}
+			groupList.setListData(groups);
+
+		if (conversations.get(GroupName) == null) {
+			JPanel chatPanel = new JPanel();
+			chatPanel.setBackground(Color.WHITE);
+			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+			conversations.put(GroupName, chatPanel);
+		}
+		
+		System.out.println("Username: " + GroupName + " Message: " + content);
+		conversations.get(GroupName).add(new ChatBubbleGroup(bubbleType, content,username));
+		conversationPanel.revalidate();
+		System.out.println("code 648: Them tin nhan thanh cong");
+	}
 
 	/**
 	 * Send a message to Server
@@ -890,10 +913,10 @@ public class Main extends JFrame {
 					for (int i =3; i < str.length;i++) {
 						String[] mess = str[i].split(":");
 						if(str[1].equals(mess[0])) {
-							addNewMessage(str[2], mess[1], ChatBubble.BubbleType.Mine, false);
+							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Mine, mess[0]);
 						}
 						else {
-							addNewMessage(str[2], mess[1], ChatBubble.BubbleType.Others, false);
+							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Others, mess[0]);
 						}
 					}
 				}
