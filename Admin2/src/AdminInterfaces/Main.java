@@ -827,7 +827,7 @@ public class Main extends JFrame {
 										stringArray = stringArray.concat(message.getSenderId() + ":" + message.getContent() + "`");
 								}
 								System.out.print("code 835: " + stringArray);
-								sendMessage(socket, "Command_SendGroupHistoryMessage`" + str[1] + "`" + stringArray);
+								sendMessage(socket, "Command_SendGroupHistoryMessage`" + str[1]+"`"+str[2] + "`" + stringArray);
 							}
 							
 						}

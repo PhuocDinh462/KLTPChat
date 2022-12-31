@@ -692,7 +692,8 @@ public class Main extends JFrame {
 			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			conversations.put(username, chatPanel);
 		}
-
+		
+		System.out.println("Username: " + username + " Message: " + content);
 		conversations.get(username).add(new ChatBubble(bubbleType, content));
 		conversationPanel.revalidate();
 		System.out.println("code 648: Them tin nhan thanh cong");
@@ -886,13 +887,13 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_SendGroupHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
 					String[] str = receivedMessage.split("`");
-					for (int i =2; i < str.length;i++) {
+					for (int i =3; i < str.length;i++) {
 						String[] mess = str[i].split(":");
 						if(str[1].equals(mess[0])) {
-							addNewMessage(mess[0], mess[1], ChatBubble.BubbleType.Mine, false);
+							addNewMessage(str[2], mess[1], ChatBubble.BubbleType.Mine, false);
 						}
 						else {
-							addNewMessage(mess[0], mess[1], ChatBubble.BubbleType.Others, false);
+							addNewMessage(str[2], mess[1], ChatBubble.BubbleType.Others, false);
 						}
 					}
 				}

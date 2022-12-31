@@ -63,7 +63,6 @@ public class ChatBubble extends JPanel{
                 add(viewed);
                 add(timeLabel);
                 add(contentButton);
-                
             }
             case Others -> {
                 contentButton.setBackground(new java.awt.Color(217,217,217));
