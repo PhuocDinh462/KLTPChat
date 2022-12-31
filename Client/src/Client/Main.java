@@ -471,6 +471,11 @@ public class Main extends JFrame {
 		contentPane.add(middlePanel, BorderLayout.CENTER);
 
 		JButton searchButton = new JButton("🔎︎");
+		searchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Search();
+			}
+		});
 		searchButton.setBounds(549, 10, 50, 23);
 		middlePanel.add(searchButton);
 
