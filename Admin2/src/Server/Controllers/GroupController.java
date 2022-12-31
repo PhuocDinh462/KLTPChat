@@ -80,6 +80,18 @@ public class GroupController extends GroupModel {
 
 		System.out.println("successful");
 		return true;
+	}
+	
+	public Boolean addNewMessage(String idMsg, String idGroup) {
+
+		ArrayList<String> listData = searchListMessage(idGroup);
+
+		listData.add(idMsg);
+
+		CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listMessage", listData)));
+
+		System.out.println("successful");
+		return true;
 
 	}
 
@@ -118,6 +130,21 @@ public class GroupController extends GroupModel {
 	public ArrayList<String> searchListUsers(String idGroup) {
 		Document filterDoc = new Document();
 		filterDoc.append("_id", idGroup);
+		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("listUsers");
+		} finally {
+			document.close();
+		}
+		System.out.println("successful");
+		return listData;
+	}
+	
+	public ArrayList<String> searchListUsersByGroupName(String GroupName) {
+		Document filterDoc = new Document();
+		filterDoc.append("name", GroupName);
 		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
 
 		ArrayList<String> listData = new ArrayList<String>();

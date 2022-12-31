@@ -291,6 +291,17 @@ public class Main extends JFrame {
 			}
 		});
 
+//		groupList.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				super.mouseClicked(e);
+//				String groupChat = groupList.getSelectedValue();
+//				conversationStatus = false;
+//				changeConversation(groupChat, conversationStatus);
+//				sendMessage("Command_MessageHistory`" + username + "`" + groupChat);
+//				groupBtn.setVisible(true);
+//			}
+//		});
 		groupList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -298,7 +309,7 @@ public class Main extends JFrame {
 				String groupChat = groupList.getSelectedValue();
 				conversationStatus = false;
 				changeConversation(groupChat, conversationStatus);
-				sendMessage("Command_MessageHistory`" + username + "`" + groupChat);
+				sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
 				groupBtn.setVisible(true);
 			}
 		});
@@ -471,7 +482,7 @@ public class Main extends JFrame {
 		groupBtn.setVisible(false);
 		groupBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(conversationStatus == false)
+				if (conversationStatus == false)
 					sendMessage("Command_ShowGroupManagement`" + conversationTitle.getText());
 			}
 		});
@@ -651,7 +662,8 @@ public class Main extends JFrame {
 	 * @param content    String
 	 * @param bubbleType BubbleType
 	 */
-	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType, boolean chatwithUser) {
+	public static void addNewMessage(String username, String content, ChatBubble.BubbleType bubbleType,
+			boolean chatwithUser) {
 		System.out.println("code 631: gia tri dau vao: " + username + " " + content);
 
 		if (chatwithUser == true) {
@@ -663,7 +675,7 @@ public class Main extends JFrame {
 			}
 			usersList.setListData(users);
 		}
-		
+
 		else {
 			for (int i = 0; i < groups.length; i++) {
 				if (groups[i].contains(username) && !groups[i].contains(" (Tin nhắn mới)")) {
@@ -871,6 +883,19 @@ public class Main extends JFrame {
 					}
 
 				}
+				else if (receivedMessage.contains("Command_SendGroupHistoryMessage")) {
+					System.out.println("\nget data base: " + receivedMessage);
+					String[] str = receivedMessage.split("`");
+					for (int i =2; i < str.length;i++) {
+						String[] mess = str[i].split(":");
+						if(str[1].equals(mess[0])) {
+							addNewMessage(mess[0], mess[1], ChatBubble.BubbleType.Mine, false);
+						}
+						else {
+							addNewMessage(mess[0], mess[1], ChatBubble.BubbleType.Others, false);
+						}
+					}
+				}
 
 				else if (receivedMessage.contains("Command_ForgotPasswordFail")) {
 					SignIn.forgotPasswordStatus = SignIn.ForgotPasswordStatus.Failed;
@@ -893,30 +918,33 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công.", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_GroupMessage")) {
 					String[] str = receivedMessage.split("`");
 					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, false);
 
 				}
-				
+
 				else if (receivedMessage.contains("Command_ShowGroupManagement")) {
 					String[] str = receivedMessage.split("`");
 					new GroupManagement(conversationTitle.getText(), str);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeGroupNameFail")) {
-					JOptionPane.showMessageDialog(null, "Tên nhóm đã tồn tại, vui lòng chọn tên khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Tên nhóm đã tồn tại, vui lòng chọn tên khác!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeGroupNameNotPermitted")) {
-					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeGroupNameSuccessful")) {
-					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Lỗi", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Lỗi",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeGroupNameSetConversationTitle")) {
 					String[] str = receivedMessage.split("`");
 					conversationTitle.setText(str[1]);

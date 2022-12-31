@@ -99,7 +99,7 @@ public class Main extends JFrame {
 	/**
 	 * @Attribute: username
 	 */
-	
+
 	private int getAccountIndex(String username) {
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i).getInfor().getUsername().equals(username))
@@ -107,7 +107,7 @@ public class Main extends JFrame {
 		}
 		return -1;
 	}
-	
+
 	private int getGroupIndex(String groupName) {
 		for (int i = 0; i < groups.size(); i++) {
 			if (groups.get(i).getGroupName().equals(groupName))
@@ -368,7 +368,8 @@ public class Main extends JFrame {
 
 		System.out.println(username + "connection success!");
 	}
-	public Socket getSocketByUser (String username) {
+
+	public Socket getSocketByUser(String username) {
 		for (Socket socket : users.keySet()) {
 			if (users.get(socket).getInfor().getUsername().equals(username)) {
 				return socket;
@@ -720,7 +721,7 @@ public class Main extends JFrame {
 					if (created) {
 						groups.add(createGroup);
 						sendMessage(client, "Command_CreateGroupAccepted");
-						for(int i =0 ; i <members.size();i++){
+						for (int i = 0; i < members.size(); i++) {
 							User testUser = userController.getUserByUsername(members.get(i));
 							Socket testSocket = getSocketByUser(members.get(i));
 							if (testSocket != null)
@@ -810,6 +811,28 @@ public class Main extends JFrame {
 						}
 					}
 
+				} else if (receivedMessage.contains("Command_MessageGroupHistory")) {
+					
+					String[] str = receivedMessage.split("`");
+					String stringArray = "";
+					System.out.println(receivedMessage);
+
+					ArrayList<Message> historyMessReceived = messageController.findMessageByGroup(str[2]);
+			
+					ArrayList<String> UsersList = groupController.searchListUsersByGroupName(str[2]);
+					for (Socket socket : users.keySet()) {
+						for (int i = 0; i < UsersList.size(); i++) {
+							if (users.get(socket).getInfor().getUsername().equals(UsersList.get(i))) {
+								for (Message message : historyMessReceived) {
+										stringArray = stringArray.concat(message.getSenderId() + ":" + message.getContent() + "`");
+								}
+								System.out.print("code 835: " + stringArray);
+								sendMessage(socket, "Command_SendGroupHistoryMessage`" + str[1] + "`" + stringArray);
+							}
+							
+						}
+					}
+
 				}
 
 				else if (receivedMessage.contains("Command_ForgotPassword")) {
@@ -853,30 +876,34 @@ public class Main extends JFrame {
 						sendMessage(client, "Command_ChangePasswordSuccessful");
 					}
 				}
-				
+
 				else if (receivedMessage.contains("Command_SendGroupMessage")) {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
-					
+
 					sendMessage(client, "Command_SendMessageAccepted");
-					
-					for(int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+
+					for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
 						for (Socket socket : users.keySet())
-							if (users.get(socket).getInfor().getUsername().equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
+							if (users.get(socket).getInfor().getUsername()
+									.equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
 								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]);
 								// Lưu tin nhắn vào db:
+								Message mess = new Message(str[3], str[1], str[2]);
+								messageController.create(mess);
+								groupController.addNewMessage(mess.getId(), groups.get(index).getGroupId());
 								// ...
-						}
+							}
 					}
 				}
-				
+
 				else if (receivedMessage.contains("Command_ShowGroupManagement")) {
 					String[] str = receivedMessage.split("`");
 					String str1 = "Command_ShowGroupManagement";
 					int index = getGroupIndex(str[1]);
 
 					for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
-						if(groups.get(index).getManagers().contains(groups.get(index).getlistUsers().get(i)))
+						if (groups.get(index).getManagers().contains(groups.get(index).getlistUsers().get(i)))
 							str1 += "`" + groups.get(index).getlistUsers().get(i) + ":Quản trị viên";
 						else
 							str1 += "`" + groups.get(index).getlistUsers().get(i) + ":Thành viên";
@@ -884,27 +911,28 @@ public class Main extends JFrame {
 
 					sendMessage(client, str1);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeGroupName")) {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
-					
+
 					// Kiểm tra quyền admin:
 					if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
 						sendMessage(client, "Command_ChangeGroupNameNotPermitted");
-					
+
 					// Kiểm tra xem tên mới tồn tại hay chưa:
-					else if(getGroupIndex(str[2]) != -1)
+					else if (getGroupIndex(str[2]) != -1)
 						sendMessage(client, "Command_ChangeGroupNameFail");
-					
+
 					else {
 						sendMessage(client, "Command_ChangeGroupNameSuccessful");
 						groups.get(index).setGroupName(str[2]);
 						groupController.update(groups.get(index).getGroupId(), str[2]);
-						
-						for(int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+
+						for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
 							for (Socket socket : users.keySet()) {
-								if (users.get(socket).getInfor().getUsername().equals(groups.get(index).getlistUsers().get(i))) {
+								if (users.get(socket).getInfor().getUsername()
+										.equals(groups.get(index).getlistUsers().get(i))) {
 									sendGroupList(socket, users.get(socket));
 									sendMessage(socket, "Command_ChangeGroupNameSetConversationTitle`" + str[2]);
 								}

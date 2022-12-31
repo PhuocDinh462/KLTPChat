@@ -143,7 +143,6 @@ public class CreateGroup extends JFrame {
 				super.mouseClicked(e);
 				int index = friendList.getSelectedIndex();
 				for (int k = 0; k < groupMemberList.getModel().getSize(); k++) {
-//		          System.out.println(friendList.getModel().getElementAt(index));
 					if (groupMemberList.getModel().getElementAt(k) == friendList.getModel().getElementAt(index)) {
 						CheckAdding.set(index, true);
 						break;
@@ -155,9 +154,7 @@ public class CreateGroup extends JFrame {
 					listModelGroup.addElement(friendList.getModel().getElementAt(index));
 
 					String[] ListData = new String[listModelGroup.getSize()];
-					for (int t = 0; t < listModelGroup.getSize(); t++) {
-//		            System.out.println("List Model"+ listModelGroup.get(t));
-//		            System.out.println("List Data" + ListData[t]);          
+					for (int t = 0; t < listModelGroup.getSize(); t++) {        
 						ListData[t] = listModelGroup.get(t);
 						System.out.println("List Data Ben Phair " + ListData[t]);
 					}
