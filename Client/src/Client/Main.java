@@ -973,6 +973,21 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					conversationTitle.setText(str[1]);
 				}
+				
+				else if (receivedMessage.contains("Command_Invite2GroupFail")) {
+					JOptionPane.showMessageDialog(null, "Người dùng không tồn tại!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_Invite2GroupAlreadyInGroup")) {
+					JOptionPane.showMessageDialog(null, "Người dùng đã ở trong nhóm!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if (receivedMessage.contains("Command_Invite2GroupSucessful")) {
+					JOptionPane.showMessageDialog(null, "Mời thành công!", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
 
 				else {
 					System.out.println(receivedMessage);

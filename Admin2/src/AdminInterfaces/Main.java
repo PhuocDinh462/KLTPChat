@@ -939,6 +939,32 @@ public class Main extends JFrame {
 						}
 					}
 				}
+				
+				else if (receivedMessage.contains("Command_Invite2Group")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+
+					if (getAccountIndex(str[2]) == -1)
+						sendMessage(client, "Command_Invite2GroupFail");
+					
+					else if(groups.get(index).getlistUsers().contains(str[2]))
+						sendMessage(client, "Command_Invite2GroupAlreadyInGroup");
+
+					else {
+						sendMessage(client, "Command_Invite2GroupSucessful");
+
+						// Lưu vào groups:
+						groups.get(index).getlistUsers().add(str[2]);
+
+						// Gửi danh sách nhóm mới:
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(str[2]))
+								sendGroupList(socket, users.get(socket));
+
+						// Lưu vào db:
+						groupController.addPeopleGroup(str[2], groups.get(index).getGroupId());
+					}
+				}
 
 			}
 

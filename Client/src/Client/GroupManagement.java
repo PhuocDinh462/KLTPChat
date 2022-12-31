@@ -69,6 +69,12 @@ public class GroupManagement extends JFrame {
 		}
 
 		JButton inviteBtn = new JButton("Mời vào nhóm");
+		inviteBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.sendMessage("Command_Invite2Group`" + groupName + "`" + inviteTextField.getText());
+				inviteTextField.setText("");
+			}
+		});
 		inviteBtn.setBounds(178, 10, 133, 24);
 		contentPane.add(inviteBtn);
 
