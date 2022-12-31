@@ -142,7 +142,7 @@ public class SignUp extends JFrame {
 		JPanel addressPanel = new JPanel();
 		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));
 		addressPanel.add(new JLabel("Địa chi "));
-		addressPanel.add(Box.createHorizontalStrut(88));
+		addressPanel.add(Box.createHorizontalStrut(90));
 		addressPanel.add(addressTextField);
 
 		// Username Panel

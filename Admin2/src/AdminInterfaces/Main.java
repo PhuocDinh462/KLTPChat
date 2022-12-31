@@ -812,25 +812,24 @@ public class Main extends JFrame {
 					}
 
 				} else if (receivedMessage.contains("Command_MessageGroupHistory")) {
-					
+
 					String[] str = receivedMessage.split("`");
 					String stringArray = "";
-					System.out.println(receivedMessage);
+					System.out.println("code 818: " + receivedMessage);
 
 					ArrayList<Message> historyMessReceived = messageController.findMessageByGroup(str[2]);
-			
+					for (Message message : historyMessReceived) {
+						System.out.println("code 827:" + message.getContent());
+						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getContent() + "`");
+					}
 					ArrayList<String> UsersList = groupController.searchListUsersByGroupName(str[2]);
 					for (Socket socket : users.keySet()) {
-						for (int i = 0; i < UsersList.size(); i++) {
-							if (users.get(socket).getInfor().getUsername().equals(UsersList.get(i))) {
-								for (Message message : historyMessReceived) {
-										stringArray = stringArray.concat(message.getSenderId() + ":" + message.getContent() + "`");
-								}
-								System.out.print("code 835: " + stringArray);
-								sendMessage(socket, "Command_SendGroupHistoryMessage`" + str[1]+"`"+str[2] + "`" + stringArray);
-							}
-							
+						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
+							System.out.print("code 835: " + stringArray);
+							sendMessage(socket,
+									"Command_SendGroupHistoryMessage`" + str[1] + "`" + str[2] + "`" + stringArray);
 						}
+
 					}
 
 				}
@@ -882,16 +881,16 @@ public class Main extends JFrame {
 					int index = getGroupIndex(str[1]);
 
 					sendMessage(client, "Command_SendMessageAccepted");
-
+					Message mess = new Message(str[3], str[1], str[2]);
+					messageController.create(mess);
+					groupController.addNewMessage(mess.getId(), groups.get(index).getGroupId());
+					System.out.println("code 895");
 					for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername()
 									.equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
 								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]);
 								// Lưu tin nhắn vào db:
-								Message mess = new Message(str[3], str[1], str[2]);
-								messageController.create(mess);
-								groupController.addNewMessage(mess.getId(), groups.get(index).getGroupId());
 								// ...
 							}
 					}

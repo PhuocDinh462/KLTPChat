@@ -54,7 +54,7 @@ public class ChatBubbleGroup extends JPanel{
         JLabel viewed = new JLabel("đã xem");
         viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
         
-        JLabel sender = new JLabel(username);
+        JLabel sender = new JLabel(username + " sent");
         sender.setFont(new Font("Times New Roman", Font.PLAIN, 10));
 
         switch (bubbleType) {
