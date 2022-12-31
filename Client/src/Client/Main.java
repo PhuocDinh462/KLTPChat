@@ -988,6 +988,15 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Mời thành công!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
+				
+				else if (receivedMessage.contains("Command_RefreshGroupManagementTable")) {
+					String[] str = receivedMessage.split("`");
+					GroupManagement.refresh(str);
+				}
+				
+				else if (receivedMessage.contains("Command_LeftTheGroup")) {
+					conversationTitle.setText("");
+				}
 
 				else {
 					System.out.println(receivedMessage);

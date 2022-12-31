@@ -123,6 +123,25 @@ public class Main extends JFrame {
 		}
 		return false;
 	}
+	
+	private String createMemberString(int groupIndex) {
+		String str = "";
+		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++) {
+			if (groups.get(groupIndex).getManagers().contains(groups.get(groupIndex).getlistUsers().get(i)))
+				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Quản trị viên";
+			else
+				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Thành viên";
+		}
+		return str;
+	}
+	
+	private void sendCommandMsg2AllMenber(int groupIndex, String msg) {
+		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++)
+			for (Socket socket : users.keySet())
+				if (users.get(socket).getInfor().getUsername()
+						.equals(groups.get(groupIndex).getlistUsers().get(i)))
+					sendMessage(socket, msg);
+	}
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -939,15 +958,15 @@ public class Main extends JFrame {
 						}
 					}
 				}
-				
+
 				else if (receivedMessage.contains("Command_Invite2Group")) {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
 
 					if (getAccountIndex(str[2]) == -1)
 						sendMessage(client, "Command_Invite2GroupFail");
-					
-					else if(groups.get(index).getlistUsers().contains(str[2]))
+
+					else if (groups.get(index).getlistUsers().contains(str[2]))
 						sendMessage(client, "Command_Invite2GroupAlreadyInGroup");
 
 					else {
@@ -960,10 +979,35 @@ public class Main extends JFrame {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername().equals(str[2]))
 								sendGroupList(socket, users.get(socket));
+						
+						// Refresh group management table:
+						String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+						sendCommandMsg2AllMenber(index, str1);
 
 						// Lưu vào db:
 						groupController.addPeopleGroup(str[2], groups.get(index).getGroupId());
 					}
+				}
+
+				else if (receivedMessage.contains("Command_LeftTheGroup")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+					
+					// Set lại conversationTitle:
+					sendMessage(client, "Command_LeftTheGroup");
+
+					// Xóa trong groups:
+					groups.get(index).getlistUsers().remove(groups.get(index).getlistUsers().indexOf(users.get(client).getInfor().getUsername()));
+
+					// Gửi danh sách nhóm mới:
+					sendGroupList(client, users.get(client));
+					
+					// Refresh group management table:
+					String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+					sendCommandMsg2AllMenber(index, str1);
+					
+					// Xóa trong db:
+					groupController.removePeopleGroup(users.get(client).getInfor().getUsername(), groups.get(index).getGroupId());
 				}
 
 			}

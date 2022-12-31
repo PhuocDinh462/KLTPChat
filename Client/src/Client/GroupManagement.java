@@ -7,8 +7,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -18,12 +16,16 @@ import java.awt.event.ActionEvent;
 
 public class GroupManagement extends JFrame {
 
-	private JPanel contentPane;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static JPanel contentPane;
 	private JTextField inviteTextField;
-	private JScrollPane memberScrollPane;
-	private JTable memberTable;
+	private static JScrollPane memberScrollPane;
+	private static JTable memberTable;
 	private JButton btniTnNhm;
-	private DefaultTableModel memberListTableModel;
+	private static DefaultTableModel memberListTableModel;
 
 	/**
 	 * Create the frame.
@@ -36,14 +38,10 @@ public class GroupManagement extends JFrame {
 
 	}
 
-	public void addComponents(String groupName, String[] memberList) {
-		// Content Pane
-		setBounds(100, 100, 539, 477);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-
+	public static void refresh(String[] memberList) {			
+		if(contentPane == null)
+			return;
+		
 		// Member Table
 		memberListTableModel = new DefaultTableModel();
 		memberListTableModel.addColumn("Tên tài khoản");
@@ -54,8 +52,9 @@ public class GroupManagement extends JFrame {
 			String[] str = memberList[i].split(":");
 			Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm" };
 			memberListTableModel.addRow(rowObjects);
-			memberTable = new JTable(memberListTableModel);
 		}
+
+		memberTable = new JTable(memberListTableModel);
 
 		if (memberList.length > 1) {
 			memberTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
@@ -67,6 +66,22 @@ public class GroupManagement extends JFrame {
 			centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 			memberTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
 		}
+
+		memberScrollPane = new JScrollPane(memberTable);
+		memberScrollPane.setBounds(10, 52, 506, 378);
+		memberScrollPane.setViewportView(memberTable);
+
+		contentPane.remove(contentPane.getComponentCount() - 1);
+		contentPane.add(memberScrollPane);
+	}
+
+	public void addComponents(String groupName, String[] memberList) {
+		// Content Pane
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(null);
+		setBounds(100, 100, 539, 477);
+		setContentPane(contentPane);
 
 		JButton inviteBtn = new JButton("Mời vào nhóm");
 		inviteBtn.addActionListener(new ActionListener() {
@@ -84,13 +99,18 @@ public class GroupManagement extends JFrame {
 		contentPane.add(inviteTextField);
 
 		JButton leftBtn = new JButton("🚪");
+		leftBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object[] object = { "Bạn có chắc muốn rời khỏi nhóm " + groupName + " không?" };
+				int option = JOptionPane.showConfirmDialog(null, object, "Rời khỏi nhóm", JOptionPane.OK_CANCEL_OPTION);
+				if (option == JOptionPane.OK_OPTION) {
+					Main.sendMessage("Command_LeftTheGroup`" + groupName);
+					dispose();
+				}
+			}
+		});
 		leftBtn.setBounds(464, 10, 52, 24);
 		contentPane.add(leftBtn);
-
-		memberScrollPane = new JScrollPane();
-		memberScrollPane.setBounds(10, 52, 506, 378);
-		memberScrollPane.setViewportView(memberTable);
-		contentPane.add(memberScrollPane);
 
 		btniTnNhm = new JButton("Đổi tên nhóm");
 		btniTnNhm.addActionListener(new ActionListener() {
@@ -107,5 +127,37 @@ public class GroupManagement extends JFrame {
 		});
 		btniTnNhm.setBounds(321, 10, 133, 24);
 		contentPane.add(btniTnNhm);
+		
+		
+		// Member Table
+				memberListTableModel = new DefaultTableModel();
+				memberListTableModel.addColumn("Tên tài khoản");
+				memberListTableModel.addColumn("Vai trò");
+				memberListTableModel.addColumn("Xóa khỏi nhóm");
+
+				for (int i = 1; i < memberList.length; i++) {
+					String[] str = memberList[i].split(":");
+					Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm" };
+					memberListTableModel.addRow(rowObjects);
+				}
+
+				memberTable = new JTable(memberListTableModel);
+
+				if (memberList.length > 1) {
+					memberTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
+					memberTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
+					memberTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+					memberTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JTextField()));
+
+					DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+					centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+					memberTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+				}
+
+				memberScrollPane = new JScrollPane(memberTable);
+				memberScrollPane.setBounds(10, 52, 506, 378);
+				memberScrollPane.setViewportView(memberTable);
+
+				contentPane.add(memberScrollPane);
 	}
 }

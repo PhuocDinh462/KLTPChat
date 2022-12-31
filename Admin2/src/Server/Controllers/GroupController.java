@@ -103,7 +103,7 @@ public class GroupController extends GroupModel {
 			if (listData.get(i).equals(idUser)) {
 				listData.remove(i);
 
-				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listFriend", listData)));
+				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listUsers", listData)));
 				System.out.println("successful");
 
 				return true;
