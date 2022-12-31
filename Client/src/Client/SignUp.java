@@ -151,7 +151,7 @@ public class SignUp extends JFrame {
 		JPanel usernamePanel = new JPanel();
 		usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.X_AXIS));
 		usernamePanel.add(new JLabel("Tên tài khoản"));
-		usernamePanel.add(Box.createHorizontalStrut(50));
+		usernamePanel.add(Box.createHorizontalStrut(52));
 		usernamePanel.add(usernameTextField);
 
 		// Email Panel
@@ -169,7 +169,7 @@ public class SignUp extends JFrame {
 		JPanel passwordPanel = new JPanel();
 		passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.X_AXIS));
 		passwordPanel.add(new JLabel("Mật khẩu"));
-		passwordPanel.add(Box.createHorizontalStrut(76));
+		passwordPanel.add(Box.createHorizontalStrut(78));
 		passwordPanel.add(passwordField);
 		contentPane.add(passwordPanel);
 
@@ -179,7 +179,7 @@ public class SignUp extends JFrame {
 		JPanel repasswordPanel = new JPanel();
 		repasswordPanel.setLayout(new BoxLayout(repasswordPanel, BoxLayout.X_AXIS));
 		repasswordPanel.add(new JLabel("Nhập lại mật khẩu"));
-		repasswordPanel.add(Box.createHorizontalStrut(20));
+		repasswordPanel.add(Box.createHorizontalStrut(24));
 		repasswordPanel.add(repasswordField);
 		contentPane.add(repasswordPanel);
 
