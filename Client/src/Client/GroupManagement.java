@@ -40,10 +40,10 @@ public class GroupManagement extends JFrame {
 
 	}
 
-	public static void refresh(String[] memberList) {			
-		if(contentPane == null)
+	public static void refresh(String[] memberList) {
+		if (contentPane == null)
 			return;
-		
+
 		// Member Table
 		memberListTableModel = new DefaultTableModel();
 		memberListTableModel.addColumn("Tên tài khoản");
@@ -52,7 +52,8 @@ public class GroupManagement extends JFrame {
 
 		for (int i = 1; i < memberList.length; i++) {
 			String[] str = memberList[i].split(":");
-			Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm:" + "Command_DeleteFromGroup`" + groupName + "`" + str[0]  };
+			Object[] rowObjects = { str[0], str[1] + ":Command_ChangeRole`" + groupName + "`" + str[0],
+					"Xóa khỏi nhóm" + ":Command_DeleteFromGroup`" + groupName + "`" + str[0] };
 			memberListTableModel.addRow(rowObjects);
 		}
 
@@ -129,37 +130,37 @@ public class GroupManagement extends JFrame {
 		});
 		btniTnNhm.setBounds(321, 10, 133, 24);
 		contentPane.add(btniTnNhm);
-		
-		
+
 		// Member Table
-				memberListTableModel = new DefaultTableModel();
-				memberListTableModel.addColumn("Tên tài khoản");
-				memberListTableModel.addColumn("Vai trò");
-				memberListTableModel.addColumn("Xóa khỏi nhóm");
+		memberListTableModel = new DefaultTableModel();
+		memberListTableModel.addColumn("Tên tài khoản");
+		memberListTableModel.addColumn("Vai trò");
+		memberListTableModel.addColumn("Xóa khỏi nhóm");
 
-				for (int i = 1; i < memberList.length; i++) {
-					String[] str = memberList[i].split(":");
-					Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm:" + "Command_DeleteFromGroup`" + groupName + "`" + str[0] };
-					memberListTableModel.addRow(rowObjects);
-				}
+		for (int i = 1; i < memberList.length; i++) {
+			String[] str = memberList[i].split(":");
+			Object[] rowObjects = { str[0], str[1] + ":Command_ChangeRole`" + groupName + "`" + str[0],
+					"Xóa khỏi nhóm" + ":Command_DeleteFromGroup`" + groupName + "`" + str[0] };
+			memberListTableModel.addRow(rowObjects);
+		}
 
-				memberTable = new JTable(memberListTableModel);
+		memberTable = new JTable(memberListTableModel);
 
-				if (memberList.length > 1) {
-					memberTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
-					memberTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
-					memberTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
-					memberTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JTextField()));
+		if (memberList.length > 1) {
+			memberTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
+			memberTable.getColumnModel().getColumn(1).setCellEditor(new ButtonEditor(new JTextField()));
+			memberTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+			memberTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JTextField()));
 
-					DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-					centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-					memberTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-				}
+			DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+			centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+			memberTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+		}
 
-				memberScrollPane = new JScrollPane(memberTable);
-				memberScrollPane.setBounds(10, 52, 506, 378);
-				memberScrollPane.setViewportView(memberTable);
+		memberScrollPane = new JScrollPane(memberTable);
+		memberScrollPane.setBounds(10, 52, 506, 378);
+		memberScrollPane.setViewportView(memberTable);
 
-				contentPane.add(memberScrollPane);
+		contentPane.add(memberScrollPane);
 	}
 }

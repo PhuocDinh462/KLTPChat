@@ -971,7 +971,7 @@ public class Main extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				}
 
-				else if (receivedMessage.contains("Command_ChangeGroupNameNotPermitted")) {
+				else if (receivedMessage.contains("Command_NotPermitted")) {
 					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -986,7 +986,7 @@ public class Main extends JFrame {
 					conversationTitle.setText(str[1]);
 				}
 				
-				else if (receivedMessage.contains("Command_Invite2GroupYouNotIn")) {
+				else if (receivedMessage.contains("Command_YouNotIn")) {
 					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -1025,23 +1025,13 @@ public class Main extends JFrame {
 					}
 				}
 
-				else if (receivedMessage.contains("Command_DeleteFromGroupYouNotIn")) {
-					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
-							JOptionPane.ERROR_MESSAGE);
-				}
-
-				else if (receivedMessage.contains("Command_DeleteFromGroupYouNotIn")) {
-					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
-							JOptionPane.ERROR_MESSAGE);
-				}
-
-				else if (receivedMessage.contains("Command_DeleteFromGroupTheyNotIn")) {
+				else if (receivedMessage.contains("Command_TheyNotIn")) {
 					JOptionPane.showMessageDialog(null, "Người dùng không ở trong nhóm này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
-
-				else if (receivedMessage.contains("Command_DeleteFromGroupNotPermitted")) {
-					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi",
+				
+				else if (receivedMessage.contains("Command_ChangeRoleSelf")) {
+					JOptionPane.showMessageDialog(null, "Không thể phân quyền cho chính mình!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
 

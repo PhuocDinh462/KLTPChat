@@ -47,7 +47,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
 public class Main extends JFrame {
-	
+
 	private String indexMessage;
 	private JPanel contentPane;
 	private JPanel panelMainContent;
@@ -125,7 +125,7 @@ public class Main extends JFrame {
 		}
 		return false;
 	}
-	
+
 	private String createMemberString(int groupIndex) {
 		String str = "";
 		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++) {
@@ -136,12 +136,11 @@ public class Main extends JFrame {
 		}
 		return str;
 	}
-	
+
 	private void sendCommandMsg2AllMenber(int groupIndex, String msg) {
 		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++)
 			for (Socket socket : users.keySet())
-				if (users.get(socket).getInfor().getUsername()
-						.equals(groups.get(groupIndex).getlistUsers().get(i)))
+				if (users.get(socket).getInfor().getUsername().equals(groups.get(groupIndex).getlistUsers().get(i)))
 					sendMessage(socket, msg);
 	}
 
@@ -516,7 +515,7 @@ public class Main extends JFrame {
 				String receivedMessage = bufferedReader.readLine() + "";
 				if (receivedMessage != null) {
 					System.out.println(receivedMessage);
-					System.out.println("Danh sách đang online: "+ users.size());
+					System.out.println("Danh sách đang online: " + users.size());
 				}
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					sendMessage(client, "Command_CloseConnect");
@@ -758,17 +757,25 @@ public class Main extends JFrame {
 					if (containUsername(str[1])) {
 						System.out.println("người nhận: " + str[1] + " người gửi: " + str[3]);
 						// lưu message gửi thành công vào database
-						indexMessage = messageController.findIndexBySender(str[3], str[1]);//kiểm tra A gửi B
+						indexMessage = messageController.findIndexBySender(str[3], str[1]);// kiểm tra A gửi B
 						indexMessage = messageController.findIndexBySender(str[1], str[3]);
-						if(indexMessage.equals("0")) {//kiểm tra có lấy được index hay không nếu == 0
-							indexMessage = UUID.randomUUID().toString();//tạo một chuỗi random
+						if (indexMessage.equals("0")) {// kiểm tra có lấy được index hay không nếu == 0
+							indexMessage = UUID.randomUUID().toString();// tạo một chuỗi random
 							System.out.println("khởi tạo index thành công:" + indexMessage);
 						}
 						messageController.create(new Message(str[3], str[1], str[2], indexMessage));
 						for (Socket socket : users.keySet()) {
-							if (users.get(socket).getInfor().getUsername().equals(str[1])) {//kiểm
-								sendMessage(socket, "Command_Message`" + users.get(client).getInfor().getUsername()
-										+ "`" + str[2]);// gửi dạng command + người nhận + nội dung
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {// kiểm
+								sendMessage(socket,
+										"Command_Message`" + users.get(client).getInfor().getUsername() + "`" + str[2]);// gửi
+																														// dạng
+																														// command
+																														// +
+																														// người
+																														// nhận
+																														// +
+																														// nội
+																														// dung
 							}
 
 						}
@@ -933,7 +940,7 @@ public class Main extends JFrame {
 
 					// Kiểm tra quyền admin:
 					if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
-						sendMessage(client, "Command_ChangeGroupNameNotPermitted");
+						sendMessage(client, "Command_NotPermitted");
 
 					// Kiểm tra xem tên mới tồn tại hay chưa:
 					else if (getGroupIndex(str[2]) != -1)
@@ -961,7 +968,7 @@ public class Main extends JFrame {
 					int index = getGroupIndex(str[1]);
 
 					if (!groups.get(index).getlistUsers().contains(users.get(client).getInfor().getUsername()))
-						sendMessage(client, "Command_Invite2GroupYouNotIn");
+						sendMessage(client, "Command_YouNotIn");
 
 					else if (getAccountIndex(str[2]) == -1)
 						sendMessage(client, "Command_Invite2GroupFail");
@@ -1017,16 +1024,16 @@ public class Main extends JFrame {
 					int index = getGroupIndex(str[1]);
 
 					if (!groups.get(index).getlistUsers().contains(users.get(client).getInfor().getUsername()))
-						sendMessage(client, "Command_DeleteFromGroupYouNotIn`");
+						sendMessage(client, "Command_YouNotIn`");
 
 					else if (str[2].equals(users.get(client).getInfor().getUsername()))
 						sendMessage(client, "Command_LeftTheGroupDeleteFromGroup`" + str[1]);
 
 					else if (!groups.get(index).getlistUsers().contains(str[2]))
-						sendMessage(client, "Command_DeleteFromGroupTheyNotIn`");
+						sendMessage(client, "Command_TheyNotIn`");
 
 					else if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
-						sendMessage(client, "Command_DeleteFromGroupNotPermitted`");
+						sendMessage(client, "Command_NotPermitted`");
 
 					else {
 						// Xóa trong groups:
@@ -1044,7 +1051,7 @@ public class Main extends JFrame {
 							// Gửi danh sách nhóm mới:
 							sendGroupList(tmp, users.get(tmp));
 						}
-						
+
 						// Refresh group management table:
 						String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
 						sendCommandMsg2AllMenber(index, str1);
@@ -1052,6 +1059,50 @@ public class Main extends JFrame {
 						// Xóa trong db:
 						groupController.removePeopleGroup(str[2], groups.get(index).getGroupId());
 					}
+				}
+
+				else if (receivedMessage.contains("Command_ChangeRole")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+
+					if (!groups.get(index).getlistUsers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_YouNotIn`");
+
+					else if (!groups.get(index).getlistUsers().contains(str[2]))
+						sendMessage(client, "Command_TheyNotIn`");
+					
+					else if (str[2].equals(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_ChangeRoleSelf`");
+
+					// Kiểm tra quyền admin:
+					else if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_NotPermitted");
+
+					else {
+						// Nếu người đó đang là admin thì cho xuống thành viên:
+						if (groups.get(index).getManagers().contains(str[2])) {
+							// Xóa trong groups:
+							groups.get(index).getManagers().remove(groups.get(index).getManagers().indexOf(str[2]));
+							
+							// Refresh group management table:
+							String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+							sendCommandMsg2AllMenber(index, str1);
+							
+							// Xóa trong db:
+							groupController.removeManagerGroup(str[2], groups.get(index).getGroupId());
+						} else {
+							// Thêm vào groups:
+							groups.get(index).getManagers().add(str[2]);
+							
+							// Refresh group management table:
+							String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+							sendCommandMsg2AllMenber(index, str1);
+							
+							// Thêm vào db:
+							groupController.addManagerGroup(str[2], groups.get(index).getGroupId());
+						}
+					}
+
 				}
 
 			}

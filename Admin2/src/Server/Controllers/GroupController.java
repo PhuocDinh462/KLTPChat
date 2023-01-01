@@ -82,6 +82,21 @@ public class GroupController extends GroupModel {
 		return true;
 	}
 	
+	public Boolean addManagerGroup(String idUser, String idGroup) {
+
+		ArrayList<String> listData = searchListManagers(idGroup);
+
+		if (listData.contains(idUser))
+			return false;
+
+		listData.add(idUser);
+
+		CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listManagers", listData)));
+
+		System.out.println("successful");
+		return true;
+	}
+	
 	public Boolean addNewMessage(String idMsg, String idGroup) {
 
 		ArrayList<String> listData = searchListMessage(idGroup);
@@ -104,6 +119,23 @@ public class GroupController extends GroupModel {
 				listData.remove(i);
 
 				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listUsers", listData)));
+				System.out.println("successful");
+
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Boolean removeManagerGroup(String idUser, String idGroup) {
+
+		ArrayList<String> listData = searchListManagers(idGroup);
+
+		for (int i = 0; i < listData.size(); i++) {
+			if (listData.get(i).equals(idUser)) {
+				listData.remove(i);
+
+				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listManagers", listData)));
 				System.out.println("successful");
 
 				return true;
@@ -135,6 +167,21 @@ public class GroupController extends GroupModel {
 		ArrayList<String> listData = new ArrayList<String>();
 		try {
 			listData = (ArrayList<String>) document.next().get("listUsers");
+		} finally {
+			document.close();
+		}
+		System.out.println("successful");
+		return listData;
+	}
+	
+	public ArrayList<String> searchListManagers(String idGroup) {
+		Document filterDoc = new Document();
+		filterDoc.append("_id", idGroup);
+		MongoCursor<Document> document = CollectionGroup().find(filterDoc).iterator();
+
+		ArrayList<String> listData = new ArrayList<String>();
+		try {
+			listData = (ArrayList<String>) document.next().get("listManagers");
 		} finally {
 			document.close();
 		}

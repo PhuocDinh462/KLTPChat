@@ -5,7 +5,6 @@ INDEX VERSION 1.131+E:\KLTPChat\.metadata\.plugins\org.eclipse.jdt.core
 1015884500.index
 3502150160.index
 3481574009.index
-137624701.index
 1816960033.index
 1442339932.index
 2307851276.index
