@@ -1000,23 +1000,65 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
 
-					// Set lại conversationTitle:
-					sendMessage(client, "Command_LeftTheGroupSetConverSationTitle");
+					// Nếu nhóm còn từ 2 thành viên trở lên:
+					if (groups.get(index).getlistUsers().size() > 1) {
+						// Xóa trong groups:
+						groups.get(index).getlistUsers().remove(
+								groups.get(index).getlistUsers().indexOf(users.get(client).getInfor().getUsername()));
 
-					// Xóa trong groups:
-					groups.get(index).getlistUsers().remove(
-							groups.get(index).getlistUsers().indexOf(users.get(client).getInfor().getUsername()));
+						// Kiểm tra số lượng admin, nếu người rời đi là admin duy nhất của nhóm thì bầu
+						// người ở trong nhóm lâu nhất làm admin (trong groups):
+						if (groups.get(index).getManagers().size() < 2
+								&& groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
+							groups.get(index).getManagers().add(groups.get(index).getlistUsers().get(0));
 
-					// Gửi danh sách nhóm mới:
-					sendGroupList(client, users.get(client));
+						// Set lại conversationTitle:
+						sendMessage(client, "Command_LeftTheGroupSetConverSationTitle");
 
-					// Refresh group management table:
-					String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
-					sendCommandMsg2AllMenber(index, str1);
+						// Gửi danh sách nhóm mới:
+						sendGroupList(client, users.get(client));
 
-					// Xóa trong db:
-					groupController.removePeopleGroup(users.get(client).getInfor().getUsername(),
-							groups.get(index).getGroupId());
+						// Refresh group management table:
+						String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+						sendCommandMsg2AllMenber(index, str1);
+
+						// Xóa trong db:
+						groupController.removePeopleGroup(users.get(client).getInfor().getUsername(),
+								groups.get(index).getGroupId());
+
+						if (groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername())) {
+							// Xóa trong groups:
+							groups.get(index).getManagers().remove(groups.get(index).getManagers()
+									.indexOf(users.get(client).getInfor().getUsername()));
+
+							// Kiểm tra số lượng admin, nếu người rời đi là admin duy nhất của nhóm thì bầu
+							// người ở trong nhóm lâu nhất làm admin (trong db):
+							if (groups.get(index).getManagers().size() < 2)
+								groupController.addManagerGroup(groups.get(index).getlistUsers().get(0),
+										groups.get(index).getGroupId());
+
+							// Xóa trong db:
+							groupController.removeManagerGroup(users.get(client).getInfor().getUsername(),
+									groups.get(index).getGroupId());
+						}
+					}
+
+					// Nếu nhóm chỉ có 1 thành viên duy nhất thì xóa nhóm đó:
+					else {
+						String tmp = groups.get(index).getGroupId();
+
+						// Xóa trong groups:
+						groups.remove(index);
+
+						// Set lại conversationTitle:
+						sendMessage(client, "Command_LeftTheGroupSetConverSationTitle");
+
+						// Gửi danh sách nhóm mới:
+						sendGroupList(client, users.get(client));
+
+						// Xóa trong db:
+						groupController.deleteGroup(tmp);
+					}
 				}
 
 				else if (receivedMessage.contains("Command_DeleteFromGroup")) {
@@ -1070,34 +1112,34 @@ public class Main extends JFrame {
 
 					else if (!groups.get(index).getlistUsers().contains(str[2]))
 						sendMessage(client, "Command_TheyNotIn`");
-					
-					else if (str[2].equals(users.get(client).getInfor().getUsername()))
-						sendMessage(client, "Command_ChangeRoleSelf`");
 
 					// Kiểm tra quyền admin:
 					else if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
 						sendMessage(client, "Command_NotPermitted");
+
+					else if (str[2].equals(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_ChangeRoleSelf`");
 
 					else {
 						// Nếu người đó đang là admin thì cho xuống thành viên:
 						if (groups.get(index).getManagers().contains(str[2])) {
 							// Xóa trong groups:
 							groups.get(index).getManagers().remove(groups.get(index).getManagers().indexOf(str[2]));
-							
+
 							// Refresh group management table:
 							String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
 							sendCommandMsg2AllMenber(index, str1);
-							
+
 							// Xóa trong db:
 							groupController.removeManagerGroup(str[2], groups.get(index).getGroupId());
 						} else {
 							// Thêm vào groups:
 							groups.get(index).getManagers().add(str[2]);
-							
+
 							// Refresh group management table:
 							String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
 							sendCommandMsg2AllMenber(index, str1);
-							
+
 							// Thêm vào db:
 							groupController.addManagerGroup(str[2], groups.get(index).getGroupId());
 						}

@@ -275,7 +275,7 @@ public class CreateGroup extends JFrame {
 				System.out.print("");
 
 			if (status == CreateGroup.CreateGroupStatus.Accepted) {
-				JOptionPane.showMessageDialog(this, "Tạo thành công!", "Thành công", JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(this, "Tạo thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
 				setVisible(false);
 			} else {
 				JOptionPane.showMessageDialog(this, "Tạo thất bại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
