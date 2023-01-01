@@ -138,6 +138,25 @@ public class MessageController extends MessageModel {
 		return indexTemp;
 	}
 	
+	public ArrayList<Message> findMessageByIndex(String indexTemp) {
+		Document doc = new Document();
+		doc.append("index", indexTemp);
+		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		ArrayList<Message> mess = new ArrayList<Message>();
+		Gson gson = new Gson();
+
+		try {
+			while (document.hasNext()) {
+				Message addMess = gson.fromJson(document.next().toJson(), Message.class);
+				mess.add(addMess);
+			}
+		} finally {
+			document.close();
+		}
+		System.out.println("Successful");
+		return mess;
+	}
+	
 	
 	public ArrayList<Message> findMessageByGroup(String GroupName) {
 		Document doc = new Document();

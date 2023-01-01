@@ -822,12 +822,7 @@ public class Main extends JFrame {
 					// lay tin nhan 1 gui 2
 					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
 					System.out.println("history: get index: " + indexMessage);
-					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
-					for (Message message : historyMess) {
-						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
-								+ message.getContent() + "`");
-					}
-					historyMess = messGetFdataBase.findMessageBySender(str[2], str[1]);
+					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
 						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
 								+ message.getContent() + "`");
