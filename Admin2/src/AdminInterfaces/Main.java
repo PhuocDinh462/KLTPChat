@@ -516,6 +516,7 @@ public class Main extends JFrame {
 				String receivedMessage = bufferedReader.readLine() + "";
 				if (receivedMessage != null) {
 					System.out.println(receivedMessage);
+					System.out.println("Danh sách đang online: "+ users.size());
 				}
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					sendMessage(client, "Command_CloseConnect");
@@ -755,28 +756,19 @@ public class Main extends JFrame {
 				} else if (receivedMessage.contains("Command_SendMessage")) {
 					String[] str = receivedMessage.split("`");
 					if (containUsername(str[1])) {
-						System.out.print("người nhận: " + str[1] + " người gửi: " + str[3]);
+						System.out.println("người nhận: " + str[1] + " người gửi: " + str[3]);
+						// lưu message gửi thành công vào database
+						indexMessage = messageController.findIndexBySender(str[3], str[1]);//kiểm tra A gửi B
+						indexMessage = messageController.findIndexBySender(str[1], str[3]);
+						if(indexMessage.equals("0")) {//kiểm tra có lấy được index hay không nếu == 0
+							indexMessage = UUID.randomUUID().toString();//tạo một chuỗi random
+							System.out.println("khởi tạo index thành công:" + indexMessage);
+						}
+						messageController.create(new Message(str[3], str[1], str[2], indexMessage));
 						for (Socket socket : users.keySet()) {
-							if (users.get(socket).getInfor().getUsername().equals(str[1])) {
-								sendMessage(socket, "Command_Message`" + users.get(client).getInfor().getUsername()// lấy
-																													// thông
-																													// tin
-																													// người
-																													// gửi
-																													// tin
-																													// nhắn
-																													// kèm
-																													// vào
-																													// message
+							if (users.get(socket).getInfor().getUsername().equals(str[1])) {//kiểm
+								sendMessage(socket, "Command_Message`" + users.get(client).getInfor().getUsername()
 										+ "`" + str[2]);// gửi dạng command + người nhận + nội dung
-								// lưu message gửi thành công vào database
-								indexMessage = messageController.findIndexBySender(str[3], str[1]);//kiểm tra A gửi B
-								indexMessage = messageController.findIndexBySender(str[1], str[3]);
-								if(indexMessage.equals("0")) {//kiểm tra có lấy được index hay không nếu == 0
-									indexMessage = UUID.randomUUID().toString();//tạo một chuỗi random
-									System.out.println("khởi tạo index thành công:" + indexMessage);
-								}
-								messageController.create(new Message(str[3], str[1], str[2], indexMessage));
 							}
 
 						}
