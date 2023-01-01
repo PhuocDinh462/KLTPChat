@@ -698,8 +698,15 @@ public class Main extends JFrame {
 			conversations.put(username, chatPanel);
 		}
 		String[] str =  content.split("~");
-		System.out.println("Username: " + username + " Message: " + content);
-		conversations.get(username).add(new ChatBubble(bubbleType, str[0], str[1]));
+		if(str.length == 2) {
+			System.out.println("Username: " + username + " Message: " + content);
+			conversations.get(username).add(new ChatBubble(bubbleType, str[0], str[1]));
+		}
+		else {
+			System.out.println("Username: " + username + " Message: " + content);
+			conversations.get(username).add(new ChatBubble(bubbleType, content));
+		}
+		
 		conversationPanel.revalidate();
 		System.out.println("code addmessage: Them tin nhan thanh cong");
 	}
@@ -899,7 +906,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					for (int index = 2; index < str.length; index++) {
 						String[] mess = str[index].split("~");
-						System.out.println("\n code 817: " + "username: " + str[1] + " " + mess[0] + " " + mess[2] + " time" + mess[3]);
+						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2] + " time" + mess[3]);
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai

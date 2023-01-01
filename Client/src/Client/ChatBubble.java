@@ -89,7 +89,7 @@ public class ChatBubble extends JPanel{
     	Date date = new Date();
     	String timeNow = formatter.format(date);
     	System.out.println("time now " + timeNow);
-
+//
 //        JLabel timeLabel = new JLabel(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
         String []str = timeTemp.split("@");
         System.out.println("timeTemp: " + str[0] + str[1]);
