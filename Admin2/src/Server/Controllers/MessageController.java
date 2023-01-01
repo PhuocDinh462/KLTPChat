@@ -22,6 +22,7 @@ public class MessageController extends MessageModel {
 
 		Document document = new Document("_id", msg.getId()).append("senderId", msg.getSenderId())
 				.append("receiverId", msg.getReceiverId()).append("content", msg.getContent())
+				.append("index", msg.getIndex())
 				.append("createTime", formatter.format(date)).append("senderDelete", false)
 				.append("receiverDelete", false);
 
@@ -111,6 +112,34 @@ public class MessageController extends MessageModel {
 		System.out.println("Successful");
 		return mess;
 	}
+	
+	public String findIndexBySender(String sender, String receiver) {
+		String indexTemp = "0";
+		Document doc = new Document();
+		doc.append("senderId", sender);
+		doc.append("receiverId", receiver);
+		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		ArrayList<Message> mess = new ArrayList<Message>();
+		Gson gson = new Gson();
+		if(document.hasNext()) {
+			System.out.println("Dữ liệu có tồn tại");
+			try {
+				while (document.hasNext()) {
+					Message addMess = gson.fromJson(document.next().toJson(), Message.class);
+					mess.add(addMess);
+				}
+			} finally {
+				indexTemp = mess.get(0).getIndex();
+				document.close();
+			}
+		}else {
+			System.out.println("Dữ liệu chưa tồn tại");
+		}
+	
+		System.out.println("Successful");
+		return indexTemp;
+	}
+	
 	
 	public ArrayList<Message> findMessageByGroup(String GroupName) {
 		Document doc = new Document();

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class Message {
 	private String _id;
+	private String index;
 	private String senderId;
 	private String receiverId;
 	private String content;
@@ -26,6 +27,7 @@ public class Message {
 		senderId = new String();
 		content = new String();
 		createTime = new String();
+		index = "0";
 		senderDelete = false;
 		receiverDelete = false;
 		seen = false;
@@ -41,6 +43,20 @@ public class Message {
 		receiverDelete = false;
 		seen = false;
 	}
+	
+	public Message(String senderIdTemp, String receiverIdTemp, String contentTemp, String indexTemp) {
+		senderId = senderIdTemp;
+		content = contentTemp;
+		index = indexTemp;
+		receiverId = receiverIdTemp;
+		_id = UUID.randomUUID().toString();
+		createTime = new String();
+		senderDelete = false;
+		receiverDelete = false;
+		seen = false;
+	}
+	
+	
 
 	public String getSenderId() {
 		return senderId;
@@ -92,5 +108,13 @@ public class Message {
 
 	public void setSeen(Boolean seen) {
 		this.seen = seen;
+	}
+
+	public String getIndex() {
+		return index;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
 	}
 }
