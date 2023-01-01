@@ -487,7 +487,7 @@ public class Main extends JFrame {
 		groupBtn.setVisible(false);
 		groupBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (conversationStatus == false)
+				if (conversationStatus == false && !conversationTitle.getText().isBlank())
 					sendMessage("Command_ShowGroupManagement`" + conversationTitle.getText());
 			}
 		});
@@ -986,29 +986,65 @@ public class Main extends JFrame {
 					conversationTitle.setText(str[1]);
 				}
 				
-				else if (receivedMessage.contains("Command_Invite2GroupFail")) {
-					JOptionPane.showMessageDialog(null, "Người dùng không tồn tại!", "Lỗi",
+				else if (receivedMessage.contains("Command_Invite2GroupYouNotIn")) {
+					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
-				
+
+				else if (receivedMessage.contains("Command_Invite2GroupFail")) {
+					JOptionPane.showMessageDialog(null, "Người dùng không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				}
+
 				else if (receivedMessage.contains("Command_Invite2GroupAlreadyInGroup")) {
 					JOptionPane.showMessageDialog(null, "Người dùng đã ở trong nhóm!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_Invite2GroupSucessful")) {
 					JOptionPane.showMessageDialog(null, "Mời thành công!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_RefreshGroupManagementTable")) {
 					String[] str = receivedMessage.split("`");
 					GroupManagement.refresh(str);
 				}
-				
-				else if (receivedMessage.contains("Command_LeftTheGroup")) {
+
+				else if (receivedMessage.contains("Command_LeftTheGroupSetConverSationTitle")) {
 					conversationTitle.setText("");
+					groupBtn.setVisible(false);
 				}
+
+				else if (receivedMessage.contains("Command_LeftTheGroupDeleteFromGroup")) {
+					String[] str = receivedMessage.split("`");
+					Object[] object = { "Bạn có chắc muốn rời khỏi nhóm " + str[1] + " không?" };
+					int option = JOptionPane.showConfirmDialog(null, object, "Rời khỏi nhóm",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						sendMessage("Command_LeftTheGroup`" + str[1]);
+					}
+				}
+
+				else if (receivedMessage.contains("Command_DeleteFromGroupYouNotIn")) {
+					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+				else if (receivedMessage.contains("Command_DeleteFromGroupYouNotIn")) {
+					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+				else if (receivedMessage.contains("Command_DeleteFromGroupTheyNotIn")) {
+					JOptionPane.showMessageDialog(null, "Người dùng không ở trong nhóm này!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+				else if (receivedMessage.contains("Command_DeleteFromGroupNotPermitted")) {
+					JOptionPane.showMessageDialog(null, "Bạn không có đủ thẩm quyền để làm việc này!", "Lỗi",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
 
 				else {
 					System.out.println(receivedMessage);

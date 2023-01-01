@@ -26,12 +26,14 @@ public class GroupManagement extends JFrame {
 	private static JTable memberTable;
 	private JButton btniTnNhm;
 	private static DefaultTableModel memberListTableModel;
+	private static String groupName;
 
 	/**
 	 * Create the frame.
 	 */
 	public GroupManagement(String groupName, String[] memberList) {
-		addComponents(groupName, memberList);
+		GroupManagement.groupName = groupName;
+		addComponents(memberList);
 		setResizable(false);
 		setVisible(true);
 		setTitle("Quản lý nhóm - " + groupName);
@@ -50,7 +52,7 @@ public class GroupManagement extends JFrame {
 
 		for (int i = 1; i < memberList.length; i++) {
 			String[] str = memberList[i].split(":");
-			Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm" };
+			Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm:" + "Command_DeleteFromGroup`" + groupName + "`" + str[0]  };
 			memberListTableModel.addRow(rowObjects);
 		}
 
@@ -75,7 +77,7 @@ public class GroupManagement extends JFrame {
 		contentPane.add(memberScrollPane);
 	}
 
-	public void addComponents(String groupName, String[] memberList) {
+	public void addComponents(String[] memberList) {
 		// Content Pane
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -137,7 +139,7 @@ public class GroupManagement extends JFrame {
 
 				for (int i = 1; i < memberList.length; i++) {
 					String[] str = memberList[i].split(":");
-					Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm" };
+					Object[] rowObjects = { str[0], str[1], "Xóa khỏi nhóm:" + "Command_DeleteFromGroup`" + groupName + "`" + str[0] };
 					memberListTableModel.addRow(rowObjects);
 				}
 

@@ -960,7 +960,10 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
 
-					if (getAccountIndex(str[2]) == -1)
+					if (!groups.get(index).getlistUsers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_Invite2GroupYouNotIn");
+
+					else if (getAccountIndex(str[2]) == -1)
 						sendMessage(client, "Command_Invite2GroupFail");
 
 					else if (groups.get(index).getlistUsers().contains(str[2]))
@@ -976,7 +979,7 @@ public class Main extends JFrame {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername().equals(str[2]))
 								sendGroupList(socket, users.get(socket));
-						
+
 						// Refresh group management table:
 						String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
 						sendCommandMsg2AllMenber(index, str1);
@@ -989,22 +992,66 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_LeftTheGroup")) {
 					String[] str = receivedMessage.split("`");
 					int index = getGroupIndex(str[1]);
-					
+
 					// Set lại conversationTitle:
-					sendMessage(client, "Command_LeftTheGroup");
+					sendMessage(client, "Command_LeftTheGroupSetConverSationTitle");
 
 					// Xóa trong groups:
-					groups.get(index).getlistUsers().remove(groups.get(index).getlistUsers().indexOf(users.get(client).getInfor().getUsername()));
+					groups.get(index).getlistUsers().remove(
+							groups.get(index).getlistUsers().indexOf(users.get(client).getInfor().getUsername()));
 
 					// Gửi danh sách nhóm mới:
 					sendGroupList(client, users.get(client));
-					
+
 					// Refresh group management table:
 					String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
 					sendCommandMsg2AllMenber(index, str1);
-					
+
 					// Xóa trong db:
-					groupController.removePeopleGroup(users.get(client).getInfor().getUsername(), groups.get(index).getGroupId());
+					groupController.removePeopleGroup(users.get(client).getInfor().getUsername(),
+							groups.get(index).getGroupId());
+				}
+
+				else if (receivedMessage.contains("Command_DeleteFromGroup")) {
+					String[] str = receivedMessage.split("`");
+					int index = getGroupIndex(str[1]);
+
+					if (!groups.get(index).getlistUsers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_DeleteFromGroupYouNotIn`");
+
+					else if (str[2].equals(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_LeftTheGroupDeleteFromGroup`" + str[1]);
+
+					else if (!groups.get(index).getlistUsers().contains(str[2]))
+						sendMessage(client, "Command_DeleteFromGroupTheyNotIn`");
+
+					else if (!groups.get(index).getManagers().contains(users.get(client).getInfor().getUsername()))
+						sendMessage(client, "Command_DeleteFromGroupNotPermitted`");
+
+					else {
+						// Xóa trong groups:
+						groups.get(index).getlistUsers().remove(groups.get(index).getlistUsers().indexOf(str[2]));
+
+						Socket tmp = null;
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(str[2]))
+								tmp = socket;
+
+						if (tmp != null) {
+							// Set lại conversationTitle:
+							sendMessage(tmp, "Command_LeftTheGroupSetConverSationTitle");
+
+							// Gửi danh sách nhóm mới:
+							sendGroupList(tmp, users.get(tmp));
+						}
+						
+						// Refresh group management table:
+						String str1 = "Command_RefreshGroupManagementTable" + createMemberString(index);
+						sendCommandMsg2AllMenber(index, str1);
+
+						// Xóa trong db:
+						groupController.removePeopleGroup(str[2], groups.get(index).getGroupId());
+					}
 				}
 
 			}
