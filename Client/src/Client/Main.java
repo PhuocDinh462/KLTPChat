@@ -174,7 +174,8 @@ public class Main extends JFrame {
 	private static String[] groups;
 
 	/**
-	 * @Attribute: conversationStatus conversationStatus = true: Chat with friend.
+	 * @Attribute: conversationStatus
+	 * 			   conversationStatus = true: Chat with friend.
 	 *             conversationStatus = false: Chat with group.
 	 */
 	private static boolean conversationStatus;
@@ -489,6 +490,17 @@ public class Main extends JFrame {
 					int option = JOptionPane.showConfirmDialog(null, object, "Xóa toàn bộ tin nhắn",
 							JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
+						// nếu mà đang ko chat vs ai
+						JPanel chatPanel = new JPanel();
+						chatPanel.setBackground(Color.WHITE);
+						chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+						conversations.remove(conversationTitle.getText());
+
+						conversationPanel.removeAll();
+						conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
+						conversationPanel.revalidate();
+						conversationPanel.repaint();
+						
 						sendMessage("Command_DeleteAllMsg`" + conversationTitle.getText());
 					}
 				}

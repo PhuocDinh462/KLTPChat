@@ -1155,13 +1155,24 @@ public class Main extends JFrame {
 					ArrayList<Message> msg2 = messageController.findMessageBySender(str[1],
 							users.get(client).getInfor().getUsername());
 
-					for (Message msg : msg1)
+					for (Message msg : msg1) {
 						if (msg.getContent().contains(str[2]))
-							str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
+							if (msg.getSenderDelete())
+								str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿"
+										+ "Tin nhắn đã bị xóa";
+							else
+								str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
 
-					for (Message msg : msg2)
+					}
+
+					for (Message msg : msg2) {
 						if (msg.getContent().contains(str[2]))
-							str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
+							if (msg.getReceiverDelete())
+								str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿"
+										+ "Tin nhắn đã bị xóa";
+							else
+								str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
+					}
 
 					sendMessage(client, str1);
 				}
@@ -1174,18 +1185,35 @@ public class Main extends JFrame {
 						sendMessage(client, str1);
 
 					else {
-						ArrayList<Message> msg2 = null;
-						if (str[2].equals(str[1]))
-							msg2 = messageController.findMessageBySender(str[1],
+						if (str[2].equals(str[1])) {
+							ArrayList<Message> msg2 = messageController.findMessageBySender(str[1],
 									users.get(client).getInfor().getUsername());
 
-						else if (str[2].equals(users.get(client).getInfor().getUsername()))
-							msg2 = messageController.findMessageBySender(users.get(client).getInfor().getUsername(),
-									str[1]);
+							for (Message msg : msg2)
+								if (msg.getContent().contains(str[3])) {
+									if (msg.getReceiverDelete())
+										str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿"
+												+ "Tin nhắn đã bị xóa`";
+									else
+										str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent()
+												+ "`";
+								}
+						}
 
-						for (Message msg : msg2)
-							if (msg.getContent().contains(str[3]))
-								str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent() + "`";
+						else if (str[2].equals(users.get(client).getInfor().getUsername())) {
+							ArrayList<Message> msg2 = messageController.findMessageBySender(users.get(client).getInfor().getUsername(),
+									str[1]);
+							
+							for (Message msg : msg2)
+								if (msg.getContent().contains(str[3])) {
+									if (msg.getSenderDelete())
+										str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿"
+												+ "Tin nhắn đã bị xóa`";
+									else
+										str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent()
+												+ "`";
+								}
+						}
 
 						sendMessage(client, str1);
 					}
@@ -1213,8 +1241,26 @@ public class Main extends JFrame {
 							if (msg.getContent().contains(str[3]))
 								str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent() + "`";
 					}
-					
+
 					sendMessage(client, str1);
+				}
+
+				else if (receivedMessage.contains("Command_DeleteAllMsg")) {
+					String[] str = receivedMessage.split("`");
+					// Tin nhắn gửi:
+					ArrayList<Message> msg1 = messageController
+							.findMessageBySender(users.get(client).getInfor().getUsername(), str[1]);
+					// Tin nhắn nhận:
+					ArrayList<Message> msg2 = messageController.findMessageBySender(str[1],
+							users.get(client).getInfor().getUsername());
+
+					// Xóa tin nhắn gửi:
+					for (Message msg : msg1)
+						messageController.deleteByMsgSend(msg.getId());
+
+					// Xóa tin nhắn nhận:
+					for (Message msg : msg2)
+						messageController.deleteByMsgReceive(msg.getId());
 				}
 			}
 
