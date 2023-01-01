@@ -1147,6 +1147,75 @@ public class Main extends JFrame {
 
 				}
 
+				else if (receivedMessage.contains("Command_SearchMsgHistoryAll")) {
+					String[] str = receivedMessage.split("`");
+					String str1 = "Command_SearchMsgHistory";
+					ArrayList<Message> msg1 = messageController
+							.findMessageBySender(users.get(client).getInfor().getUsername(), str[1]);
+					ArrayList<Message> msg2 = messageController.findMessageBySender(str[1],
+							users.get(client).getInfor().getUsername());
+
+					for (Message msg : msg1)
+						if (msg.getContent().contains(str[2]))
+							str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
+
+					for (Message msg : msg2)
+						if (msg.getContent().contains(str[2]))
+							str1 += "`" + msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent();
+
+					sendMessage(client, str1);
+				}
+
+				else if (receivedMessage.contains("Command_SearchMsgHistoryBySender")) {
+					String[] str = receivedMessage.split("`");
+					String str1 = "Command_SearchMsgHistory`";
+
+					if (!str[2].equals(str[1]) && !str[2].equals(users.get(client).getInfor().getUsername()))
+						sendMessage(client, str1);
+
+					else {
+						ArrayList<Message> msg2 = null;
+						if (str[2].equals(str[1]))
+							msg2 = messageController.findMessageBySender(str[1],
+									users.get(client).getInfor().getUsername());
+
+						else if (str[2].equals(users.get(client).getInfor().getUsername()))
+							msg2 = messageController.findMessageBySender(users.get(client).getInfor().getUsername(),
+									str[1]);
+
+						for (Message msg : msg2)
+							if (msg.getContent().contains(str[3]))
+								str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent() + "`";
+
+						sendMessage(client, str1);
+					}
+				}
+
+				else if (receivedMessage.contains("Command_SearchMsgHistoryInGroup")) {
+					String[] str = receivedMessage.split("`");
+					String str1 = "Command_SearchMsgHistory`";
+					int index = getGroupIndex(str[1]);
+
+					if (str[2].isBlank()) {
+						for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
+							ArrayList<Message> msg2 = messageController
+									.findMessageBySender(groups.get(index).getlistUsers().get(i), str[1]);
+							for (Message msg : msg2)
+								if (msg.getContent().contains(str[3]))
+									str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent()
+											+ "`";
+						}
+					}
+
+					else {
+						ArrayList<Message> msg2 = messageController.findMessageBySender(str[2], str[1]);
+						for (Message msg : msg2)
+							if (msg.getContent().contains(str[3]))
+								str1 += msg.getSenderId() + "¿" + msg.getCreateTime() + "¿" + msg.getContent() + "`";
+					}
+					
+					sendMessage(client, str1);
+				}
 			}
 
 		} catch (Exception exception) {

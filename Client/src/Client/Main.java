@@ -473,13 +473,27 @@ public class Main extends JFrame {
 		JButton searchButton = new JButton("🔎︎");
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Search();
+				if (!conversationTitle.getText().isBlank())
+					new Search(conversationTitle.getText(), conversationStatus);
 			}
 		});
 		searchButton.setBounds(549, 10, 50, 23);
 		middlePanel.add(searchButton);
 
 		JButton deleteButton = new JButton("🗑");
+		deleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!conversationTitle.getText().isBlank()) {
+					Object[] object = {
+							"Bạn có chắc muốn xóa toàn bộ tin nhắn với " + conversationTitle.getText() + " không?" };
+					int option = JOptionPane.showConfirmDialog(null, object, "Xóa toàn bộ tin nhắn",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						sendMessage("Command_DeleteAllMsg`" + conversationTitle.getText());
+					}
+				}
+			}
+		});
 		deleteButton.setBounds(489, 10, 50, 23);
 		middlePanel.add(deleteButton);
 
@@ -648,10 +662,10 @@ public class Main extends JFrame {
 
 		JPanel chatPanel = conversations.get(conversationUser);
 		// nếu mà đang ko chat vs ai
-			chatPanel = new JPanel();
-			chatPanel.setBackground(Color.WHITE);
-			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-			conversations.put(conversationUser, chatPanel);
+		chatPanel = new JPanel();
+		chatPanel.setBackground(Color.WHITE);
+		chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+		conversations.put(conversationUser, chatPanel);
 
 		conversationPanel.removeAll();
 		conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
@@ -696,29 +710,29 @@ public class Main extends JFrame {
 			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			conversations.put(username, chatPanel);
 		}
-		String[] str =  content.split("~");
-		if(str.length == 2) {
+		String[] str = content.split("~");
+		if (str.length == 2) {
 			System.out.println("Username: " + username + " Message: " + content);
 			conversations.get(username).add(new ChatBubble(bubbleType, str[0], str[1]));
-		}
-		else {
+		} else {
 			System.out.println("Username: " + username + " Message: " + content);
 			conversations.get(username).add(new ChatBubble(bubbleType, content));
 		}
-		
+
 		conversationPanel.revalidate();
 		System.out.println("code addmessage: Them tin nhan thanh cong");
 	}
-	
-	public static void addNewGroupMessage(String GroupName, String content, ChatBubbleGroup.BubbleType bubbleType,String username) {
+
+	public static void addNewGroupMessage(String GroupName, String content, ChatBubbleGroup.BubbleType bubbleType,
+			String username) {
 		System.out.println("code 631: gia tri dau vao: " + GroupName + " " + content);
-			for (int i = 0; i < groups.length; i++) {
-				if (groups[i].contains(GroupName) && !groups[i].contains(" (Tin nhắn mới)")) {
-					if (!conversationTitle.getText().equals(groups[i]))
-						groups[i] = groups[i] + " (Tin nhắn mới)";
-				}
+		for (int i = 0; i < groups.length; i++) {
+			if (groups[i].contains(GroupName) && !groups[i].contains(" (Tin nhắn mới)")) {
+				if (!conversationTitle.getText().equals(groups[i]))
+					groups[i] = groups[i] + " (Tin nhắn mới)";
 			}
-			groupList.setListData(groups);
+		}
+		groupList.setListData(groups);
 
 		if (conversations.get(GroupName) == null) {
 			JPanel chatPanel = new JPanel();
@@ -726,9 +740,9 @@ public class Main extends JFrame {
 			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			conversations.put(GroupName, chatPanel);
 		}
-		
+
 		System.out.println("Username: " + GroupName + " Message: " + content);
-		conversations.get(GroupName).add(new ChatBubbleGroup(bubbleType, content,username));
+		conversations.get(GroupName).add(new ChatBubbleGroup(bubbleType, content, username));
 		conversationPanel.revalidate();
 		System.out.println("code 648: Them tin nhan thanh cong");
 	}
@@ -905,7 +919,8 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					for (int index = 2; index < str.length; index++) {
 						String[] mess = str[index].split("~");
-						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2] + " time" + mess[3]);
+						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]
+								+ " time" + mess[3]);
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai
@@ -917,16 +932,14 @@ public class Main extends JFrame {
 						}
 					}
 
-				}
-				else if (receivedMessage.contains("Command_SendGroupHistoryMessage")) {
+				} else if (receivedMessage.contains("Command_SendGroupHistoryMessage")) {
 					System.out.println("\nget data base: " + receivedMessage);
 					String[] str = receivedMessage.split("`");
-					for (int i =3; i < str.length;i++) {
+					for (int i = 3; i < str.length; i++) {
 						String[] mess = str[i].split(":");
-						if(str[1].equals(mess[0])) {
+						if (str[1].equals(mess[0])) {
 							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Mine, mess[0]);
-						}
-						else {
+						} else {
 							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Others, mess[0]);
 						}
 					}
@@ -984,7 +997,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					conversationTitle.setText(str[1]);
 				}
-				
+
 				else if (receivedMessage.contains("Command_YouNotIn")) {
 					JOptionPane.showMessageDialog(null, "Bạn không ở trong nhóm này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
@@ -1028,12 +1041,16 @@ public class Main extends JFrame {
 					JOptionPane.showMessageDialog(null, "Người dùng không ở trong nhóm này!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
-				
+
 				else if (receivedMessage.contains("Command_ChangeRoleSelf")) {
 					JOptionPane.showMessageDialog(null, "Không thể phân quyền cho chính mình!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
 
+				else if (receivedMessage.contains("Command_SearchMsgHistory")) {
+					String[] str = receivedMessage.split("`");
+					Search.refresh(str);
+				}
 
 				else {
 					System.out.println(receivedMessage);
