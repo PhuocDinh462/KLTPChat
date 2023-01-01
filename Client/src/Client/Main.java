@@ -647,12 +647,11 @@ public class Main extends JFrame {
 		conversationTitle.setText(conversationUser);
 
 		JPanel chatPanel = conversations.get(conversationUser);
-		if (chatPanel == null) {// nếu mà đang ko chat vs ai
+		// nếu mà đang ko chat vs ai
 			chatPanel = new JPanel();
 			chatPanel.setBackground(Color.WHITE);
 			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			conversations.put(conversationUser, chatPanel);
-		}
 
 		conversationPanel.removeAll();
 		conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
