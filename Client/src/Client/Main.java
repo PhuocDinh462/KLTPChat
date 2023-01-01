@@ -697,11 +697,11 @@ public class Main extends JFrame {
 			chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 			conversations.put(username, chatPanel);
 		}
-		
+		String[] str =  content.split("~");
 		System.out.println("Username: " + username + " Message: " + content);
-		conversations.get(username).add(new ChatBubble(bubbleType, content));
+		conversations.get(username).add(new ChatBubble(bubbleType, str[0], str[1]));
 		conversationPanel.revalidate();
-		System.out.println("code 648: Them tin nhan thanh cong");
+		System.out.println("code addmessage: Them tin nhan thanh cong");
 	}
 	
 	public static void addNewGroupMessage(String GroupName, String content, ChatBubbleGroup.BubbleType bubbleType,String username) {
@@ -898,16 +898,16 @@ public class Main extends JFrame {
 					System.out.println("\nget data base: " + receivedMessage);
 					String[] str = receivedMessage.split("`");
 					for (int index = 2; index < str.length; index++) {
-						String[] mess = str[index].split(":");
-						System.out.println("\n code 817: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]);
+						String[] mess = str[index].split("~");
+						System.out.println("\n code 817: " + "username: " + str[1] + " " + mess[0] + " " + mess[2] + " time" + mess[3]);
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai
-							addNewMessage(mess[1], mess[2], ChatBubble.BubbleType.Mine, true);
+							addNewMessage(mess[1], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Mine, true);
 						} else if (!str[1].equals(mess[0])) {
 							System.out.println("code 823: mot tin nhan vua duoc them vao");
 							// nguoc lai la ben trai
-							addNewMessage(mess[0], mess[2], ChatBubble.BubbleType.Others, true);
+							addNewMessage(mess[0], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Others, true);
 						}
 					}
 

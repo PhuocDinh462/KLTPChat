@@ -824,8 +824,8 @@ public class Main extends JFrame {
 					System.out.println("history: get index: " + indexMessage);
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
-						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"
-								+ message.getContent() + "`");
+						stringArray = stringArray.concat(message.getSenderId() + "~" + message.getReceiverId() + "~"
+								+ message.getContent() + "~" + message.getCreateTime() + "`");
 					}
 					System.out.print("code 786: " + stringArray);
 

@@ -17,7 +17,7 @@ import Server.Models.MessageModel;
 
 public class MessageController extends MessageModel {
 	public void create(Message msg) {
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy@HH:mm:ss");
 		Date date = new Date();
 
 		Document document = new Document("_id", msg.getId()).append("senderId", msg.getSenderId())
