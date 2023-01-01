@@ -41,12 +41,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 import java.awt.Color;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
 public class Main extends JFrame {
-
+	
+	private String indexMessage;
 	private JPanel contentPane;
 	private JPanel panelMainContent;
 
@@ -768,7 +770,13 @@ public class Main extends JFrame {
 																													// message
 										+ "`" + str[2]);// gửi dạng command + người nhận + nội dung
 								// lưu message gửi thành công vào database
-								messageController.create(new Message(str[3], str[1], str[2]));
+								indexMessage = messageController.findIndexBySender(str[3], str[1]);//kiểm tra A gửi B
+								indexMessage = messageController.findIndexBySender(str[1], str[3]);
+								if(indexMessage.equals("0")) {//kiểm tra có lấy được index hay không nếu == 0
+									indexMessage = UUID.randomUUID().toString();//tạo một chuỗi random
+									System.out.println("khởi tạo index thành công:" + indexMessage);
+								}
+								messageController.create(new Message(str[3], str[1], str[2], indexMessage));
 							}
 
 						}
@@ -812,6 +820,8 @@ public class Main extends JFrame {
 					}
 					String stringArray = "";
 					// lay tin nhan 1 gui 2
+					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
+					System.out.println("history: get index: " + indexMessage);
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageBySender(str[1], str[2]);
 					for (Message message : historyMess) {
 						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getReceiverId() + ":"

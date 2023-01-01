@@ -124,10 +124,8 @@ public class MessageController extends MessageModel {
 		if(document.hasNext()) {
 			System.out.println("Dữ liệu có tồn tại");
 			try {
-				while (document.hasNext()) {
 					Message addMess = gson.fromJson(document.next().toJson(), Message.class);
 					mess.add(addMess);
-				}
 			} finally {
 				indexTemp = mess.get(0).getIndex();
 				document.close();
