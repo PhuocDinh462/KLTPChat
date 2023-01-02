@@ -347,9 +347,6 @@ public class Main extends JFrame {
 		JScrollPane messageScroll = new JScrollPane(conversationPanel);
 		messageScroll.setBounds(10, 34, 589, 548);
 		messageScroll.setBorder(new EmptyBorder(10, 0, 10, 0));
-
-		JButton fileButton = new JButton("\uD83D\uDCC1");
-		fileButton.addActionListener(e -> fileButtonEventHandler());
 		messageTextField = new JTextField(20);
 		JButton sendButton = new JButton("Gửi");
 		sendButton.addActionListener(e -> {
@@ -360,8 +357,6 @@ public class Main extends JFrame {
 		JPanel messagePanel = new JPanel();
 		messagePanel.setBounds(10, 582, 589, 21);
 		messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
-		messagePanel.add(fileButton);
-		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(messageTextField);
 		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(sendButton);
@@ -639,7 +634,8 @@ public class Main extends JFrame {
 				conversations.get(conversationTitle.getText())
 				.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
 			}
-			revalidate();
+				
+			
 			
 //			while (messageStatus == MessageStatus.Waiting)
 //				System.out.print("tin nhắn đang chờ");

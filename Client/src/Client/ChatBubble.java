@@ -54,8 +54,8 @@ public class ChatBubble extends JPanel{
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
-        JLabel viewed = new JLabel("đã xem");
-        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+//        JLabel viewed = new JLabel("đã xem");
+//        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
         
 
         switch (bubbleType) {
@@ -63,7 +63,7 @@ public class ChatBubble extends JPanel{
                 contentButton.setBackground(new java.awt.Color(0,132,255));
                 contentButton.setForeground(Color.WHITE);
                 setLayout(new FlowLayout(FlowLayout.RIGHT));
-                add(viewed);
+//                add(viewed);
                 add(timeLabel);
                 add(contentButton);
             }
