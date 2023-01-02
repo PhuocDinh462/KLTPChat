@@ -740,7 +740,6 @@ public class Main extends JFrame {
 
 	public static void addNewGroupMessage(String GroupName, String content, ChatBubbleGroup.BubbleType bubbleType,
 			String username) {
-		System.out.println("code 631: gia tri dau vao: " + GroupName + " " + content);
 		for (int i = 0; i < groups.length; i++) {
 			if (groups[i].contains(GroupName) && !groups[i].contains(" (Tin nhắn mới)")) {
 				if (!conversationTitle.getText().equals(groups[i]))
@@ -756,8 +755,8 @@ public class Main extends JFrame {
 			conversations.put(GroupName, chatPanel);
 		}
 
-		System.out.println("Username: " + GroupName + " Message: " + content);
-		conversations.get(GroupName).add(new ChatBubbleGroup(bubbleType, content, username));
+		String[] str = content.split("~");
+		conversations.get(GroupName).add(new ChatBubbleGroup(bubbleType, str[0], username, str[1]));
 		conversationPanel.revalidate();
 		System.out.println("code 648: Them tin nhan thanh cong");
 	}
@@ -951,11 +950,14 @@ public class Main extends JFrame {
 					System.out.println("\nget data base: " + receivedMessage);
 					String[] str = receivedMessage.split("`");
 					for (int i = 3; i < str.length; i++) {
-						String[] mess = str[i].split(":");
+
+						String[] mess = str[i].split("~");
 						if (str[1].equals(mess[0])) {
-							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Mine, mess[0]);
+							addNewGroupMessage(str[2], mess[1] + "~" + mess[2], ChatBubbleGroup.BubbleType.Mine,
+									mess[0]);
 						} else {
-							addNewGroupMessage(str[2], mess[1], ChatBubbleGroup.BubbleType.Others, mess[0]);
+							addNewGroupMessage(str[2], mess[1] + "~" + mess[2], ChatBubbleGroup.BubbleType.Others,
+									mess[0]);
 						}
 					}
 				}

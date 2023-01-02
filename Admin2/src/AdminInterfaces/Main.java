@@ -843,7 +843,7 @@ public class Main extends JFrame {
 					ArrayList<Message> historyMessReceived = messageController.findMessageByGroup(str[2]);
 					for (Message message : historyMessReceived) {
 						System.out.println("code 827:" + message.getContent());
-						stringArray = stringArray.concat(message.getSenderId() + ":" + message.getContent() + "`");
+						stringArray = stringArray.concat(message.getSenderId() + "~" + message.getContent() + "~" + message.getCreateTime()  + "`");
 					}
 					ArrayList<String> UsersList = groupController.searchListUsersByGroupName(str[2]);
 					for (Socket socket : users.keySet()) {

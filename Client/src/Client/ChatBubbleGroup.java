@@ -4,9 +4,10 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.io.*;
-
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 
 public class ChatBubbleGroup extends JPanel{
@@ -40,6 +41,56 @@ public class ChatBubbleGroup extends JPanel{
      * @param bubbleType BubbleType
      * @param content String: Content of this Chat Bubble
      */
+    public ChatBubbleGroup(BubbleType bubbleType, String content,String username,String timeTemp) {
+   	 setBackground(Color.WHITE);
+    	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    	Date date = new Date();
+    	String timeNow = formatter.format(date);
+    	System.out.println("time now " + timeNow);
+        String []str = timeTemp.split("@");
+        System.out.println("timeTemp: " + str[0] + str[1]);
+    	JLabel timeLabel = new JLabel(timeTemp);
+        timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
+        if(timeNow.equals(str[0])) {
+        	timeLabel.setText(str[1]);
+        }
+
+       JButton contentButton = new JButton(content);
+       contentButton.setBorderPainted(false);
+       contentButton.setFocusPainted(false);
+       
+       JLabel viewed = new JLabel("đã xem");
+       viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+       
+       JLabel sender = new JLabel(username + " sent");
+       sender.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+
+       switch (bubbleType) {
+           case Mine -> {
+               contentButton.setBackground(new java.awt.Color(0,132,255));
+               contentButton.setForeground(Color.WHITE);
+               setLayout(new FlowLayout(FlowLayout.RIGHT));
+               add(viewed);
+               add(timeLabel);
+               add(contentButton);
+           }
+           case Others -> {
+               contentButton.setBackground(new java.awt.Color(217,217,217));
+               setLayout(new FlowLayout(FlowLayout.LEFT));
+               add(contentButton);
+               add(timeLabel);
+               add(sender);
+               
+           }
+           case File -> {
+               contentButton.addActionListener(e -> downloadFile(content));
+               contentButton.setBackground(new java.awt.Color(217,217,217));
+               setLayout(new FlowLayout(FlowLayout.LEFT));
+               add(contentButton);
+               add(timeLabel);
+           }
+       }
+   }
     public ChatBubbleGroup(BubbleType bubbleType, String content,String username) {
         setBackground(Color.WHITE);
         
