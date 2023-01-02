@@ -636,9 +636,10 @@ public class Main extends JFrame {
 				
 			else {
 				sendMessage("Command_SendGroupMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-				conversations.get(conversationTitle.getText())
-				.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
+					conversations.get(conversationTitle.getText())
+							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
 			}
+			revalidate();
 				
 			
 			
