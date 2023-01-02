@@ -315,7 +315,12 @@ public class Main extends JFrame {
 				String groupChat = groupList.getSelectedValue();
 				conversationStatus = false;
 				changeConversation(groupChat, conversationStatus);
-				sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				if(groupChat.contains("Tin nhắn mới)")){
+					groupChat = groupChat.replace(" (Tin nhắn mới)", "");
+					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				}else {
+					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				}
 				groupBtn.setVisible(true);
 			}
 		});
