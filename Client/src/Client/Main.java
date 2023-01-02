@@ -286,7 +286,13 @@ public class Main extends JFrame {
 				String friendChat = usersList.getSelectedValue();
 				conversationStatus = true;
 				changeConversation(friendChat, conversationStatus);
-				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				if(friendChat.contains("Tin nhắn mới)")){
+					friendChat = friendChat.replace(" (Tin nhắn mới)", "");
+					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				}else {
+					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				}
+				
 				groupBtn.setVisible(false);
 			}
 		});
@@ -620,25 +626,35 @@ public class Main extends JFrame {
 			JOptionPane.showMessageDialog(this, "Chọn người nhận tin nhắn trước khi gửi.", "Lỗi",
 					JOptionPane.WARNING_MESSAGE);
 		} else {
-			messageStatus = MessageStatus.Waiting;
-			if (conversationStatus == true)
+//			messageStatus = MessageStatus.Waiting;
+			if (conversationStatus == true) {
 				sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-			else
+				conversations.get(conversationTitle.getText())
+				.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				
+			}
+				
+			else {
 				sendMessage("Command_SendGroupMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-			while (messageStatus == MessageStatus.Waiting)
-				System.out.print("");
+				conversations.get(conversationTitle.getText())
+				.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
+			}
+			revalidate();
+			
+//			while (messageStatus == MessageStatus.Waiting)
+//				System.out.print("tin nhắn đang chờ");
 
-			if (messageStatus == MessageStatus.Accepted) {
-				if (conversationStatus == true)
-					conversations.get(conversationTitle.getText())
-							.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+//			if (messageStatus == MessageStatus.Accepted) {
+//				if (conversationStatus == true)
+//					conversations.get(conversationTitle.getText())
+//							.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
 //				else
 //					conversations.get(conversationTitle.getText())
 //							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
-				revalidate();
-			} else {
-				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
-			}
+//				revalidate();
+//			} else {
+//				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//			}
 		}
 	}
 
