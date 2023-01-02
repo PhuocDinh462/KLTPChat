@@ -119,6 +119,7 @@ public class CreateGroup extends JFrame {
 			listModelFriend.addElement(item);
 		}
 		JList<String> friendList = new JList<String>(listModelFriend);
+		friendList.setBackground(new Color(238, 238, 238));
 		friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		friendList.setVisibleRowCount(10);
 		friendScroll.setViewportView(friendList);
@@ -132,7 +133,7 @@ public class CreateGroup extends JFrame {
 		contentPane.add(groupMemberScroll);
 
 		JList<String> groupMemberList = new JList<String>(listModelGroup);
-		groupMemberList.setBackground(Color.WHITE);
+		groupMemberList.setBackground(new Color(238, 238, 238));
 		groupMemberList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		groupMemberList.setVisibleRowCount(10);
 		groupMemberScroll.setRowHeaderView(groupMemberList);

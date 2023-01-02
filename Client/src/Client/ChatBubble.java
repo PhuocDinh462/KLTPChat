@@ -49,7 +49,7 @@ public class ChatBubble extends JPanel{
 //    	JLabel timeLabel = new JLabel(timeTemp);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
 
-        JButton contentButton = new JButton(content);
+        JButton contentButton = new JButton(brContent(content));
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
@@ -82,6 +82,23 @@ public class ChatBubble extends JPanel{
         }
     }
     
+    private String brContent(String content) {
+    	int brLen = 50;
+    	int maxlen = brLen + 20;
+    	int len = content.length();
+    	
+    	for(int i = 0, j = 0; i < len; i++, j++) {
+    		if((j >= brLen && content.charAt(i) == ' ') || j >= maxlen) {
+    			content = content.substring(0, i) + "<br>" + content.substring(i, content.length());
+    			i += 4;
+    			len += 4;
+    			j = 0;
+    		}
+    			
+    	}
+   	
+    	return "<html>" + content;
+    }
     
     public ChatBubble(BubbleType bubbleType, String content, String timeTemp) {
         setBackground(Color.WHITE);
@@ -99,7 +116,7 @@ public class ChatBubble extends JPanel{
         	timeLabel.setText(str[1]);
         }
 
-        JButton contentButton = new JButton(content);
+        JButton contentButton = new JButton(brContent(content));
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
