@@ -693,7 +693,6 @@ public class Main extends JFrame {
 											.getFriend().indexOf(str[1]));
 
 					// Xóa bạn trong account:
-					accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
 					accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).deleteFriend(str[1]);
 
 					// Xóa bạn trong users:
@@ -702,10 +701,11 @@ public class Main extends JFrame {
 					for (Socket socket : users.keySet())
 						if (users.get(socket).getInfor().getUsername().equals(str[1])) {
 							// Xóa bạn trên interface:
-							sendMessage(socket,
-									"Command_unfriend`"
-											+ accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername()))
-													.getFriend().indexOf(users.get(client).getInfor().getUsername()));
+							sendMessage(socket, "Command_unfriend`" + accounts.get(getAccountIndex(str[1])).getFriend()
+									.indexOf(users.get(client).getInfor().getUsername()));
+							
+							// Xóa bạn trong account:
+							accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
 
 							// Xóa bạn trong users:
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
@@ -912,7 +912,7 @@ public class Main extends JFrame {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername()
 									.equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
-								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]  + "`" + str[3]);
+								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2] + "`" + str[3]);
 							}
 					}
 				}
@@ -1199,9 +1199,9 @@ public class Main extends JFrame {
 						}
 
 						else if (str[2].equals(users.get(client).getInfor().getUsername())) {
-							ArrayList<Message> msg2 = messageController.findMessageBySender(users.get(client).getInfor().getUsername(),
-									str[1]);
-							
+							ArrayList<Message> msg2 = messageController
+									.findMessageBySender(users.get(client).getInfor().getUsername(), str[1]);
+
 							for (Message msg : msg2)
 								if (msg.getContent().contains(str[3])) {
 									if (msg.getSenderDelete())

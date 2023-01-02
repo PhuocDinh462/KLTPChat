@@ -51,8 +51,9 @@ public class FriendList extends JFrame {
 		for (int i = 1; i < friendList.length; i++) {
 			Object[] rowObjects = { friendList[i], "Hủy kết bạn:" + "Command_unfriend`" + friendList[i] };
 			friendListTableModel.addRow(rowObjects);
-			friendListTable = new JTable(friendListTableModel);
 		}
+		
+		friendListTable = new JTable(friendListTableModel);
 
 		if (friendList.length > 1) {
 			friendListTable.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
