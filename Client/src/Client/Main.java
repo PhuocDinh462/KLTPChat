@@ -630,7 +630,10 @@ public class Main extends JFrame {
 				System.out.print("");
 
 			if (messageStatus == MessageStatus.Accepted) {
-				conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				if(conversationStatus ==true) 
+					conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				else
+					conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
 				revalidate();
 			} else {
 				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
@@ -981,7 +984,7 @@ public class Main extends JFrame {
 
 				else if (receivedMessage.contains("Command_GroupMessage")) {
 					String[] str = receivedMessage.split("`");
-					addNewMessage(str[1], str[2], ChatBubble.BubbleType.Others, false);
+					addNewGroupMessage(str[1], str[2], ChatBubbleGroup.BubbleType.Others, str[3]);
 
 				}
 

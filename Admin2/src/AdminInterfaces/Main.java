@@ -912,9 +912,7 @@ public class Main extends JFrame {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername()
 									.equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
-								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]);
-								// Lưu tin nhắn vào db:
-								// ...
+								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2]  + "`" + str[3]);
 							}
 					}
 				}
