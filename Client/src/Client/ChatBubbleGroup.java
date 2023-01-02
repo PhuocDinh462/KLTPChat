@@ -55,7 +55,7 @@ public class ChatBubbleGroup extends JPanel{
         	timeLabel.setText(str[1]);
         }
 
-       JButton contentButton = new JButton(content);
+       JButton contentButton = new JButton(brContent(content));
        contentButton.setBorderPainted(false);
        contentButton.setFocusPainted(false);
        
@@ -91,6 +91,25 @@ public class ChatBubbleGroup extends JPanel{
            }
        }
    }
+    
+    private String brContent(String content) {
+    	int brLen = 50;
+    	int maxlen = brLen + 20;
+    	int len = content.length();
+    	
+    	for(int i = 0, j = 0; i < len; i++, j++) {
+    		if((j >= brLen && content.charAt(i) == ' ') || j >= maxlen) {
+    			content = content.substring(0, i) + "<br>" + content.substring(i, content.length());
+    			i += 4;
+    			len += 4;
+    			j = 0;
+    		}
+    			
+    	}
+   	
+    	return "<html>" + content;
+    }
+    
     public ChatBubbleGroup(BubbleType bubbleType, String content,String username) {
         setBackground(Color.WHITE);
         
@@ -98,7 +117,7 @@ public class ChatBubbleGroup extends JPanel{
         JLabel timeLabel = new JLabel(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalTime.now()));
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
 
-        JButton contentButton = new JButton(content);
+        JButton contentButton = new JButton(brContent(content));
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
