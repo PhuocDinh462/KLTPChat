@@ -14,8 +14,11 @@ import Server.Controllers.UserController;
 
 import java.awt.Font;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingConstants;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -152,7 +155,7 @@ public class CreateAccount extends JFrame {
 		JButton btnCreated = new JButton("Đăng kí");
 		btnCreated.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Boolean auth = signUpNowButtonEventHandler(textFullname.getText(), SignUp.getSelectedButtonText(bg),
+				Boolean auth = signUpNowButtonEventHandler(textFullname.getText(), getSelectedButtonText(bg),
 						dateChooser.getDate(), textAddress.getText(), textUsername.getText(), textEmail.getText(),
 						String.valueOf(textPass.getPassword()), String.valueOf(textRePass.getPassword()));
 
@@ -187,7 +190,7 @@ public class CreateAccount extends JFrame {
 			String email, String password, String repassword) {
 		String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
 				+ "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-		Boolean test = SignUp.patternMatches(email, regexPattern);
+		Boolean test = patternMatches(email, regexPattern);
 
 		if (fullname.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Bạn chưa nhập họ tên!", "Lỗi", JOptionPane.WARNING_MESSAGE);
@@ -219,5 +222,20 @@ public class CreateAccount extends JFrame {
 			}
 		}
 		return false;
+	}
+	
+	public static String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+
+        return null;
+    }
+	
+	public static boolean patternMatches(String emailAddress, String regexPattern) {
+		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}
 }
