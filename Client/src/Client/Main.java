@@ -934,8 +934,8 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					for (int index = 2; index < str.length; index++) {
 						String[] mess = str[index].split("~");
-						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]
-								+ " time" + mess[3]);
+//						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]
+//								+ " time" + mess[3]);
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai
@@ -987,6 +987,7 @@ public class Main extends JFrame {
 
 				else if (receivedMessage.contains("Command_GroupMessage")) {
 					String[] str = receivedMessage.split("`");
+					System.out.println("qweqweqweqwe:" + receivedMessage);
 					addNewGroupMessage(str[1], str[2], ChatBubbleGroup.BubbleType.Others, str[3]);
 
 				}
