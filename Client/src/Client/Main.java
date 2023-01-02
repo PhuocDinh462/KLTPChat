@@ -174,8 +174,7 @@ public class Main extends JFrame {
 	private static String[] groups;
 
 	/**
-	 * @Attribute: conversationStatus
-	 * 			   conversationStatus = true: Chat with friend.
+	 * @Attribute: conversationStatus conversationStatus = true: Chat with friend.
 	 *             conversationStatus = false: Chat with group.
 	 */
 	private static boolean conversationStatus;
@@ -500,7 +499,7 @@ public class Main extends JFrame {
 						conversationPanel.add(chatPanel, BorderLayout.PAGE_START);
 						conversationPanel.revalidate();
 						conversationPanel.repaint();
-						
+
 						sendMessage("Command_DeleteAllMsg`" + conversationTitle.getText());
 					}
 				}
@@ -630,10 +629,12 @@ public class Main extends JFrame {
 				System.out.print("");
 
 			if (messageStatus == MessageStatus.Accepted) {
-				if(conversationStatus ==true) 
-					conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
-				else
-					conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				if (conversationStatus == true)
+					conversations.get(conversationTitle.getText())
+							.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+//				else
+//					conversations.get(conversationTitle.getText())
+//							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
 				revalidate();
 			} else {
 				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
