@@ -88,15 +88,15 @@ public class SignUp extends JFrame {
 
 		// Title Label
 		JLabel titleLabel = new JLabel("Đăng ký", JLabel.CENTER);
-		titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
+		titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
 		// Fullname Panel
-		JTextField fullnameTextField = new JTextField(15);
+		JTextField fullnameTextField = new JTextField(30);
 
 		JPanel fullnamePanel = new JPanel();
 		fullnamePanel.setLayout(new BoxLayout(fullnamePanel, BoxLayout.X_AXIS));
 		fullnamePanel.add(new JLabel("Họ và Tên"));
-		fullnamePanel.add(Box.createHorizontalStrut(76));
+		fullnamePanel.add(Box.createHorizontalStrut(56));
 		fullnamePanel.add(fullnameTextField);
 
 		// Gender Panel
@@ -111,7 +111,7 @@ public class SignUp extends JFrame {
 		JPanel GenderPanel = new JPanel();
 		GenderPanel.setLayout(new BoxLayout(GenderPanel, BoxLayout.X_AXIS));
 		GenderPanel.add(new JLabel("Giới tính "));
-		GenderPanel.add(Box.createHorizontalStrut(80));
+		GenderPanel.add(Box.createHorizontalStrut(60));
 		GenderPanel.add(radioBtn1);
 		GenderPanel.add(radioBtn2);
 		String gender = new String();
@@ -130,7 +130,7 @@ public class SignUp extends JFrame {
 		JLabel lblNewLabel = new JLabel("Ngay Sinh");
 		CalendarPanel.add(lblNewLabel);
 
-		Component horizontalStrut = Box.createHorizontalStrut(76);
+		Component horizontalStrut = Box.createHorizontalStrut(57);
 		CalendarPanel.add(horizontalStrut);
 
 		JDateChooser dateChooser = new JDateChooser();
@@ -142,7 +142,7 @@ public class SignUp extends JFrame {
 		JPanel addressPanel = new JPanel();
 		addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.X_AXIS));
 		addressPanel.add(new JLabel("Địa chi "));
-		addressPanel.add(Box.createHorizontalStrut(90));
+		addressPanel.add(Box.createHorizontalStrut(70));
 		addressPanel.add(addressTextField);
 
 		// Username Panel
@@ -151,7 +151,7 @@ public class SignUp extends JFrame {
 		JPanel usernamePanel = new JPanel();
 		usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.X_AXIS));
 		usernamePanel.add(new JLabel("Tên tài khoản"));
-		usernamePanel.add(Box.createHorizontalStrut(52));
+		usernamePanel.add(Box.createHorizontalStrut(40));
 		usernamePanel.add(usernameTextField);
 
 		// Email Panel
@@ -160,7 +160,7 @@ public class SignUp extends JFrame {
 		JPanel emailPanel = new JPanel();
 		emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
 		emailPanel.add(new JLabel("Email"));
-		emailPanel.add(Box.createHorizontalStrut(100));
+		emailPanel.add(Box.createHorizontalStrut(81));
 		emailPanel.add(emailTextField);
 
 		// Password Panel
@@ -169,7 +169,7 @@ public class SignUp extends JFrame {
 		JPanel passwordPanel = new JPanel();
 		passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.X_AXIS));
 		passwordPanel.add(new JLabel("Mật khẩu"));
-		passwordPanel.add(Box.createHorizontalStrut(78));
+		passwordPanel.add(Box.createHorizontalStrut(61));
 		passwordPanel.add(passwordField);
 		contentPane.add(passwordPanel);
 
@@ -179,7 +179,7 @@ public class SignUp extends JFrame {
 		JPanel repasswordPanel = new JPanel();
 		repasswordPanel.setLayout(new BoxLayout(repasswordPanel, BoxLayout.X_AXIS));
 		repasswordPanel.add(new JLabel("Nhập lại mật khẩu"));
-		repasswordPanel.add(Box.createHorizontalStrut(24));
+		repasswordPanel.add(Box.createHorizontalStrut(20));
 		repasswordPanel.add(repasswordField);
 		contentPane.add(repasswordPanel);
 

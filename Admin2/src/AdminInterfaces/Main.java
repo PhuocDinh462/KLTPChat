@@ -246,6 +246,7 @@ public class Main extends JFrame {
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
 
 				if (PromptResult == 0) {
+					
 					System.exit(0);
 				}
 			}
