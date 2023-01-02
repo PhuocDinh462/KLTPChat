@@ -703,9 +703,10 @@ public class Main extends JFrame {
 							// Xóa bạn trên interface:
 							sendMessage(socket, "Command_unfriend`" + accounts.get(getAccountIndex(str[1])).getFriend()
 									.indexOf(users.get(client).getInfor().getUsername()));
-							
+
 							// Xóa bạn trong account:
-							accounts.get(getAccountIndex(str[1])).deleteFriend(users.get(client).getInfor().getUsername());
+							accounts.get(getAccountIndex(str[1]))
+									.deleteFriend(users.get(client).getInfor().getUsername());
 
 							// Xóa bạn trong users:
 							users.get(socket).deleteFriend(users.get(client).getInfor().getUsername());
@@ -843,7 +844,8 @@ public class Main extends JFrame {
 					ArrayList<Message> historyMessReceived = messageController.findMessageByGroup(str[2]);
 					for (Message message : historyMessReceived) {
 						System.out.println("code 827:" + message.getContent());
-						stringArray = stringArray.concat(message.getSenderId() + "~" + message.getContent() + "~" + message.getCreateTime()  + "`");
+						stringArray = stringArray.concat(message.getSenderId() + "~" + message.getContent() + "~"
+								+ message.getCreateTime() + "`");
 					}
 					ArrayList<String> UsersList = groupController.searchListUsersByGroupName(str[2]);
 					for (Socket socket : users.keySet()) {
@@ -907,12 +909,13 @@ public class Main extends JFrame {
 					Message mess = new Message(str[3], str[1], str[2]);
 					messageController.create(mess);
 					groupController.addNewMessage(mess.getId(), groups.get(index).getGroupId());
-					System.out.println("code 895");
+
 					for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername()
 									.equals(groups.get(index).getlistUsers().get(i)) && socket != client) {
-								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2] + "`" + str[3]);
+								sendMessage(socket, "Command_GroupMessage`" + str[1] + "`" + str[2] + "~"
+										+ mess.getCreateTime() + "`" + str[3]);
 							}
 					}
 				}

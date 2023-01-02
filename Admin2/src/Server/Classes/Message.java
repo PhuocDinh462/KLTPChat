@@ -1,5 +1,7 @@
 package Server.Classes;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class Message {
@@ -22,11 +24,13 @@ public class Message {
 	}
 
 	public Message() {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy@HH:mm:ss");
+		Date date = new Date();
 		_id = UUID.randomUUID().toString();
 		receiverId = new String();
 		senderId = new String();
 		content = new String();
-		createTime = new String();
+		createTime = formatter.format(date);
 		index = "0";
 		senderDelete = false;
 		receiverDelete = false;
@@ -34,11 +38,14 @@ public class Message {
 	}
 
 	public Message(String senderIdTemp, String receiverIdTemp, String contentTemp) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy@HH:mm:ss");
+		Date date = new Date();
+		
 		senderId = senderIdTemp;
 		content = contentTemp;
 		receiverId = receiverIdTemp;
 		_id = UUID.randomUUID().toString();
-		createTime = new String();
+		createTime = formatter.format(date);
 		senderDelete = false;
 		receiverDelete = false;
 		seen = false;
