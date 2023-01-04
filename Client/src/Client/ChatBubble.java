@@ -85,8 +85,8 @@ public class ChatBubble extends JPanel{
     }
     
     private String brContent(String content) {
-    	int brLen = 50;
-    	int maxlen = brLen + 20;
+    	int brLen = 30;
+    	int maxlen = brLen + 15;
     	int len = content.length();
     	
     	for(int i = 0, j = 0; i < len; i++, j++) {

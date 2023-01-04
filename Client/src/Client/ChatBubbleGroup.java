@@ -93,8 +93,8 @@ public class ChatBubbleGroup extends JPanel{
    }
     
     private String brContent(String content) {
-    	int brLen = 50;
-    	int maxlen = brLen + 20;
+    	int brLen = 30;
+    	int maxlen = brLen + 15;
     	int len = content.length();
     	
     	for(int i = 0, j = 0; i < len; i++, j++) {
@@ -121,8 +121,8 @@ public class ChatBubbleGroup extends JPanel{
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
-        JLabel viewed = new JLabel("đã xem");
-        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+//        JLabel viewed = new JLabel("đã xem");
+//        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
         
         JLabel sender = new JLabel(username + " sent");
         sender.setFont(new Font("Times New Roman", Font.PLAIN, 10));
@@ -132,7 +132,7 @@ public class ChatBubbleGroup extends JPanel{
                 contentButton.setBackground(new java.awt.Color(0,132,255));
                 contentButton.setForeground(Color.WHITE);
                 setLayout(new FlowLayout(FlowLayout.RIGHT));
-                add(viewed);
+//                add(viewed);
                 add(timeLabel);
                 add(contentButton);
             }

@@ -1033,7 +1033,7 @@ public class Main extends JFrame {
 				}
 
 				else if (receivedMessage.contains("Command_ChangeGroupNameSuccessful")) {
-					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Lỗi",
+					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 

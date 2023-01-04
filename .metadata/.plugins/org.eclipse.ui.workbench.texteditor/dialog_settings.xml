@@ -16,13 +16,6 @@
 			<item value="hoạt động"/>
 			<item value="online"/>
 			<item value="oline"/>
-			<item value="xóa"/>
-			<item value="history"/>
-			<item value="title"/>
-			<item value="showFriendButton"/>
-			<item value="main"/>
-			<item value="sendfi"/>
-			<item value="sendMessage"/>
 		</list>
 		<list key="replacehistory">
 		</list>
