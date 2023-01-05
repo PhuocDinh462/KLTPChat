@@ -766,6 +766,7 @@ public class Main extends JFrame {
 							System.out.println("khởi tạo index thành công:" + indexMessage);
 						}
 						messageController.create(new Message(str[3], str[1], str[2], indexMessage));
+						System.out.println("luu tin nhan thanh cong ");
 						for (Socket socket : users.keySet()) {
 							if (users.get(socket).getInfor().getUsername().equals(str[1])) {// kiểm
 								sendMessage(socket,
