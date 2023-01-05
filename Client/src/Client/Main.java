@@ -1029,7 +1029,7 @@ public class Main extends JFrame {
 				}
 
 				else if (receivedMessage.contains("Command_ChangeGroupNameFail")) {
-					JOptionPane.showMessageDialog(null, "Tên nhóm đã tồn tại, vui lòng chọn tên khác!", "Lỗi",
+					JOptionPane.showMessageDialog(null, "Tên đã tồn tại, vui lòng chọn tên khác!", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
 				}
 

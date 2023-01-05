@@ -279,7 +279,7 @@ public class CreateGroup extends JFrame {
 				JOptionPane.showMessageDialog(this, "Tạo thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
 				setVisible(false);
 			} else {
-				JOptionPane.showMessageDialog(this, "Tạo thất bại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Tên đã tồn tại, vui lòng chọn tên khác!", "Lỗi", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}

@@ -65,11 +65,10 @@ public class MessageController extends MessageModel {
 		return messages;
 	}
 
-	public void updateReceiver(String newReceiver, String currentReceiver) {
+	public void updateReceiver(String newReceiver, String currentReceiver) {	
 		Document doc = new Document();
 		doc.append("receiverId", currentReceiver);
-		CollectionMessage().deleteMany(doc);
-		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();		
 		Gson gson = new Gson();
 		try {
 			while (document.hasNext()) {

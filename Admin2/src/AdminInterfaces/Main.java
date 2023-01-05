@@ -546,16 +546,16 @@ public class Main extends JFrame {
 
 					// Chuyển trạng thái offline cho user
 					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
-					
+
 					// Chuyển trạng thái offline cho friend
-					for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+					for (int j = 0; j < accounts.get(i).getFriend().size(); j++) {
 						String name = accounts.get(i).getFriend().get(j);
 						for (Socket socket : users.keySet())
 							if (users.get(socket).getInfor().getUsername().equals(name)) {
-								sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Offline");
+								sendMessage(socket, "Command_changeFriendStatus`"
+										+ accounts.get(i).getInfor().getUsername() + "`Offline");
 							}
 					}
-
 
 					bufferedReader.close();
 					removeUser(client);
@@ -596,13 +596,14 @@ public class Main extends JFrame {
 
 							// Thêm vào danh sách lịch sử đăng nhập
 							PanelLoginHis.addToListUser(accounts.get(i));
-							
+
 							// Chuyển trạng thái online cho friend
-							for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+							for (int j = 0; j < accounts.get(i).getFriend().size(); j++) {
 								String name = accounts.get(i).getFriend().get(j);
 								for (Socket socket : users.keySet())
 									if (users.get(socket).getInfor().getUsername().equals(name)) {
-										sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Online");
+										sendMessage(socket, "Command_changeFriendStatus`"
+												+ accounts.get(i).getInfor().getUsername() + "`Online");
 									}
 							}
 						}
@@ -615,16 +616,19 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_CreateAccount")) {
 					String[] str = receivedMessage.split("`");
 
-					User createUser = new User(str[1], str[2], str[3], str[4], str[5], str[6], str[7]);
-					Boolean created = userController.create(createUser);
-					accounts.add(createUser);
-					if (created) {
-						sendMessage(client, "Command_CreateAccountAccepted");
-						PanelManage.refreshList();
-					} else {
-						sendMessage(client, "Command_CreateAccountFailed");
+					if (getGroupIndex(str[1]) != -1 && getAccountIndex(str[1]) != -1) {
+						User createUser = new User(str[1], str[2], str[3], str[4], str[5], str[6], str[7]);
+						Boolean created = userController.create(createUser);
+						accounts.add(createUser);
+						if (created) {
+							sendMessage(client, "Command_CreateAccountAccepted");
+							PanelManage.refreshList();
+						} else {
+							sendMessage(client, "Command_CreateAccountFailed");
+						}
 					}
-
+					else
+						sendMessage(client, "Command_CreateAccountFailed");
 				}
 
 				else if (receivedMessage.contains("Command_AddFriendRequest")) {
@@ -725,10 +729,12 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String str = "Command_ShowFriendList";
 					int index = getAccountIndex(users.get(client).getInfor().getUsername());
-					
+
 					for (int i = 0; i < accounts.get(index).getFriend().size(); i++) {
 						String friendName = accounts.get(index).getFriend().get(i);
-						String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus() ? "Online" : "Offline";
+						String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus()
+								? "Online"
+								: "Offline";
 						str += "`" + friendName + ":" + friendStatus;
 					}
 
@@ -782,30 +788,35 @@ public class Main extends JFrame {
 
 				else if (receivedMessage.contains("Command_CreateNewGroup")) {
 					String[] str = receivedMessage.split("`");
-					String creator = users.get(client).getInfor().getUsername();
-					ArrayList<String> members = new ArrayList<String>();
-					ArrayList<String> managers = new ArrayList<String>();
-					members.add(creator);
-					managers.add(creator);
-					for (int i = 2; i < str.length; i++) {
-						members.add(str[i]);
-					}
-					Group createGroup = new Group(str[1], managers, members);
-					Boolean created = groupController.create(createGroup);
 
-					if (created) {
-						groups.add(createGroup);
-						sendMessage(client, "Command_CreateGroupAccepted");
-						PanelGroupChat.refreshTable();
-						for (int i = 0; i < members.size(); i++) {
-							User testUser = userController.getUserByUsername(members.get(i));
-							Socket testSocket = getSocketByUser(members.get(i));
-							if (testSocket != null)
-								addUserLogin(testSocket, members.get(i));
+					// Kiểm tra xem tên mới tồn tại hay chưa:
+					if (getGroupIndex(str[1]) != -1 && getAccountIndex(str[1]) != -1) {
+						String creator = users.get(client).getInfor().getUsername();
+						ArrayList<String> members = new ArrayList<String>();
+						ArrayList<String> managers = new ArrayList<String>();
+						members.add(creator);
+						managers.add(creator);
+						for (int i = 2; i < str.length; i++) {
+							members.add(str[i]);
 						}
-					} else {
+						Group createGroup = new Group(str[1], managers, members);
+						Boolean created = groupController.create(createGroup);
+
+						if (created) {
+							groups.add(createGroup);
+							sendMessage(client, "Command_CreateGroupAccepted");
+							PanelGroupChat.refreshTable();
+							for (int i = 0; i < members.size(); i++) {
+								User testUser = userController.getUserByUsername(members.get(i));
+								Socket testSocket = getSocketByUser(members.get(i));
+								if (testSocket != null)
+									addUserLogin(testSocket, members.get(i));
+							}
+						} else {
+							sendMessage(client, "Command_CreateGroupFailed");
+						}
+					} else
 						sendMessage(client, "Command_CreateGroupFailed");
-					}
 					//
 				} else if (receivedMessage.contains("Command_SendMessage")) {
 					String[] str = receivedMessage.split("`");
@@ -814,7 +825,7 @@ public class Main extends JFrame {
 						// lưu message gửi thành công vào database
 						indexMessage = messageController.findIndexBySender(str[3], str[1]);// kiểm tra A gửi B
 						String temp = messageController.findIndexBySender(str[1], str[3]);
-						if(!temp.equals("0")) {
+						if (!temp.equals("0")) {
 							indexMessage = temp;
 						}
 						if (indexMessage.equals("0")) {// kiểm tra có lấy được index hay không nếu == 0
@@ -879,11 +890,11 @@ public class Main extends JFrame {
 					String stringArray = "";
 					// lay tin nhan 1 gui 2
 					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
-					
+
 					String indexTemp = messGetFdataBase.findIndexBySender(str[2], str[1]);
-					if(indexTemp.equals("0")) {
+					if (indexTemp.equals("0")) {
 						System.out.println(indexTemp);
-					}else {
+					} else {
 						indexMessage = indexTemp;
 					}
 					System.out.println("history: get index: " + indexMessage);
@@ -1010,13 +1021,18 @@ public class Main extends JFrame {
 						sendMessage(client, "Command_NotPermitted");
 
 					// Kiểm tra xem tên mới tồn tại hay chưa:
-					else if (getGroupIndex(str[2]) != -1)
+					else if (getGroupIndex(str[2]) != -1 || getAccountIndex(str[2]) != -1)
 						sendMessage(client, "Command_ChangeGroupNameFail");
 
 					else {
+						// Đổi tên nhóm trong db:
+						groupController.update(groups.get(index).getGroupId(), str[2]);
+
+						// Đổi tên nhóm trong messages của db:
+						messageController.updateReceiver(str[2], str[1]);
+
 						sendMessage(client, "Command_ChangeGroupNameSuccessful");
 						groups.get(index).setGroupName(str[2]);
-						groupController.update(groups.get(index).getGroupId(), str[2]);
 
 						for (int i = 0; i < groups.get(index).getlistUsers().size(); i++) {
 							for (Socket socket : users.keySet()) {
