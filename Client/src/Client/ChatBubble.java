@@ -49,13 +49,14 @@ public class ChatBubble extends JPanel{
 //    	JLabel timeLabel = new JLabel(timeTemp);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
 
-//        JButton contentButton = new JButton(brContent(content));
-        JButton contentButton = new JButton(content);
+        JButton contentButton = new JButton(brContent(content));
+//        JButton contentButton = new JButton(content);
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
-        JLabel viewed = new JLabel("đã xem");
-        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+        
+//        JLabel viewed = new JLabel("đã xem");
+//        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
         
 
         switch (bubbleType) {
@@ -63,7 +64,7 @@ public class ChatBubble extends JPanel{
                 contentButton.setBackground(new java.awt.Color(0,132,255));
                 contentButton.setForeground(Color.WHITE);
                 setLayout(new FlowLayout(FlowLayout.RIGHT));
-                add(viewed);
+//                add(viewed);
                 add(timeLabel);
                 add(contentButton);
             }
@@ -84,8 +85,8 @@ public class ChatBubble extends JPanel{
     }
     
     private String brContent(String content) {
-    	int brLen = 50;
-    	int maxlen = brLen + 20;
+    	int brLen = 30;
+    	int maxlen = brLen + 15;
     	int len = content.length();
     	
     	for(int i = 0, j = 0; i < len; i++, j++) {
@@ -117,21 +118,21 @@ public class ChatBubble extends JPanel{
         	timeLabel.setText(str[1]);
         }
 
-//        JButton contentButton = new JButton(brContent(content));
-        JButton contentButton = new JButton(content);
+        JButton contentButton = new JButton(brContent(content));
+//        JButton contentButton = new JButton(content);
         contentButton.setBorderPainted(false);
         contentButton.setFocusPainted(false);
         
-        JLabel viewed = new JLabel("đã xem");
-        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
-        
+//        JLabel viewed = new JLabel("đã xem");
+//        viewed.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+//        
 
         switch (bubbleType) {
             case Mine -> {
                 contentButton.setBackground(new java.awt.Color(0,132,255));
                 contentButton.setForeground(Color.WHITE);
                 setLayout(new FlowLayout(FlowLayout.RIGHT));
-                add(viewed);
+//                add(viewed);
                 add(timeLabel);
                 add(contentButton);
             }

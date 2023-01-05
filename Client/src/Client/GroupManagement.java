@@ -89,8 +89,10 @@ public class GroupManagement extends JFrame {
 		JButton inviteBtn = new JButton("Mời vào nhóm");
 		inviteBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Main.sendMessage("Command_Invite2Group`" + groupName + "`" + inviteTextField.getText());
-				inviteTextField.setText("");
+				if (!inviteTextField.getText().isBlank()) {
+					Main.sendMessage("Command_Invite2Group`" + groupName + "`" + inviteTextField.getText());
+					inviteTextField.setText("");
+				}
 			}
 		});
 		inviteBtn.setBounds(178, 10, 133, 24);
@@ -125,6 +127,7 @@ public class GroupManagement extends JFrame {
 
 				if (option == JOptionPane.OK_OPTION && !newName.getText().isBlank()) {
 					Main.sendMessage("Command_ChangeGroupName`" + groupName + "`" + newName.getText());
+					dispose();
 				}
 			}
 		});

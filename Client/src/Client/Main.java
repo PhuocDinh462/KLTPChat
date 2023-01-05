@@ -286,7 +286,13 @@ public class Main extends JFrame {
 				String friendChat = usersList.getSelectedValue();
 				conversationStatus = true;
 				changeConversation(friendChat, conversationStatus);
-				sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				if(friendChat.contains("Tin nhắn mới)")){
+					friendChat = friendChat.replace(" (Tin nhắn mới)", "");
+					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				}else {
+					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
+				}
+				
 				groupBtn.setVisible(false);
 			}
 		});
@@ -309,7 +315,12 @@ public class Main extends JFrame {
 				String groupChat = groupList.getSelectedValue();
 				conversationStatus = false;
 				changeConversation(groupChat, conversationStatus);
-				sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				if(groupChat.contains("Tin nhắn mới)")){
+					groupChat = groupChat.replace(" (Tin nhắn mới)", "");
+					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				}else {
+					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
+				}
 				groupBtn.setVisible(true);
 			}
 		});
@@ -341,9 +352,6 @@ public class Main extends JFrame {
 		JScrollPane messageScroll = new JScrollPane(conversationPanel);
 		messageScroll.setBounds(10, 34, 589, 548);
 		messageScroll.setBorder(new EmptyBorder(10, 0, 10, 0));
-
-		JButton fileButton = new JButton("\uD83D\uDCC1");
-		fileButton.addActionListener(e -> fileButtonEventHandler());
 		messageTextField = new JTextField(20);
 		JButton sendButton = new JButton("Gửi");
 		sendButton.addActionListener(e -> {
@@ -354,8 +362,6 @@ public class Main extends JFrame {
 		JPanel messagePanel = new JPanel();
 		messagePanel.setBounds(10, 582, 589, 21);
 		messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
-		messagePanel.add(fileButton);
-		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(messageTextField);
 		messagePanel.add(Box.createHorizontalStrut(5));
 		messagePanel.add(sendButton);
@@ -620,25 +626,37 @@ public class Main extends JFrame {
 			JOptionPane.showMessageDialog(this, "Chọn người nhận tin nhắn trước khi gửi.", "Lỗi",
 					JOptionPane.WARNING_MESSAGE);
 		} else {
-			messageStatus = MessageStatus.Waiting;
-			if (conversationStatus == true)
+//			messageStatus = MessageStatus.Waiting;
+			if (conversationStatus == true) {
 				sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-			else
+				conversations.get(conversationTitle.getText())
+				.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+				
+			}
+				
+			else {
 				sendMessage("Command_SendGroupMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-			while (messageStatus == MessageStatus.Waiting)
-				System.out.print("");
-
-			if (messageStatus == MessageStatus.Accepted) {
-				if (conversationStatus == true)
 					conversations.get(conversationTitle.getText())
-							.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
+			}
+			revalidate();
+				
+			
+			
+//			while (messageStatus == MessageStatus.Waiting)
+//				System.out.print("tin nhắn đang chờ");
+
+//			if (messageStatus == MessageStatus.Accepted) {
+//				if (conversationStatus == true)
+//					conversations.get(conversationTitle.getText())
+//							.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
 //				else
 //					conversations.get(conversationTitle.getText())
 //							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
-				revalidate();
-			} else {
-				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
-			}
+//				revalidate();
+//			} else {
+//				JOptionPane.showMessageDialog(this, "Người dùng không hoạt động.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+//			}
 		}
 	}
 
@@ -802,6 +820,7 @@ public class Main extends JFrame {
 					System.arraycopy(str, 1, users, 0, str.length - 1);
 					usersList.removeAll();
 					usersList.setListData(users);
+//					if(username)
 					for (String e : users) {
 						friendsList.add(e);
 					}
@@ -934,16 +953,22 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					for (int index = 2; index < str.length; index++) {
 						String[] mess = str[index].split("~");
-//						System.out.println("\n code 902: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]
-//								+ " time" + mess[3]);
+						System.out.println("\n code 955: " + "username: " + str[1] + " " + mess[0] + " " + mess[2]
+								+ " time" + mess[3] + " senderDl: " + mess[4] + " receivedl: " + mess[5]);
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai
-							addNewMessage(mess[1], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Mine, true);
+							if(mess[4].equals("false")) {
+								addNewMessage(mess[1], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Mine, true);
+							}
+							
 						} else if (!str[1].equals(mess[0])) {
-							System.out.println("code 823: mot tin nhan vua duoc them vao");
+							System.out.println("code 965: mot tin nhan vua duoc them vao");
 							// nguoc lai la ben trai
-							addNewMessage(mess[0], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Others, true);
+							if(mess[5].equals("false")) {
+								addNewMessage(mess[0], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Others, true);
+							}
+							
 						}
 					}
 
@@ -1008,7 +1033,7 @@ public class Main extends JFrame {
 				}
 
 				else if (receivedMessage.contains("Command_ChangeGroupNameSuccessful")) {
-					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Lỗi",
+					JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 
