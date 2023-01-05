@@ -106,7 +106,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblHVTn = new JLabel("Họ và tên");
 		lblHVTn.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblHVTn.setBounds(10, 89, 77, 13);
+		lblHVTn.setBounds(10, 86, 77, 18);
 		contentPane.add(lblHVTn);
 		
 		fullnameTextField = new JTextField();
@@ -117,7 +117,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblGiiTnh = new JLabel("Giới tính");
 		lblGiiTnh.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblGiiTnh.setBounds(10, 121, 77, 13);
+		lblGiiTnh.setBounds(10, 118, 77, 18);
 		contentPane.add(lblGiiTnh);
 		
 		JRadioButton radioBtn1 = new JRadioButton("Nam");
@@ -141,7 +141,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblNgySinh = new JLabel("Ngày sinh");
 		lblNgySinh.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblNgySinh.setBounds(10, 154, 77, 13);
+		lblNgySinh.setBounds(10, 151, 77, 18);
 		contentPane.add(lblNgySinh);
 		
 		JDateChooser dateChooser = new JDateChooser();
@@ -156,12 +156,12 @@ public class SignUp extends JFrame {
 		
 		JLabel lblaCh = new JLabel("Địa chỉ");
 		lblaCh.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblaCh.setBounds(10, 201, 77, 13);
+		lblaCh.setBounds(10, 198, 77, 18);
 		contentPane.add(lblaCh);
 		
 		JLabel lblTnTiKhon = new JLabel("Tên tài khoản");
 		lblTnTiKhon.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblTnTiKhon.setBounds(10, 245, 77, 13);
+		lblTnTiKhon.setBounds(10, 242, 77, 18);
 		contentPane.add(lblTnTiKhon);
 		
 		usernameTextField = new JTextField();
@@ -172,7 +172,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblEmail = new JLabel("Email");
 		lblEmail.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblEmail.setBounds(10, 289, 77, 13);
+		lblEmail.setBounds(10, 286, 77, 18);
 		contentPane.add(lblEmail);
 		
 		emailTextField = new JTextField();
@@ -183,7 +183,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblMtKhu = new JLabel("Mật khẩu");
 		lblMtKhu.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblMtKhu.setBounds(10, 333, 77, 13);
+		lblMtKhu.setBounds(10, 330, 77, 18);
 		contentPane.add(lblMtKhu);
 		
 		passwordField = new JPasswordField();
@@ -196,7 +196,7 @@ public class SignUp extends JFrame {
 		
 		JLabel lblNhpLiMt = new JLabel("Nhập lại mật khẩu");
 		lblNhpLiMt.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblNhpLiMt.setBounds(10, 377, 102, 13);
+		lblNhpLiMt.setBounds(10, 374, 102, 18);
 		contentPane.add(lblNhpLiMt);
 		
 		JButton signUpNowButton = new JButton("Đăng ký");
