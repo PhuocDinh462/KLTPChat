@@ -257,6 +257,7 @@ public class PanelManagement extends JPanel {
 		int sizeRow = tableUsers.getRowCount();
 		Boolean checkChange = false;
 		String title = new String();
+		ArrayList<String> listUserError = new ArrayList<String>();
 
 		for (int i = 0; i < sizeRow; i++) {
 			Boolean selectedUser = (Boolean) tableUsers.getValueAt(i, 9);
@@ -264,6 +265,13 @@ public class PanelManagement extends JPanel {
 			selectedUser = (selectedUser == null || selectedUser == false) ? false : true;
 
 			if (selectedUser == true) {
+				String getStatus = (String) tableUsers.getValueAt(i, 7);
+
+				if (getStatus.equals("Online")) {
+					listUserError.add((String) tableUsers.getValueAt(i, 1));
+					continue;
+				}
+
 				String name = (String) tableUsers.getValueAt(i, 1);
 				if (type == 0) {
 					title = "Xóa thành công!";
@@ -279,6 +287,12 @@ public class PanelManagement extends JPanel {
 		if (checkChange) {
 			accounts = userController.getAllUsers();
 			setListItems(accounts);
+		} else if (listUserError.size() > 0) {
+			title = "";
+			for (String e : listUserError) {
+				title += e;
+			}
+			title += " đang Online.";
 		} else
 			title = "Không có gì để cập nhật!";
 
