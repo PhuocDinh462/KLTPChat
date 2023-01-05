@@ -772,7 +772,10 @@ public class Main extends JFrame {
 						System.out.println("người nhận: " + str[1] + " người gửi: " + str[3]);
 						// lưu message gửi thành công vào database
 						indexMessage = messageController.findIndexBySender(str[3], str[1]);// kiểm tra A gửi B
-						indexMessage = messageController.findIndexBySender(str[1], str[3]);
+						String temp = messageController.findIndexBySender(str[1], str[3]);
+						if(!temp.equals("0")) {
+							indexMessage = temp;
+						}
 						if (indexMessage.equals("0")) {// kiểm tra có lấy được index hay không nếu == 0
 							indexMessage = UUID.randomUUID().toString();// tạo một chuỗi random
 							System.out.println("khởi tạo index thành công:" + indexMessage);
@@ -835,6 +838,7 @@ public class Main extends JFrame {
 					String stringArray = "";
 					// lay tin nhan 1 gui 2
 					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
+					indexMessage = messGetFdataBase.findIndexBySender(str[2], str[1]);
 					System.out.println("history: get index: " + indexMessage);
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
