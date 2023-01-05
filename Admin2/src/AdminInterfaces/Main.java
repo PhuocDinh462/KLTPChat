@@ -158,7 +158,7 @@ public class Main extends JFrame {
 		userController = new UserController();
 		groupController = new GroupController();
 		messageController = new MessageController();
-
+		initUI();
 		Thread openServer = new Thread(() -> waitClients());
 		openServer.start();
 	}
@@ -179,7 +179,6 @@ public class Main extends JFrame {
 		users = new HashMap<>();
 		waitingClientResponse = false;
 		try {
-			initUI();
 			try (ServerSocket serverSocket = new ServerSocket(port)) {
 				// Khởi tạo UI, tài khoản, nhóm
 				accounts = userController.getAllUsers();
@@ -187,6 +186,18 @@ public class Main extends JFrame {
 
 				System.out.println("\nServer đang chạy tại port " + port + "...");
 				while (true) {
+					// Tải lại data của Groups
+					if (PanelManage.getChangeGroup()) {
+						refreshGroups();
+						PanelManage.setChangeGroup(false);
+					}
+
+					// Tải lại data account
+					if (PanelManage.getChangeAccount()) {
+						refreshAccount();
+						PanelManage.setChangeAccount(false);
+					}
+
 					Socket client = serverSocket.accept();
 					if (client == null)
 						break;
@@ -246,7 +257,7 @@ public class Main extends JFrame {
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
 
 				if (PromptResult == 0) {
-					for(Socket e: users.keySet()) {
+					for (Socket e : users.keySet()) {
 						sendMessage(e, "Command_Disconnection");
 					}
 					System.exit(0);
@@ -367,6 +378,14 @@ public class Main extends JFrame {
 				.addComponent(panelAdmin, GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
 				.addComponent(panelMainContent, GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE));
 		contentPane.setLayout(gl_contentPane);
+	}
+
+	public void refreshGroups() {
+		PanelGroupChat.refreshTable();
+	}
+
+	public void refreshAccount() {
+		accounts = userController.getAllUsers();
 	}
 
 	public boolean containUser(String username) {
@@ -582,6 +601,7 @@ public class Main extends JFrame {
 					accounts.add(createUser);
 					if (created) {
 						sendMessage(client, "Command_CreateAccountAccepted");
+						PanelManage.refreshList();
 					} else {
 						sendMessage(client, "Command_CreateAccountFailed");
 					}
@@ -756,6 +776,7 @@ public class Main extends JFrame {
 					if (created) {
 						groups.add(createGroup);
 						sendMessage(client, "Command_CreateGroupAccepted");
+						PanelGroupChat.refreshTable();
 						for (int i = 0; i < members.size(); i++) {
 							User testUser = userController.getUserByUsername(members.get(i));
 							Socket testSocket = getSocketByUser(members.get(i));

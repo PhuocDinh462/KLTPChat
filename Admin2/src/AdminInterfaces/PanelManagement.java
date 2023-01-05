@@ -6,6 +6,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import Server.Classes.Group;
+import Server.Classes.Message;
 import Server.Classes.User;
 import Server.Controllers.GroupController;
 import Server.Controllers.MessageController;
@@ -43,6 +44,8 @@ public class PanelManagement extends JPanel {
 	private GroupController groupController;
 
 	private ArrayList<User> accounts;
+	private Boolean changeGroup = false;
+	private Boolean changeAccount = false;
 
 	public PanelManagement() {
 		userController = new UserController();
@@ -134,8 +137,7 @@ public class PanelManagement extends JPanel {
 						ObjButtons[1]);
 				if (promptResult == 0)
 					deleteOrBlockedAccount(1);
-
-				// Gui yeu cau khoa client
+				changeAccount = true;
 			}
 		});
 
@@ -175,7 +177,9 @@ public class PanelManagement extends JPanel {
 	}
 
 	public void refreshList() {
+		changeAccount = true;
 		accounts = userController.getAllUsers();
+		setListItems(accounts);
 	}
 
 	public void setColSpaceTable() {
@@ -315,11 +319,46 @@ public class PanelManagement extends JPanel {
 
 	public void deleteInformation(User userUpdate) {
 		ArrayList<Group> groups = new ArrayList<Group>();
-		messageController.deleteByMsgSend(userUpdate.getId());
-		messageController.deleteByMsgReceive(userUpdate.getId());
+		messageController.deleteAllMessagesByReceiver(userUpdate.getInfor().getUsername());
+		messageController.deleteAllMessagesBySender(userUpdate.getInfor().getUsername());
 		groups = groupController.getAllGroups();
+		ArrayList<String> mess = new ArrayList<String>();
+		mess = messageController.getAllMesssagesId();
+		int i = 0;
+
+		for (User e : accounts) {
+			if (e.getFriend().contains(userUpdate.getInfor().getUsername())) {
+				userController.deleteFriend(e.getInfor().getUsername(), userUpdate.getId());
+			}
+			i++;
+		}
+
+		i = 0;
 		for (Group e : groups) {
-			groupController.removePeopleGroup(userUpdate.getInfor().getUsername(), e.getGroupId());
+
+			if (e.getlistUsers().contains(userUpdate.getInfor().getUsername())) {
+				groupController.removePeopleGroup(userUpdate.getInfor().getUsername(), e.getGroupId());
+				e.getlistUsers().remove(i);
+
+				for (String idMess : e.getmessageId()) {
+					if (!mess.contains(idMess)) {
+						groupController.removeMessageById(idMess, e.getGroupId());
+					}
+				}
+
+				changeGroup = true;
+			}
+			if (e.getManagers().contains(userUpdate.getInfor().getUsername())) {
+				groupController.removeManagerGroup(userUpdate.getInfor().getUsername(), e.getGroupId());
+				e.getManagers().remove(i);
+				changeGroup = true;
+			}
+
+			if (e.getlistUsers().isEmpty()) {
+				groupController.deleteGroup(e.getGroupId());
+				changeGroup = true;
+			}
+			i++;
 		}
 	}
 
@@ -361,6 +400,22 @@ public class PanelManagement extends JPanel {
 
 		System.out.println("Sorted complete!");
 		return users;
+	}
+
+	public Boolean getChangeGroup() {
+		return changeGroup;
+	}
+
+	public void setChangeGroup(Boolean changeGroup) {
+		this.changeGroup = changeGroup;
+	}
+
+	public Boolean getChangeAccount() {
+		return changeAccount;
+	}
+
+	public void setChangeAccount(Boolean changeAccount) {
+		this.changeAccount = changeAccount;
 	}
 
 	public static class ComparatorIncreasing implements Comparator<User> {

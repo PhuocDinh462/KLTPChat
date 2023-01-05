@@ -263,6 +263,12 @@ public class GroupChat extends JPanel {
 		tableAGroup.getColumnModel().getColumn(2).setMaxWidth(150);
 	}
 
+	public void refreshTable() {
+		groups = groupController.getAllGroups();
+		setListGroups(groups);
+		System.out.println("Refresh complete!");
+	}
+
 	/**
 	 * Sort list name of group
 	 * 

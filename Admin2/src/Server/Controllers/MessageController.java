@@ -12,7 +12,10 @@ import org.bson.Document;
 
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
+
+import Server.Classes.InforUser;
 import Server.Classes.Message;
+import Server.Classes.User;
 import Server.Models.MessageModel;
 
 public class MessageController extends MessageModel {
@@ -41,6 +44,25 @@ public class MessageController extends MessageModel {
 			document.close();
 		}
 		System.out.print("Successfull");
+	}
+
+	public ArrayList<String> getAllMesssagesId() {
+		MongoCursor<Document> document = CollectionMessage().find().iterator();
+		ArrayList<String> messages = new ArrayList<String>();
+		Gson gson = new Gson();
+
+		try {
+			while (document.hasNext()) {
+				Document doc = document.next();
+
+				Message getMess = gson.fromJson(doc.toJson(), Message.class);
+				messages.add(getMess.getId());
+			}
+		} finally {
+			document.close();
+		}
+		System.out.println("Successful");
+		return messages;
 	}
 
 	public void updateReceiver(String newReceiver, String currentReceiver) {
@@ -99,6 +121,16 @@ public class MessageController extends MessageModel {
 			CollectionMessage().updateOne(eq("_id", id), combine(set("receiverDelete", true)));
 		}
 		System.out.print("Successful");
+	}
+
+	public void deleteAllMessagesBySender(String sender) {
+		CollectionMessage().deleteMany(eq("senderId", sender));
+		System.out.println("Successful");
+	}
+
+	public void deleteAllMessagesByReceiver(String receiver) {
+		CollectionMessage().deleteMany(eq("receiverId", receiver));
+		System.out.println("Successful");
 	}
 
 	public Message findMessageById(String id) {

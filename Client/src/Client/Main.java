@@ -809,6 +809,7 @@ public class Main extends JFrame {
 				if (receivedMessage.contains("Command_CloseConnect")) {
 					bufferedReader.close();
 					server.close();
+					System.exit(0);
 					break;
 				} else if (receivedMessage.contains("Command_Disconnection")) {
 					String[] ObjButtons = { "Yes", "No" };

@@ -81,7 +81,7 @@ public class GroupController extends GroupModel {
 		System.out.println("successful");
 		return true;
 	}
-	
+
 	public Boolean addManagerGroup(String idUser, String idGroup) {
 
 		ArrayList<String> listData = searchListManagers(idGroup);
@@ -96,7 +96,7 @@ public class GroupController extends GroupModel {
 		System.out.println("successful");
 		return true;
 	}
-	
+
 	public Boolean addNewMessage(String idMsg, String idGroup) {
 
 		ArrayList<String> listData = searchListMessage(idGroup);
@@ -108,6 +108,19 @@ public class GroupController extends GroupModel {
 		System.out.println("successful");
 		return true;
 
+	}
+
+	public void removeMessageById(String id, String idGroup) {
+		ArrayList<String> listData = searchListMessage(idGroup);
+
+		for (int i = 0; i < listData.size(); i++) {
+			if (listData.get(i).equals(id)) {
+				listData.remove(i);
+
+				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listMessage", listData)));
+			}
+		}
+		System.out.println("successful");
 	}
 
 	public Boolean removePeopleGroup(String username, String idGroup) {
@@ -126,7 +139,7 @@ public class GroupController extends GroupModel {
 		}
 		return false;
 	}
-	
+
 	public Boolean removeManagerGroup(String idUser, String idGroup) {
 
 		ArrayList<String> listData = searchListManagers(idGroup);
@@ -173,7 +186,7 @@ public class GroupController extends GroupModel {
 		System.out.println("successful");
 		return listData;
 	}
-	
+
 	public ArrayList<String> searchListManagers(String idGroup) {
 		Document filterDoc = new Document();
 		filterDoc.append("_id", idGroup);
@@ -188,7 +201,7 @@ public class GroupController extends GroupModel {
 		System.out.println("successful");
 		return listData;
 	}
-	
+
 	public ArrayList<String> searchListUsersByGroupName(String GroupName) {
 		Document filterDoc = new Document();
 		filterDoc.append("name", GroupName);
