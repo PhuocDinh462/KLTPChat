@@ -838,7 +838,13 @@ public class Main extends JFrame {
 					String stringArray = "";
 					// lay tin nhan 1 gui 2
 					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
-					indexMessage = messGetFdataBase.findIndexBySender(str[2], str[1]);
+					
+					String indexTemp = messGetFdataBase.findIndexBySender(str[2], str[1]);
+					if(indexTemp.equals("0")) {
+						System.out.println(indexTemp);
+					}else {
+						indexMessage = indexTemp;
+					}
 					System.out.println("history: get index: " + indexMessage);
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
