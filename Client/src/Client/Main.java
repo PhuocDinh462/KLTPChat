@@ -1100,6 +1100,11 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 					Search.refresh(str);
 				}
+				
+				else if (receivedMessage.contains("Command_changeFriendStatus")) {
+					String[] str = receivedMessage.split("`");
+					FriendList.changeFriendStatusByName(str[1], str[2]);
+				}
 
 				else {
 					System.out.println(receivedMessage);

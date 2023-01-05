@@ -527,6 +527,16 @@ public class Main extends JFrame {
 
 					// Chuyển trạng thái offline cho user
 					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
+					
+					// Chuyển trạng thái offline cho friend
+					for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+						String name = accounts.get(i).getFriend().get(j);
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(name)) {
+								sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Offline");
+							}
+					}
+
 
 					bufferedReader.close();
 					removeUser(client);
@@ -567,6 +577,15 @@ public class Main extends JFrame {
 
 							// Thêm vào danh sách lịch sử đăng nhập
 							PanelLoginHis.addToListUser(accounts.get(i));
+							
+							// Chuyển trạng thái online cho friend
+							for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+								String name = accounts.get(i).getFriend().get(j);
+								for (Socket socket : users.keySet())
+									if (users.get(socket).getInfor().getUsername().equals(name)) {
+										sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Online");
+									}
+							}
 						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
@@ -684,15 +703,16 @@ public class Main extends JFrame {
 
 				// Hiển thị danh sách bạn bè
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
-					String str = "Command_ShowFriendList`";
-
-					for (int i = 0; i < accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
-							.getFriend().size(); i++)
-						str += accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getFriend()
-								.get(i) + "`";
+					String str = "Command_ShowFriendList";
+					int index = getAccountIndex(users.get(client).getInfor().getUsername());
+					
+					for (int i = 0; i < accounts.get(index).getFriend().size(); i++) {
+						String friendName = accounts.get(index).getFriend().get(i);
+						String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus() ? "Online" : "Offline";
+						str += "`" + friendName + ":" + friendStatus;
+					}
 
 					sendMessage(client, str);
-
 				}
 
 				// Hủy kết bạn
