@@ -264,6 +264,7 @@ public class SignUp extends JFrame {
 
 			if (status == SignUp.SignUpStatus.Accepted) {
 				Main.sendMessage("Command_SignedIn`" + username);
+				Main.username = username;
 				new Main();
 				dispose();
 			} else {

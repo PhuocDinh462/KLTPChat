@@ -546,6 +546,16 @@ public class Main extends JFrame {
 
 					// Chuyển trạng thái offline cho user
 					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
+					
+					// Chuyển trạng thái offline cho friend
+					for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+						String name = accounts.get(i).getFriend().get(j);
+						for (Socket socket : users.keySet())
+							if (users.get(socket).getInfor().getUsername().equals(name)) {
+								sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Offline");
+							}
+					}
+
 
 					bufferedReader.close();
 					removeUser(client);
@@ -586,6 +596,15 @@ public class Main extends JFrame {
 
 							// Thêm vào danh sách lịch sử đăng nhập
 							PanelLoginHis.addToListUser(accounts.get(i));
+							
+							// Chuyển trạng thái online cho friend
+							for(int j = 0; j < accounts.get(i).getFriend().size(); j++) {
+								String name = accounts.get(i).getFriend().get(j);
+								for (Socket socket : users.keySet())
+									if (users.get(socket).getInfor().getUsername().equals(name)) {
+										sendMessage(socket, "Command_changeFriendStatus`" + accounts.get(i).getInfor().getUsername() + "`Online");
+									}
+							}
 						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
@@ -704,15 +723,16 @@ public class Main extends JFrame {
 
 				// Hiển thị danh sách bạn bè
 				else if (receivedMessage.contains("Command_ShowFriendList")) {
-					String str = "Command_ShowFriendList`";
-
-					for (int i = 0; i < accounts.get(getAccountIndex(users.get(client).getInfor().getUsername()))
-							.getFriend().size(); i++)
-						str += accounts.get(getAccountIndex(users.get(client).getInfor().getUsername())).getFriend()
-								.get(i) + "`";
+					String str = "Command_ShowFriendList";
+					int index = getAccountIndex(users.get(client).getInfor().getUsername());
+					
+					for (int i = 0; i < accounts.get(index).getFriend().size(); i++) {
+						String friendName = accounts.get(index).getFriend().get(i);
+						String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus() ? "Online" : "Offline";
+						str += "`" + friendName + ":" + friendStatus;
+					}
 
 					sendMessage(client, str);
-
 				}
 
 				// Hủy kết bạn
@@ -793,7 +813,10 @@ public class Main extends JFrame {
 						System.out.println("người nhận: " + str[1] + " người gửi: " + str[3]);
 						// lưu message gửi thành công vào database
 						indexMessage = messageController.findIndexBySender(str[3], str[1]);// kiểm tra A gửi B
-						indexMessage = messageController.findIndexBySender(str[1], str[3]);
+						String temp = messageController.findIndexBySender(str[1], str[3]);
+						if(!temp.equals("0")) {
+							indexMessage = temp;
+						}
 						if (indexMessage.equals("0")) {// kiểm tra có lấy được index hay không nếu == 0
 							indexMessage = UUID.randomUUID().toString();// tạo một chuỗi random
 							System.out.println("khởi tạo index thành công:" + indexMessage);
@@ -856,6 +879,13 @@ public class Main extends JFrame {
 					String stringArray = "";
 					// lay tin nhan 1 gui 2
 					indexMessage = messGetFdataBase.findIndexBySender(str[1], str[2]);
+					
+					String indexTemp = messGetFdataBase.findIndexBySender(str[2], str[1]);
+					if(indexTemp.equals("0")) {
+						System.out.println(indexTemp);
+					}else {
+						indexMessage = indexTemp;
+					}
 					System.out.println("history: get index: " + indexMessage);
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
