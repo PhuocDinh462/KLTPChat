@@ -10,7 +10,6 @@ import org.bson.Document;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
 
 import Server.Classes.InforUser;
 import Server.Classes.User;
@@ -163,7 +162,7 @@ public class UserController extends UserModel {
 
 	public void deleteByUsername(String username) {
 		User getUser = getUserByUsername(username);
-
+		
 		CollectionUser().deleteMany(eq("_id", getUser.getId()));
 		System.out.println("successful");
 	}

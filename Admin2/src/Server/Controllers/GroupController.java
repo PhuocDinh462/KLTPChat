@@ -110,12 +110,12 @@ public class GroupController extends GroupModel {
 
 	}
 
-	public Boolean removePeopleGroup(String idUser, String idGroup) {
+	public Boolean removePeopleGroup(String username, String idGroup) {
 
 		ArrayList<String> listData = searchListUsers(idGroup);
 
 		for (int i = 0; i < listData.size(); i++) {
-			if (listData.get(i).equals(idUser)) {
+			if (listData.get(i).equals(username)) {
 				listData.remove(i);
 
 				CollectionGroup().updateOne(eq("_id", idGroup), combine(set("listUsers", listData)));

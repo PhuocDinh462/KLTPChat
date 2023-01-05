@@ -5,7 +5,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
+import Server.Classes.Group;
 import Server.Classes.User;
+import Server.Controllers.GroupController;
+import Server.Controllers.MessageController;
 import Server.Controllers.UserController;
 
 import javax.swing.JTable;
@@ -36,11 +39,15 @@ public class PanelManagement extends JPanel {
 	private String[] titleTable;
 
 	private UserController userController;
+	private MessageController messageController;
+	private GroupController groupController;
 
 	private ArrayList<User> accounts;
 
 	public PanelManagement() {
 		userController = new UserController();
+		messageController = new MessageController();
+		groupController = new GroupController();
 		accounts = userController.getAllUsers();
 
 		initTableModel();
@@ -269,12 +276,15 @@ public class PanelManagement extends JPanel {
 
 				if (getStatus.equals("Online")) {
 					listUserError.add((String) tableUsers.getValueAt(i, 1));
+					tableUsers.getModel().setValueAt(false, i, 9);
 					continue;
 				}
 
 				String name = (String) tableUsers.getValueAt(i, 1);
 				if (type == 0) {
 					title = "Xóa thành công!";
+					User userUpdate = userController.getUserByUsername(name);
+					deleteInformation(userUpdate);
 					userController.deleteByUsername(name);
 				} else {
 					title = type / 10 == 1 ? "Mở khóa tài khoản thành công!" : "Khóa tài khoản thành công";
@@ -287,7 +297,7 @@ public class PanelManagement extends JPanel {
 		if (checkChange) {
 			accounts = userController.getAllUsers();
 			setListItems(accounts);
-		} else if (listUserError.size() > 0) {
+		} else if (!listUserError.isEmpty()) {
 			title = "";
 			for (String e : listUserError) {
 				title += e;
@@ -301,6 +311,16 @@ public class PanelManagement extends JPanel {
 				ObjButtons, ObjButtons[0]);
 
 		System.out.println("Update status done!");
+	}
+
+	public void deleteInformation(User userUpdate) {
+		ArrayList<Group> groups = new ArrayList<Group>();
+		messageController.deleteByMsgSend(userUpdate.getId());
+		messageController.deleteByMsgReceive(userUpdate.getId());
+		groups = groupController.getAllGroups();
+		for (Group e : groups) {
+			groupController.removePeopleGroup(userUpdate.getInfor().getUsername(), e.getGroupId());
+		}
 	}
 
 	private int getAccountIndex(String username) {

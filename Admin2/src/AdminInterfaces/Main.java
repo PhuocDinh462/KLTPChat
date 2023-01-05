@@ -6,21 +6,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import Server.Classes.Group;
 import Server.Classes.Message;
 import Server.Classes.User;
 import Server.Controllers.GroupController;
 import Server.Controllers.MessageController;
 import Server.Controllers.UserController;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
-
 import javax.swing.SwingConstants;
 import java.awt.SystemColor;
 import java.awt.event.MouseAdapter;
@@ -38,9 +34,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.UUID;
 import java.awt.Color;
 import javax.swing.GroupLayout;
@@ -164,9 +158,7 @@ public class Main extends JFrame {
 		userController = new UserController();
 		groupController = new GroupController();
 		messageController = new MessageController();
-		accounts = userController.getAllUsers();
-		groups = groupController.getAllGroups();
-		initUI();
+
 		Thread openServer = new Thread(() -> waitClients());
 		openServer.start();
 	}
@@ -186,9 +178,13 @@ public class Main extends JFrame {
 	private void waitClients() {
 		users = new HashMap<>();
 		waitingClientResponse = false;
-
 		try {
+			initUI();
 			try (ServerSocket serverSocket = new ServerSocket(port)) {
+				// Khởi tạo UI, tài khoản, nhóm
+				accounts = userController.getAllUsers();
+				groups = groupController.getAllGroups();
+
 				System.out.println("\nServer đang chạy tại port " + port + "...");
 				while (true) {
 					Socket client = serverSocket.accept();
@@ -200,6 +196,10 @@ public class Main extends JFrame {
 			}
 		} catch (Exception exception) {
 			System.out.println("Không thể tạo server vì có một server khác đang chạy!");
+			String[] ObjButtons = { "OK" };
+			int PromptResult = JOptionPane.showOptionDialog(null, "Server is running...", "Confirmation",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
+			System.exit(0);
 		}
 	}
 
@@ -246,7 +246,9 @@ public class Main extends JFrame {
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
 
 				if (PromptResult == 0) {
-					
+					for(Socket e: users.keySet()) {
+						sendMessage(e, "Command_Disconnection");
+					}
 					System.exit(0);
 				}
 			}
@@ -522,6 +524,10 @@ public class Main extends JFrame {
 					sendMessage(client, "Command_CloseConnect");
 					int i = getAccountIndex(users.get(client).getInfor().getUsername());
 					accounts.get(i).getInfor().setStatus(false);
+
+					// Chuyển trạng thái offline cho user
+					PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Offline");
+
 					bufferedReader.close();
 					removeUser(client);
 					client.close();
@@ -555,6 +561,12 @@ public class Main extends JFrame {
 							accounts.get(i).getTimeLogin().add(
 									DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
 							userController.addLogin(accounts.get(i).getId());
+
+							// Chuyển trạng thái online cho user
+							PanelManage.changeStatusUserByUsername(accounts.get(i).getInfor().getUsername(), "Online");
+
+							// Thêm vào danh sách lịch sử đăng nhập
+							PanelLoginHis.addToListUser(accounts.get(i));
 						}
 					} else {
 						sendMessage(client, "Command_AccountVerifyFailed");
@@ -826,7 +838,8 @@ public class Main extends JFrame {
 					ArrayList<Message> historyMess = messGetFdataBase.findMessageByIndex(indexMessage);
 					for (Message message : historyMess) {
 						stringArray = stringArray.concat(message.getSenderId() + "~" + message.getReceiverId() + "~"
-								+ message.getContent() + "~" + message.getCreateTime() +"~"+ message.getSenderDelete() + "~"+ message.getReceiverDelete() +"`");
+								+ message.getContent() + "~" + message.getCreateTime() + "~" + message.getSenderDelete()
+								+ "~" + message.getReceiverDelete() + "`");
 					}
 					System.out.print("code 786: " + stringArray);
 

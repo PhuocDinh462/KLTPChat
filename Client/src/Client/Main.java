@@ -286,13 +286,13 @@ public class Main extends JFrame {
 				String friendChat = usersList.getSelectedValue();
 				conversationStatus = true;
 				changeConversation(friendChat, conversationStatus);
-				if(friendChat.contains("Tin nhắn mới)")){
+				if (friendChat.contains("Tin nhắn mới)")) {
 					friendChat = friendChat.replace(" (Tin nhắn mới)", "");
 					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
-				}else {
+				} else {
 					sendMessage("Command_MessageHistory`" + username + "`" + friendChat);
 				}
-				
+
 				groupBtn.setVisible(false);
 			}
 		});
@@ -315,10 +315,10 @@ public class Main extends JFrame {
 				String groupChat = groupList.getSelectedValue();
 				conversationStatus = false;
 				changeConversation(groupChat, conversationStatus);
-				if(groupChat.contains("Tin nhắn mới)")){
+				if (groupChat.contains("Tin nhắn mới)")) {
 					groupChat = groupChat.replace(" (Tin nhắn mới)", "");
 					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
-				}else {
+				} else {
 					sendMessage("Command_MessageGroupHistory`" + username + "`" + groupChat);
 				}
 				groupBtn.setVisible(true);
@@ -629,20 +629,17 @@ public class Main extends JFrame {
 //			messageStatus = MessageStatus.Waiting;
 			if (conversationStatus == true) {
 				sendMessage("Command_SendMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-				conversations.get(conversationTitle.getText())
-				.add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
-				
+				conversations.get(conversationTitle.getText()).add(new ChatBubble(ChatBubble.BubbleType.Mine, message));
+
 			}
-				
+
 			else {
 				sendMessage("Command_SendGroupMessage`" + conversationTitle.getText() + "`" + message + "`" + username);
-					conversations.get(conversationTitle.getText())
-							.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
+				conversations.get(conversationTitle.getText())
+						.add(new ChatBubbleGroup(ChatBubbleGroup.BubbleType.Mine, message, username));
 			}
 			revalidate();
-				
-			
-			
+
 //			while (messageStatus == MessageStatus.Waiting)
 //				System.out.print("tin nhắn đang chờ");
 
@@ -813,6 +810,14 @@ public class Main extends JFrame {
 					bufferedReader.close();
 					server.close();
 					break;
+				} else if (receivedMessage.contains("Command_Disconnection")) {
+					String[] ObjButtons = { "Yes", "No" };
+					int PromptResult = JOptionPane.showOptionDialog(null,
+							"Server đã ngắt kết nối. Bạn có muốn đóng chương trình không?", "Notification",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
+					if (PromptResult == 0) {
+						System.exit(0);
+					}
 
 				} else if (receivedMessage.contains("Command_UserList")) {
 					String[] str = receivedMessage.split("`");
@@ -958,17 +963,17 @@ public class Main extends JFrame {
 						if (str[1].equals(mess[0])) {
 							System.out.println("code 819: mot tin nhan vua duoc them vao");
 							// nguoi gui = usernam thi them vao ben phai
-							if(mess[4].equals("false")) {
+							if (mess[4].equals("false")) {
 								addNewMessage(mess[1], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Mine, true);
 							}
-							
+
 						} else if (!str[1].equals(mess[0])) {
 							System.out.println("code 965: mot tin nhan vua duoc them vao");
 							// nguoc lai la ben trai
-							if(mess[5].equals("false")) {
+							if (mess[5].equals("false")) {
 								addNewMessage(mess[0], mess[2] + "~" + mess[3], ChatBubble.BubbleType.Others, true);
 							}
-							
+
 						}
 					}
 

@@ -19,12 +19,11 @@ public class MessageController extends MessageModel {
 	public void create(Message msg) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy@HH:mm:ss");
 		Date date = new Date();
-		
+
 		Document document = new Document("_id", msg.getId()).append("senderId", msg.getSenderId())
 				.append("receiverId", msg.getReceiverId()).append("content", msg.getContent())
-				.append("index", msg.getIndex())
-				.append("createTime", formatter.format(date)).append("senderDelete", false)
-				.append("receiverDelete", false);
+				.append("index", msg.getIndex()).append("createTime", formatter.format(date))
+				.append("senderDelete", false).append("receiverDelete", false);
 
 		CollectionMessage().insertOne(document);
 		System.out.println("successful");
@@ -42,6 +41,24 @@ public class MessageController extends MessageModel {
 			document.close();
 		}
 		System.out.print("Successfull");
+	}
+
+	public void updateReceiver(String newReceiver, String currentReceiver) {
+		Document doc = new Document();
+		doc.append("receiverId", currentReceiver);
+		CollectionMessage().deleteMany(doc);
+		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
+		Gson gson = new Gson();
+		try {
+			while (document.hasNext()) {
+				Document getDoc = document.next();
+				Message getMess = gson.fromJson(getDoc.toJson(), Message.class);
+				CollectionMessage().updateOne(eq("_id", getMess.getId()), combine(set("receiverId", newReceiver)));
+			}
+		} finally {
+			document.close();
+		}
+		System.out.println("Successfull");
 	}
 
 	public void deleteById(String id) {
@@ -112,7 +129,7 @@ public class MessageController extends MessageModel {
 		System.out.println("Successful");
 		return mess;
 	}
-	
+
 	public String findIndexBySender(String sender, String receiver) {
 		String indexTemp = "0";
 		Document doc = new Document();
@@ -121,23 +138,23 @@ public class MessageController extends MessageModel {
 		MongoCursor<Document> document = CollectionMessage().find(doc).iterator();
 		ArrayList<Message> mess = new ArrayList<Message>();
 		Gson gson = new Gson();
-		if(document.hasNext()) {
+		if (document.hasNext()) {
 			System.out.println("Dữ liệu có tồn tại");
 			try {
-					Message addMess = gson.fromJson(document.next().toJson(), Message.class);
-					mess.add(addMess);
+				Message addMess = gson.fromJson(document.next().toJson(), Message.class);
+				mess.add(addMess);
 			} finally {
 				indexTemp = mess.get(0).getIndex();
 				document.close();
 			}
-		}else {
+		} else {
 			System.out.println("Dữ liệu chưa tồn tại");
 		}
-	
+
 		System.out.println("Successful");
 		return indexTemp;
 	}
-	
+
 	public ArrayList<Message> findMessageByIndex(String indexTemp) {
 		Document doc = new Document();
 		doc.append("index", indexTemp);
@@ -156,8 +173,7 @@ public class MessageController extends MessageModel {
 		System.out.println("Successful");
 		return mess;
 	}
-	
-	
+
 	public ArrayList<Message> findMessageByGroup(String GroupName) {
 		Document doc = new Document();
 		doc.append("receiverId", GroupName);
