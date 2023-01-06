@@ -162,7 +162,7 @@ public class UserController extends UserModel {
 
 	public void deleteByUsername(String username) {
 		User getUser = getUserByUsername(username);
-		
+
 		CollectionUser().deleteMany(eq("_id", getUser.getId()));
 		System.out.println("successful");
 	}
@@ -201,7 +201,6 @@ public class UserController extends UserModel {
 		for (int i = 0; i < listData.size(); i++) {
 			if (listData.get(i).equals(idRequest)) {
 				listData.remove(i);
-
 				CollectionUser().updateOne(eq("_id", id), combine(set("listFriend", listData)));
 
 				System.out.println("successful");

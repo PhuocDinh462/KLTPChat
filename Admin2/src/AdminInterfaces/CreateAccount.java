@@ -22,6 +22,7 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
@@ -214,7 +215,8 @@ public class CreateAccount extends JFrame {
 		} else if (!test) {
 			JOptionPane.showMessageDialog(this, "Email nhập không hợp lệ ", "Lỗi", JOptionPane.WARNING_MESSAGE);
 		} else {
-			User newUser = new User(username, password, fullname, address, date.toString(), gender, email);
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			User newUser = new User(username, password, fullname, address, formatter.format(date), gender, email);
 
 			if (userController.create(newUser)) {
 				setVisible(false);
@@ -223,18 +225,18 @@ public class CreateAccount extends JFrame {
 		}
 		return false;
 	}
-	
-	public static String getSelectedButtonText(ButtonGroup buttonGroup) {
-        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
-            AbstractButton button = buttons.nextElement();
-            if (button.isSelected()) {
-                return button.getText();
-            }
-        }
 
-        return null;
-    }
-	
+	public static String getSelectedButtonText(ButtonGroup buttonGroup) {
+		for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+			AbstractButton button = buttons.nextElement();
+			if (button.isSelected()) {
+				return button.getText();
+			}
+		}
+
+		return null;
+	}
+
 	public static boolean patternMatches(String emailAddress, String regexPattern) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}

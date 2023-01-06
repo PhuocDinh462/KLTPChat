@@ -328,12 +328,10 @@ public class PanelManagement extends JPanel {
 
 		for (User e : accounts) {
 			if (e.getFriend().contains(userUpdate.getInfor().getUsername())) {
-				userController.deleteFriend(e.getInfor().getUsername(), userUpdate.getId());
+				userController.deleteFriend(e.getId(), userUpdate.getInfor().getUsername());
 			}
-			i++;
 		}
 
-		i = 0;
 		for (Group e : groups) {
 
 			if (e.getlistUsers().contains(userUpdate.getInfor().getUsername())) {
