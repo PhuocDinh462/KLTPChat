@@ -72,11 +72,13 @@ public class FriendList extends JFrame {
 	}
 
 	public static void changeFriendStatusByName(String name, String status) {
-		int sizeRow = friendListTable.getRowCount();
-		
-		for (int i = 0; i < sizeRow; i++)
-			if (name.equals(friendListTable.getModel().getValueAt(i, 0)))
-		friendListTable.getModel().setValueAt(status, i, 1);
+		if (friendListTable != null) {
+			int sizeRow = friendListTable.getRowCount();
+
+			for (int i = 0; i < sizeRow; i++)
+				if (name.equals(friendListTable.getModel().getValueAt(i, 0)))
+					friendListTable.getModel().setValueAt(status, i, 1);
+		}
 	}
 
 	public void addComponents(String[] friendList) {

@@ -246,7 +246,7 @@ public class UserController extends UserModel {
 				listData.remove(i);
 
 				CollectionUser().updateOne(eq("_id", id), combine(set("listAddFriend", listData)));
-
+				System.out.println("successful");
 				return true;
 			}
 		}
