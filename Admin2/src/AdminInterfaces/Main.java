@@ -51,10 +51,16 @@ public class Main extends JFrame {
 	private ImageIcon iconGroupChat = new ImageIcon(Main.class.getResource("/Image/GroupChat.png"));
 	private ImageIcon iconLogo = new ImageIcon(Main.class.getResource("/Image/Logo.png"));
 
+	/**
+	 * Panel UI
+	 */
 	private PanelManagement PanelManage;
 	private LoginHistory PanelLoginHis;
 	private GroupChat PanelGroupChat;
 
+	/**
+	 * Controller
+	 */
 	private UserController userController;
 	private GroupController groupController;
 	private MessageController messageController;
@@ -92,52 +98,12 @@ public class Main extends JFrame {
 	 */
 	private ArrayList<Group> groups;
 
+	/********************************************************************************************
+	 * 										MAIN FUNCTION										*
+	 ********************************************************************************************/
 	/**
-	 * @Attribute: username
+	 * Main function
 	 */
-
-	private int getAccountIndex(String username) {
-		for (int i = 0; i < accounts.size(); i++) {
-			if (accounts.get(i).getInfor().getUsername().equals(username))
-				return i;
-		}
-		return -1;
-	}
-
-	private int getGroupIndex(String groupName) {
-		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).getGroupName().equals(groupName))
-				return i;
-		}
-		return -1;
-	}
-
-	private boolean containUsername(String username) {
-		for (User user : accounts) {
-			if (user.getInfor().getUsername().equals(username))
-				return true;
-		}
-		return false;
-	}
-
-	private String createMemberString(int groupIndex) {
-		String str = "";
-		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++) {
-			if (groups.get(groupIndex).getManagers().contains(groups.get(groupIndex).getlistUsers().get(i)))
-				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Quản trị viên";
-			else
-				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Thành viên";
-		}
-		return str;
-	}
-
-	private void sendCommandMsg2AllMenber(int groupIndex, String msg) {
-		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++)
-			for (Socket socket : users.keySet())
-				if (users.get(socket).getInfor().getUsername().equals(groups.get(groupIndex).getlistUsers().get(i)))
-					sendMessage(socket, msg);
-	}
-
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -152,7 +118,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Initializes the AppChat
 	 */
 	public Main() {
 		userController = new UserController();
@@ -163,83 +129,20 @@ public class Main extends JFrame {
 		openServer.start();
 	}
 
-	// Setting display component content
+	/*************************************************************************************
+	 * 									USER INTERFACE									 *
+	 *************************************************************************************/
+
+	/**
+	 * Setting display component content panel PanelManage: Page management user.
+	 * PanelLoginHis: Page show history. PanelGroupChat: Page management.
+	 */
 	public void menuClicked(JPanel panel) {
 		PanelManage.setVisible(false);
 		PanelLoginHis.setVisible(false);
 		PanelGroupChat.setVisible(false);
 
 		panel.setVisible(true);
-	}
-
-	/**
-	 * Wait for clients
-	 */
-	private void waitClients() {
-		users = new HashMap<>();
-		waitingClientResponse = false;
-		try {
-			try (ServerSocket serverSocket = new ServerSocket(port)) {
-				// Khởi tạo UI, tài khoản, nhóm
-				accounts = userController.getAllUsers();
-				groups = groupController.getAllGroups();
-
-				System.out.println("\nServer đang chạy tại port " + port + "...");
-				while (true) {
-					// Tải lại data của Groups
-					if (PanelManage.getChangeGroup()) {
-						refreshGroups();
-						PanelManage.setChangeGroup(false);
-					}
-
-					// Tải lại data account
-					if (PanelManage.getChangeAccount()) {
-						refreshAccount();
-						PanelManage.setChangeAccount(false);
-					}
-
-					Socket client = serverSocket.accept();
-					if (client == null)
-						break;
-					Thread receiveClientMessage = new Thread(() -> receiveClientMessages(client));
-					receiveClientMessage.start();
-				}
-			}
-		} catch (Exception exception) {
-			System.out.println("Không thể tạo server vì có một server khác đang chạy!");
-			String[] ObjButtons = { "OK" };
-			int PromptResult = JOptionPane.showOptionDialog(null, "Server is running...", "Confirmation",
-					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
-			System.exit(0);
-		}
-	}
-
-	private class PanelButtonMouseAdapter extends MouseAdapter {
-		JPanel panel;
-
-		public PanelButtonMouseAdapter(JPanel panel) {
-			this.panel = panel;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			panel.setBackground(new Color(240, 240, 240));
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			panel.setBackground(Color.LIGHT_GRAY);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			panel.setBackground(new Color(160, 160, 160));
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			panel.setBackground(new Color(240, 240, 240));
-		}
 	}
 
 	private void initUI() {
@@ -380,6 +283,79 @@ public class Main extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 	}
 
+	private class PanelButtonMouseAdapter extends MouseAdapter {
+		JPanel panel;
+
+		public PanelButtonMouseAdapter(JPanel panel) {
+			this.panel = panel;
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			panel.setBackground(Color.LIGHT_GRAY);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			panel.setBackground(new Color(160, 160, 160));
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			panel.setBackground(new Color(240, 240, 240));
+		}
+	}
+
+	/********************************************************************************
+	 * 								SUPPORT FUNCTION								*
+	 ********************************************************************************/
+	private int getAccountIndex(String username) {
+		for (int i = 0; i < accounts.size(); i++) {
+			if (accounts.get(i).getInfor().getUsername().equals(username))
+				return i;
+		}
+		return -1;
+	}
+
+	private int getGroupIndex(String groupName) {
+		for (int i = 0; i < groups.size(); i++) {
+			if (groups.get(i).getGroupName().equals(groupName))
+				return i;
+		}
+		return -1;
+	}
+
+	private boolean containUsername(String username) {
+		for (User user : accounts) {
+			if (user.getInfor().getUsername().equals(username))
+				return true;
+		}
+		return false;
+	}
+
+	private String createMemberString(int groupIndex) {
+		String str = "";
+		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++) {
+			if (groups.get(groupIndex).getManagers().contains(groups.get(groupIndex).getlistUsers().get(i)))
+				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Quản trị viên";
+			else
+				str += "`" + groups.get(groupIndex).getlistUsers().get(i) + ":Thành viên";
+		}
+		return str;
+	}
+
+	private void sendCommandMsg2AllMenber(int groupIndex, String msg) {
+		for (int i = 0; i < groups.get(groupIndex).getlistUsers().size(); i++)
+			for (Socket socket : users.keySet())
+				if (users.get(socket).getInfor().getUsername().equals(groups.get(groupIndex).getlistUsers().get(i)))
+					sendMessage(socket, msg);
+	}
+
 	public void refreshGroups() {
 		PanelGroupChat.refreshTable();
 	}
@@ -393,6 +369,105 @@ public class Main extends JFrame {
 			if (user.getInfor().getUsername().equals(username))
 				return true;
 		return false;
+	}
+	
+	public Socket getSocketByUser(String username) {
+		for (Socket socket : users.keySet()) {
+			if (users.get(socket).getInfor().getUsername().equals(username)) {
+				return socket;
+			}
+		}
+		return null;
+	}
+	
+	// Check friend
+	public Boolean checkFriend(String username, String friend, ArrayList<String> friends) {
+		for (String e : friends) {
+			if (e.equals(friend))
+				return true;
+		}
+		return false;
+	}
+	
+
+	public ArrayList<User> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(ArrayList<User> accounts) {
+		this.accounts = accounts;
+	}
+
+	public GroupController getGroupController() {
+		return groupController;
+	}
+
+	public MessageController getMessageController() {
+		return messageController;
+	}
+
+	public UserController getUserController() {
+		return userController;
+	}
+
+	/**********************************************************************************
+	 * 							COMUNICATION WITH CLIENT							  *
+	 **********************************************************************************/
+
+	/**
+	 * Wait for clients
+	 */
+	private void waitClients() {
+		users = new HashMap<>();
+		waitingClientResponse = false;
+		try {
+			try (ServerSocket serverSocket = new ServerSocket(port)) {
+				// Khởi tạo UI, tài khoản, nhóm
+				accounts = userController.getAllUsers();
+				groups = groupController.getAllGroups();
+
+				System.out.println("\nServer đang chạy tại port " + port + "...");
+				while (true) {
+					// Tải lại data của Groups
+					if (PanelManage.getChangeGroup()) {
+						refreshGroups();
+						PanelManage.setChangeGroup(false);
+					}
+
+					// Tải lại data account
+					if (PanelManage.getChangeAccount()) {
+						refreshAccount();
+						PanelManage.setChangeAccount(false);
+					}
+
+					Socket client = serverSocket.accept();
+					if (client == null)
+						break;
+					Thread receiveClientMessage = new Thread(() -> receiveClientMessages(client));
+					receiveClientMessage.start();
+				}
+			}
+		} catch (Exception exception) {
+			System.out.println("Không thể tạo server vì có một server khác đang chạy!");
+			String[] ObjButtons = { "OK" };
+			int PromptResult = JOptionPane.showOptionDialog(null, "Server is running...", "Confirmation",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
+			System.exit(0);
+		}
+	}
+	
+	public void updateFriendList(Socket client) {
+		String str = "Command_ShowFriendList";
+		int index = getAccountIndex(users.get(client).getInfor().getUsername());
+
+		for (int i = 0; i < accounts.get(index).getFriend().size(); i++) {
+			String friendName = accounts.get(index).getFriend().get(i);
+			String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus() ? "Online"
+					: "Offline";
+			str += "`" + friendName + ":" + friendStatus;
+		}
+
+		sendMessage(client, str);
 	}
 
 	/**
@@ -411,15 +486,6 @@ public class Main extends JFrame {
 		System.out.println(username + "connection success!");
 	}
 
-	public Socket getSocketByUser(String username) {
-		for (Socket socket : users.keySet()) {
-			if (users.get(socket).getInfor().getUsername().equals(username)) {
-				return socket;
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * Remove online user
 	 * 
@@ -427,15 +493,6 @@ public class Main extends JFrame {
 	 */
 	public void removeUser(Socket socket) {
 		users.remove(socket);
-	}
-
-	// Check friend
-	public Boolean checkFriend(String username, String friend, ArrayList<String> friends) {
-		for (String e : friends) {
-			if (e.equals(friend))
-				return true;
-		}
-		return false;
 	}
 
 	/**
@@ -469,33 +526,13 @@ public class Main extends JFrame {
 		sendMessage(socket, groupList.toString());
 	}
 
-	public ArrayList<User> getAccounts() {
-		return accounts;
-	}
 
-	public void setAccounts(ArrayList<User> accounts) {
-		this.accounts = accounts;
-	}
-
-	public GroupController getGroupController() {
-		return groupController;
-	}
-
-	public MessageController getMessageController() {
-		return messageController;
-	}
-
-	public UserController getUserController() {
-		return userController;
-	}
-
-//
-//	/**
-//	 * Send a message to client
-//	 * 
-//	 * @param client  Socket
-//	 * @param message String
-//	 */
+	/**
+	 * Send a message to client
+	 * 
+	 * @param client  Socket
+	 * @param message String
+	 */
 	public void sendMessage(Socket client, String message) {
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
@@ -508,26 +545,11 @@ public class Main extends JFrame {
 		}
 	}
 
-//	public void sendMessage(Socket client, Message message) {
-//		try {
-//			BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-//			 String array[] = new String[message.size()];// ArrayList to String Array conversion                
-//	            for(int j =0;j<message.size();j++){  
-//	              array[j] = message.get(j);  
-//	            }  
-//			bufferedWriter.write(message);
-//			bufferedWriter.newLine();
-//			bufferedWriter.flush();
-//
-//		} catch (Exception exception) {
-//			removeUser(client);
-//		}
-//	}
-//	/**
-//	 * Receive and Process Message from client
-//	 * 
-//	 * @param client Socket
-//	 */
+	/**
+	 * Receive and Process Message from client
+	 * 
+	 * @param client Socket
+	 */
 
 	private void receiveClientMessages(Socket client) {
 		try {
@@ -626,8 +648,7 @@ public class Main extends JFrame {
 						} else {
 							sendMessage(client, "Command_CreateAccountFailed");
 						}
-					}
-					else
+					} else
 						sendMessage(client, "Command_CreateAccountFailed");
 				}
 
