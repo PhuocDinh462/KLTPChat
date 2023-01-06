@@ -614,7 +614,7 @@ public class Main extends JFrame {
 				else if (receivedMessage.contains("Command_CreateAccount")) {
 					String[] str = receivedMessage.split("`");
 
-					if (getGroupIndex(str[1]) != -1 && getAccountIndex(str[1]) != -1) {
+					if (getGroupIndex(str[1]) == -1 && getAccountIndex(str[1]) == -1) {
 						User createUser = new User(str[1], str[2], str[3], str[4], str[5], str[6], str[7]);
 						Boolean created = userController.create(createUser);
 						accounts.add(createUser);
@@ -787,7 +787,7 @@ public class Main extends JFrame {
 					String[] str = receivedMessage.split("`");
 
 					// Kiểm tra xem tên mới tồn tại hay chưa:
-					if (getGroupIndex(str[1]) != -1 && getAccountIndex(str[1]) != -1) {
+					if (getGroupIndex(str[1]) == -1 && getAccountIndex(str[1]) == -1) {
 						String creator = users.get(client).getInfor().getUsername();
 						ArrayList<String> members = new ArrayList<String>();
 						ArrayList<String> managers = new ArrayList<String>();
