@@ -161,7 +161,7 @@ public class Main extends JFrame {
 
 				if (PromptResult == 0) {
 					for (Socket e : users.keySet()) {
-						sendMessage(e, "Command_Disconnection");
+						sendMessage(e, "Command_Disconnection");	
 					}
 					System.exit(0);
 				}
@@ -175,7 +175,7 @@ public class Main extends JFrame {
 		setContentPane(contentPane);
 
 		// Init component
-		PanelManage = new PanelManagement();
+		PanelManage = new PanelManagement(this);
 		PanelLoginHis = new LoginHistory();
 		PanelGroupChat = new GroupChat();
 
@@ -362,6 +362,8 @@ public class Main extends JFrame {
 
 	public void refreshAccount() {
 		accounts = userController.getAllUsers();
+		for (Socket socket : users.keySet())
+			sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
 	}
 
 	public boolean containUser(String username) {
@@ -422,24 +424,12 @@ public class Main extends JFrame {
 		waitingClientResponse = false;
 		try {
 			try (ServerSocket serverSocket = new ServerSocket(port)) {
-				// Khởi tạo UI, tài khoản, nhóm
+				//Tài khoản, nhóm
 				accounts = userController.getAllUsers();
 				groups = groupController.getAllGroups();
 
 				System.out.println("\nServer đang chạy tại port " + port + "...");
 				while (true) {
-					// Tải lại data của Groups
-					if (PanelManage.getChangeGroup()) {
-						refreshGroups();
-						PanelManage.setChangeGroup(false);
-					}
-
-					// Tải lại data account
-					if (PanelManage.getChangeAccount()) {
-						refreshAccount();
-						PanelManage.setChangeAccount(false);
-					}
-
 					Socket client = serverSocket.accept();
 					if (client == null)
 						break;
@@ -454,20 +444,6 @@ public class Main extends JFrame {
 					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
 			System.exit(0);
 		}
-	}
-	
-	public void updateFriendList(Socket client) {
-		String str = "Command_ShowFriendList";
-		int index = getAccountIndex(users.get(client).getInfor().getUsername());
-
-		for (int i = 0; i < accounts.get(index).getFriend().size(); i++) {
-			String friendName = accounts.get(index).getFriend().get(i);
-			String friendStatus = accounts.get(getAccountIndex(friendName)).getInfor().getStatus() ? "Online"
-					: "Offline";
-			str += "`" + friendName + ":" + friendStatus;
-		}
-
-		sendMessage(client, str);
 	}
 
 	/**
@@ -503,7 +479,7 @@ public class Main extends JFrame {
 	 */
 	public void sendUserList(Socket socket, User user) {
 		StringBuilder userList = new StringBuilder("Command_UserList");
-
+		System.out.println("Sending user list");
 		for (int i = 0; i < user.getFriend().size(); i++)
 			userList.append("`").append(user.getFriend().get(i));
 

@@ -44,10 +44,8 @@ public class PanelManagement extends JPanel {
 	private GroupController groupController;
 
 	private ArrayList<User> accounts;
-	private Boolean changeGroup = false;
-	private Boolean changeAccount = false;
 
-	public PanelManagement() {
+	public PanelManagement(Main main) {
 		userController = new UserController();
 		messageController = new MessageController();
 		groupController = new GroupController();
@@ -135,9 +133,10 @@ public class PanelManagement extends JPanel {
 				int promptResult = JOptionPane.showOptionDialog(null, "Bạn có chắc chắn muốn khóa tài khoản?",
 						"Xác nhận", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons,
 						ObjButtons[1]);
-				if (promptResult == 0)
+				if (promptResult == 0) {
 					deleteOrBlockedAccount(1);
-				changeAccount = true;
+					main.refreshAccount();
+				}
 			}
 		});
 
@@ -147,14 +146,17 @@ public class PanelManagement extends JPanel {
 
 				int promptResult = JOptionPane.showOptionDialog(null, "Bạn có chắc chắn muốn xóa?", "Xác nhận",
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
-				if (promptResult == 0)
+				if (promptResult == 0) {
 					deleteOrBlockedAccount(0);
+					main.refreshAccount();
+					main.refreshGroups();
+				}
 			}
 		});
 
 		btnAddNewAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CreateAccount(PanelManagement.this);
+				new CreateAccount(PanelManagement.this, main);
 			}
 		});
 	}
@@ -177,7 +179,6 @@ public class PanelManagement extends JPanel {
 	}
 
 	public void refreshList() {
-		changeAccount = true;
 		accounts = userController.getAllUsers();
 		setListItems(accounts);
 	}
@@ -343,18 +344,14 @@ public class PanelManagement extends JPanel {
 						groupController.removeMessageById(idMess, e.getGroupId());
 					}
 				}
-
-				changeGroup = true;
 			}
 			if (e.getManagers().contains(userUpdate.getInfor().getUsername())) {
 				groupController.removeManagerGroup(userUpdate.getInfor().getUsername(), e.getGroupId());
 				e.getManagers().remove(i);
-				changeGroup = true;
 			}
 
 			if (e.getlistUsers().isEmpty()) {
 				groupController.deleteGroup(e.getGroupId());
-				changeGroup = true;
 			}
 			i++;
 		}
@@ -398,22 +395,6 @@ public class PanelManagement extends JPanel {
 
 		System.out.println("Sorted complete!");
 		return users;
-	}
-
-	public Boolean getChangeGroup() {
-		return changeGroup;
-	}
-
-	public void setChangeGroup(Boolean changeGroup) {
-		this.changeGroup = changeGroup;
-	}
-
-	public Boolean getChangeAccount() {
-		return changeAccount;
-	}
-
-	public void setChangeAccount(Boolean changeAccount) {
-		this.changeAccount = changeAccount;
 	}
 
 	public static class ComparatorIncreasing implements Comparator<User> {

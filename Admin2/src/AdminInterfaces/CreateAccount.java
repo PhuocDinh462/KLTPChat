@@ -45,7 +45,7 @@ public class CreateAccount extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public CreateAccount(PanelManagement pm) {
+	public CreateAccount(PanelManagement pm, Main main) {
 		userController = new UserController();
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -164,6 +164,7 @@ public class CreateAccount extends JFrame {
 					String[] ObjButtons = { "OK" };
 					JOptionPane.showOptionDialog(null, "Valid account!", "Confirmation", JOptionPane.DEFAULT_OPTION,
 							JOptionPane.INFORMATION_MESSAGE, null, ObjButtons, ObjButtons[0]);
+					main.refreshAccount();
 					pm.refreshList();
 				} else {
 					String[] ObjButtons = { "OK" };

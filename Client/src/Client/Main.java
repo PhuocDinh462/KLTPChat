@@ -924,6 +924,7 @@ public class Main extends JFrame {
 
 				} else if (receivedMessage.contains("Command_ShowFriendList")) {
 					String[] str = receivedMessage.split("`");
+					System.out.println(receivedMessage);
 					new FriendList(str);
 
 				} else if (receivedMessage.contains("Command_unfriend")) {
