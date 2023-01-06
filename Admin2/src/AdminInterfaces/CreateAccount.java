@@ -166,10 +166,6 @@ public class CreateAccount extends JFrame {
 							JOptionPane.INFORMATION_MESSAGE, null, ObjButtons, ObjButtons[0]);
 					main.refreshAccount();
 					pm.refreshList();
-				} else {
-					String[] ObjButtons = { "OK" };
-					JOptionPane.showOptionDialog(null, "Invalid account", "Confirmation", JOptionPane.DEFAULT_OPTION,
-							JOptionPane.ERROR_MESSAGE, null, ObjButtons, ObjButtons[0]);
 				}
 			}
 		});
