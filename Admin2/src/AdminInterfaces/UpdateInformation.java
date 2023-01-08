@@ -130,8 +130,8 @@ public class UpdateInformation extends JPanel {
 					user.getInfor().setGender(gender);
 					userController.update(user.getInfor().getUsername(), user.getInfor());
 					String[] ObjButtons = { "OK" };
-					JOptionPane.showOptionDialog(null, "Cập nhật thành công!", "Xác nhận",
-							JOptionPane.DEFAULT_OPTION, JOptionPane.NO_OPTION, null, ObjButtons, ObjButtons[0]);
+					JOptionPane.showOptionDialog(null, "Cập nhật thành công!", "Xác nhận", JOptionPane.DEFAULT_OPTION,
+							JOptionPane.NO_OPTION, null, ObjButtons, ObjButtons[0]);
 				} else {
 
 					String[] ObjButtons = { "OK" };

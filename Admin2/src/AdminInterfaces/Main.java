@@ -124,6 +124,9 @@ public class Main extends JFrame {
 		userController = new UserController();
 		groupController = new GroupController();
 		messageController = new MessageController();
+		//Tài khoản, nhóm
+		accounts = userController.getAllUsers();
+		groups = groupController.getAllGroups();
 		initUI();
 		Thread openServer = new Thread(() -> waitClients());
 		openServer.start();
@@ -158,7 +161,6 @@ public class Main extends JFrame {
 				String[] ObjButtons = { "Yes", "No" };
 				int PromptResult = JOptionPane.showOptionDialog(null, "Are you sure you want to exit?", "Confirmation",
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
-
 				if (PromptResult == 0) {
 					for (Socket e : users.keySet()) {
 						sendMessage(e, "Command_Disconnection");	
@@ -364,6 +366,7 @@ public class Main extends JFrame {
 		accounts = userController.getAllUsers();
 		for (Socket socket : users.keySet())
 			sendUserList(socket, accounts.get(getAccountIndex(users.get(socket).getInfor().getUsername())));
+		System.out.println("Update complete!");
 	}
 
 	public boolean containUser(String username) {
@@ -424,10 +427,6 @@ public class Main extends JFrame {
 		waitingClientResponse = false;
 		try {
 			try (ServerSocket serverSocket = new ServerSocket(port)) {
-				//Tài khoản, nhóm
-				accounts = userController.getAllUsers();
-				groups = groupController.getAllGroups();
-
 				System.out.println("\nServer đang chạy tại port " + port + "...");
 				while (true) {
 					Socket client = serverSocket.accept();
@@ -459,7 +458,7 @@ public class Main extends JFrame {
 		sendUserList(socket, getUser);
 		sendGroupList(socket, getUser);
 
-		System.out.println(username + "connection success!");
+		System.out.println(username + " connection success!");
 	}
 
 	/**

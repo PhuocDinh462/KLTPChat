@@ -251,7 +251,14 @@ public class Main extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				sendMessage("Command_CloseConnect");
+				String[] ObjButtons = { "Yes", "No" };
+				int PromptResult = JOptionPane.showOptionDialog(null, "Are you sure you want to exit?", "Confirmation",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[1]);
+
+				if (PromptResult == 0) {
+					sendMessage("Command_CloseConnect");
+					System.exit(0);
+				}
 			}
 		});
 		addComponents();

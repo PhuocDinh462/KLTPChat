@@ -174,14 +174,14 @@ public class FeaturesManagement extends JFrame {
 				menuClicked(panelListF);
 			}
 		});
-		
+
 		JPanel panelUser = new JPanel();
 		panelUser.setBackground(SystemColor.window);
 		panelUser.setForeground(SystemColor.desktop);
 		panelUser.setBounds(0, 0, 170, 100);
 		panel.add(panelUser);
 		panelUser.setLayout(null);
-		
+
 		JLabel lblIconImg = new JLabel();
 		lblIconImg.setBounds(60, 10, 50, 50);
 		panelUser.add(lblIconImg);

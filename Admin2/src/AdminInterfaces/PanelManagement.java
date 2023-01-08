@@ -123,6 +123,7 @@ public class PanelManagement extends JPanel {
 		btnUnblocked.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteOrBlockedAccount(10);
+				main.refreshAccount();
 			}
 		});
 

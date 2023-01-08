@@ -219,6 +219,11 @@ public class CreateAccount extends JFrame {
 				setVisible(false);
 				return true;
 			}
+			else {
+				String[] ObjButtons = { "OK" };
+				JOptionPane.showOptionDialog(null, "Already have username or email in database!", "Confirmation", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE, null, ObjButtons, ObjButtons[0]);
+			}
 		}
 		return false;
 	}

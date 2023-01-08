@@ -1,6 +1,7 @@
 package AdminInterfaces;
 
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Server.Classes.User;
@@ -15,9 +16,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class UpdatePassword extends JPanel {
-	private JTextField textOldPass;
-	private JTextField textNewPass;
-	private JTextField textRePass;
+	private JPasswordField textOldPass;
+	private JPasswordField textNewPass;
+	private JPasswordField textRePass;
 
 	private UserController userController;
 	private User user;
@@ -47,17 +48,17 @@ public class UpdatePassword extends JPanel {
 		lblRePass.setBounds(40, 135, 120, 25);
 		add(lblRePass);
 
-		textOldPass = new JTextField();
+		textOldPass = new JPasswordField();
 		textOldPass.setBounds(170, 75, 220, 25);
 		add(textOldPass);
 		textOldPass.setColumns(10);
 
-		textNewPass = new JTextField();
+		textNewPass = new JPasswordField();
 		textNewPass.setColumns(10);
 		textNewPass.setBounds(170, 105, 220, 25);
 		add(textNewPass);
 
-		textRePass = new JTextField();
+		textRePass = new JPasswordField();
 		textRePass.setColumns(10);
 		textRePass.setBounds(170, 135, 220, 25);
 		add(textRePass);
@@ -67,17 +68,20 @@ public class UpdatePassword extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String title = new String();
 				String error = "Error";
-				if (!textOldPass.getText().equals(user.getInfor().getPassword())) {
+				if (!String.valueOf(textOldPass.getPassword()).equals(user.getInfor().getPassword())) {
 					title = "Mật khẩu cũ của bạn không đúng!";
-				} else if (textNewPass.getText().equals("")) {
+				} else if (String.valueOf(textNewPass.getPassword()).equals("")) {
 					title = "Bạn chưa nhập mật khẩu mới!";
-				} else if (!textNewPass.getText().equals(textRePass.getText())) {
+				} else if (!String.valueOf(textNewPass.getPassword()).equals(String.valueOf(textRePass.getPassword()))) {
 					title = "Mật khẩu không trùng khớp!";
 				} else {
 					title = "Cập nhật mật khẩu thành công!";
 					error = "";
-					user.getInfor().setPassword(textNewPass.getText());
-					userController.updatePassword(user.getInfor().getUsername(), textNewPass.getText());
+					user.getInfor().setPassword(String.valueOf(textNewPass.getPassword()));
+					userController.updatePassword(user.getInfor().getUsername(), String.valueOf(textNewPass.getPassword()));
+					textOldPass.setText("");
+					textNewPass.setText("");
+					textRePass.setText("");
 				}
 
 				String[] ObjButtons = { "OK" };
