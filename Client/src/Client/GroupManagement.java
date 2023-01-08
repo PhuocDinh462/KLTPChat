@@ -123,7 +123,7 @@ public class GroupManagement extends JFrame {
 				JTextField newName = new JTextField();
 				Object[] object = { "Nhập tên mới:", newName };
 
-				int option = JOptionPane.showConfirmDialog(null, object, "Đổi mật khẩu", JOptionPane.OK_CANCEL_OPTION);
+				int option = JOptionPane.showConfirmDialog(null, object, "Đổi tên nhóm", JOptionPane.OK_CANCEL_OPTION);
 
 				if (option == JOptionPane.OK_OPTION && !newName.getText().isBlank()) {
 					Main.sendMessage("Command_ChangeGroupName`" + groupName + "`" + newName.getText());

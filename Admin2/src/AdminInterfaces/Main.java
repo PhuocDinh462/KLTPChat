@@ -99,7 +99,7 @@ public class Main extends JFrame {
 	private ArrayList<Group> groups;
 
 	/********************************************************************************************
-	 * 										MAIN FUNCTION										*
+	 * MAIN FUNCTION *
 	 ********************************************************************************************/
 	/**
 	 * Main function
@@ -130,7 +130,7 @@ public class Main extends JFrame {
 	}
 
 	/*************************************************************************************
-	 * 									USER INTERFACE									 *
+	 * USER INTERFACE *
 	 *************************************************************************************/
 
 	/**
@@ -161,7 +161,7 @@ public class Main extends JFrame {
 
 				if (PromptResult == 0) {
 					for (Socket e : users.keySet()) {
-						sendMessage(e, "Command_Disconnection");	
+						sendMessage(e, "Command_Disconnection");
 					}
 					System.exit(0);
 				}
@@ -312,7 +312,7 @@ public class Main extends JFrame {
 	}
 
 	/********************************************************************************
-	 * 								SUPPORT FUNCTION								*
+	 * SUPPORT FUNCTION *
 	 ********************************************************************************/
 	private int getAccountIndex(String username) {
 		for (int i = 0; i < accounts.size(); i++) {
@@ -372,7 +372,7 @@ public class Main extends JFrame {
 				return true;
 		return false;
 	}
-	
+
 	public Socket getSocketByUser(String username) {
 		for (Socket socket : users.keySet()) {
 			if (users.get(socket).getInfor().getUsername().equals(username)) {
@@ -381,7 +381,7 @@ public class Main extends JFrame {
 		}
 		return null;
 	}
-	
+
 	// Check friend
 	public Boolean checkFriend(String username, String friend, ArrayList<String> friends) {
 		for (String e : friends) {
@@ -390,7 +390,6 @@ public class Main extends JFrame {
 		}
 		return false;
 	}
-	
 
 	public ArrayList<User> getAccounts() {
 		return accounts;
@@ -413,7 +412,7 @@ public class Main extends JFrame {
 	}
 
 	/**********************************************************************************
-	 * 							COMUNICATION WITH CLIENT							  *
+	 * COMUNICATION WITH CLIENT *
 	 **********************************************************************************/
 
 	/**
@@ -424,7 +423,7 @@ public class Main extends JFrame {
 		waitingClientResponse = false;
 		try {
 			try (ServerSocket serverSocket = new ServerSocket(port)) {
-				//Tài khoản, nhóm
+				// Tài khoản, nhóm
 				accounts = userController.getAllUsers();
 				groups = groupController.getAllGroups();
 
@@ -501,7 +500,6 @@ public class Main extends JFrame {
 
 		sendMessage(socket, groupList.toString());
 	}
-
 
 	/**
 	 * Send a message to client
@@ -1158,8 +1156,14 @@ public class Main extends JFrame {
 						sendMessage(client, "Command_NotPermitted`");
 
 					else {
+						boolean isAdmin = false;
+						if (groups.get(index).getManagers().contains(str[2]))
+							isAdmin = true;
+
 						// Xóa trong groups:
 						groups.get(index).getlistUsers().remove(groups.get(index).getlistUsers().indexOf(str[2]));
+						if (isAdmin)
+							groups.get(index).getManagers().remove(groups.get(index).getManagers().indexOf(str[2]));
 
 						Socket tmp = null;
 						for (Socket socket : users.keySet())
@@ -1180,6 +1184,8 @@ public class Main extends JFrame {
 
 						// Xóa trong db:
 						groupController.removePeopleGroup(str[2], groups.get(index).getGroupId());
+						if (isAdmin)
+							groupController.removeManagerGroup(str[2], groups.get(index).getGroupId());
 					}
 				}
 

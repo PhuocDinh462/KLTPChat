@@ -4,10 +4,11 @@
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="Command_deleteAddFriendRequest"/>
+		<item key="selection" value="addUserLogin"/>
 		<item key="wrap" value="true"/>
 		<item key="incremental" value="false"/>
 		<list key="findhistory">
+			<item value="addUserLogin"/>
 			<item value="Command_deleteAddFriendRequest"/>
 			<item value="addfr"/>
 			<item value="Command_SendMessage"/>
@@ -15,7 +16,6 @@
 			<item value="SendHistory"/>
 			<item value="userList"/>
 			<item value="userLists"/>
-			<item value="userLisst"/>
 		</list>
 		<list key="replacehistory">
 		</list>
