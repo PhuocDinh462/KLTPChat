@@ -8,7 +8,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -80,6 +79,8 @@ public class Search extends JFrame {
 					else
 						Main.sendMessage("Command_SearchMsgHistoryInGroup`" + name + "`" + SenderTextField.getText()
 								+ "`" + contentTextField.getText());
+					
+					contentTextField.setText("");
 				}
 			}
 		});
