@@ -6,7 +6,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import Server.Classes.Group;
-import Server.Classes.Message;
 import Server.Classes.User;
 import Server.Controllers.GroupController;
 import Server.Controllers.MessageController;
@@ -15,6 +14,8 @@ import Server.Controllers.UserController;
 import javax.swing.JTable;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -30,7 +31,9 @@ import javax.swing.JOptionPane;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class PanelManagement extends JPanel {
 
@@ -61,13 +64,13 @@ public class PanelManagement extends JPanel {
 		tHeader.setFont(new Font("Tahome", Font.BOLD, 12));
 
 		textFindUser = new JTextField();
-		textFindUser.setBounds(15, 8, 200, 30);
+		textFindUser.setBounds(15, 8, 170, 30);
 		add(textFindUser);
 		textFindUser.setColumns(10);
 
 		// Filter User
 		JButton btnFind = new JButton("Tìm kiếm");
-		btnFind.setBounds(225, 11, 90, 25);
+		btnFind.setBounds(192, 11, 90, 25);
 		add(btnFind);
 
 		JButton btnAddNewAccount = new JButton("Thêm tài khoản");
@@ -88,18 +91,30 @@ public class PanelManagement extends JPanel {
 		JComboBox comboBoxSorted = new JComboBox();
 		comboBoxSorted.setFont(new Font("Dialog", Font.PLAIN, 13));
 		comboBoxSorted.setModel(new DefaultComboBoxModel(new String[] { "Tăng dần", "Giảm dần" }));
-		comboBoxSorted.setBounds(390, 8, 90, 30);
+		comboBoxSorted.setBounds(430, 8, 90, 30);
 		add(comboBoxSorted);
 
 		JLabel lblSorted = new JLabel("Sắp xếp:");
 		lblSorted.setFont(new Font("Dialog", Font.PLAIN, 13));
-		lblSorted.setBounds(335, 8, 65, 30);
+		lblSorted.setBounds(375, 8, 65, 30);
 		add(lblSorted);
 
 		JButton btnUnblocked = new JButton("Mở tài khoản");
 		btnUnblocked.setFont(new Font("Dialog", Font.PLAIN, 13));
 		btnUnblocked.setBounds(530, 7, 120, 30);
 		add(btnUnblocked);
+
+		JButton btnNewButton = new JButton();
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnNewButton.setText("Refresh");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				main.refreshAccount();
+				refreshList();
+			}
+		});
+		btnNewButton.setBounds(292, 11, 73, 25);
+		add(btnNewButton);
 
 		// Button Features
 		btnFind.addActionListener(new ActionListener() {
